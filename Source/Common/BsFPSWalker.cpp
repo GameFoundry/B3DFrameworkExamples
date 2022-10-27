@@ -52,7 +52,7 @@ namespace bs
 		const Transform& tfrm = SO()->GetTransform();
 
 		// If the movement button is pressed, determine direction to move in
-		Vector3 direction = Vector3::ZERO;
+		Vector3 direction = Vector3::kZero;
 		if(goingForward) direction += tfrm.GetForward();
 		if(goingBack) direction -= tfrm.GetForward();
 		if(goingRight) direction += tfrm.GetRight();

@@ -69,10 +69,10 @@ namespace bs
 			mPitch = wrapAngle2(mPitch);
 
 			Quaternion yRot;
-			yRot.FromAxisAngle(Vector3::UNIT_Y, Radian(mYaw));
+			yRot.FromAxisAngle(Vector3::kUnitY, Radian(mYaw));
 
 			Quaternion xRot;
-			xRot.FromAxisAngle(Vector3::UNIT_X, Radian(mPitch));
+			xRot.FromAxisAngle(Vector3::kUnitX, Radian(mPitch));
 
 			Quaternion camRot = yRot * xRot;
 			camRot.Normalize();

@@ -162,7 +162,7 @@ namespace bs
 		headerLabelStyle.FontSize = 24;
 
 		// Set the default text color
-		headerLabelStyle.Normal.TextColor = Color::White;
+		headerLabelStyle.Normal.TextColor = Color::kWhite;
 
 		// Grab the default GUI skin to which we'll append the new style to. You could also create a new GUI skin and
 		// add the style to it, but that would also require adding default styles for all the GUI element types.

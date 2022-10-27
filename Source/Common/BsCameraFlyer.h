@@ -32,10 +32,10 @@ namespace bs
 		VirtualAxis mVerticalAxis; /**< Input device axis used for controlling camera's pitch rotation (up/down). */
 		VirtualAxis mHorizontalAxis; /**< Input device axis used for controlling camera's yaw rotation (left/right). */
 
-		static const float START_SPEED; /**< Initial movement speed. */
-		static const float TOP_SPEED; /**< Maximum movement speed. */
-		static const float ACCELERATION; /**< Acceleration that determines how quickly to go from starting to top speed. */
-		static const float FAST_MODE_MULTIPLIER; /**< Multiplier applied to the speed when the fast move button is held. */
-		static const float ROTATION_SPEED; /**< Determines speed of camera rotation. */
+		static const float kStartSpeed; /**< Initial movement speed. */
+		static const float kTopSpeed; /**< Maximum movement speed. */
+		static const float kAcceleration; /**< Acceleration that determines how quickly to go from starting to top speed. */
+		static const float kFastModeMultiplier; /**< Multiplier applied to the speed when the fast move button is held. */
+		static const float kRotationSpeed; /**< Determines speed of camera rotation. */
 	};
 } // namespace bs

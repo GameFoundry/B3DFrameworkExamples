@@ -66,7 +66,7 @@ namespace bs
 		planeMaterial->SetTexture("gAlbedoTex", gridPattern2);
 
 		// Tile the texture so every tile covers a 2x2m area
-		planeMaterial->SetVec2("gUVTile", Vector2::ONE * GROUND_PLANE_SCALE * 0.5f);
+		planeMaterial->SetVec2("gUVTile", Vector2::kOne * GROUND_PLANE_SCALE * 0.5f);
 
 		HMaterial boxMaterial = Material::Create(shader);
 		boxMaterial->SetTexture("gAlbedoTex", gridPattern);
@@ -108,7 +108,7 @@ namespace bs
 		/************************************************************************/
 
 		// Helper method that creates a pyramid of six boxes that can be physically manipulated
-		auto createBoxStack = [=](const Vector3& position, const Quaternion& rotation = Quaternion::IDENTITY)
+		auto createBoxStack = [=](const Vector3& position, const Quaternion& rotation = Quaternion::kIdentity)
 		{
 			HSceneObject boxSO[6];
 			for(auto& entry : boxSO)
@@ -153,7 +153,7 @@ namespace bs
 			}
 		};
 
-		createBoxStack(Vector3::ZERO);
+		createBoxStack(Vector3::kZero);
 		createBoxStack(Vector3(6.0f, 0.0f, 3.0f), Quaternion(Degree(0.0f), Degree(-45.0f), Degree(0.0f)));
 		createBoxStack(Vector3(-6.0f, 0.0f, 3.0f), Quaternion(Degree(0.0f), Degree(45.0f), Degree(0.0f)));
 

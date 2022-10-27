@@ -119,7 +119,7 @@ namespace bs
 		sceneCamera->GetViewport()->SetTarget(window);
 
 		// Set background color
-		sceneCamera->GetViewport()->SetClearColorValue(Color::Black);
+		sceneCamera->GetViewport()->SetClearColorValue(Color::kBlack);
 
 		/************************************************************************/
 		/* 									AUDIO	                     		*/
@@ -176,7 +176,7 @@ namespace bs
 			case BC_MOUSE_LEFT:
 				// Play a one-shot sound at origin. We don't use an AudioSource component because it's a short sound cue
 				// that we don't require additional control over.
-				gAudio().Play(cueClip, Vector3::ZERO);
+				gAudio().Play(cueClip, Vector3::kZero);
 				break;
 			default:
 				break;

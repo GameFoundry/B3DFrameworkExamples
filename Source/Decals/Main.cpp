@@ -65,7 +65,7 @@ namespace bs
 		planeMaterial->SetTexture("gAlbedoTex", gridPattern2);
 
 		// Tile the texture so every tile covers a 2x2m area
-		planeMaterial->SetVec2("gUVTile", Vector2::ONE * GROUND_PLANE_SCALE * 0.5f);
+		planeMaterial->SetVec2("gUVTile", Vector2::kOne * GROUND_PLANE_SCALE * 0.5f);
 
 		// Load meshes we'll used for our rendered objects
 		HMesh planeMesh = gBuiltinResources().GetMesh(BuiltinMesh::Quad);

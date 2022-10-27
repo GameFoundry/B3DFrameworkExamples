@@ -60,8 +60,8 @@ namespace bs
 				mPitch = pitchMax;
 		}
 
-		Quaternion yRot(Vector3::UNIT_Y, Radian(mYaw));
-		Quaternion xRot(Vector3::UNIT_X, Radian(mPitch));
+		Quaternion yRot(Vector3::kUnitY, Radian(mYaw));
+		Quaternion xRot(Vector3::kUnitX, Radian(mPitch));
 
 		if(!mCharacterSO)
 		{

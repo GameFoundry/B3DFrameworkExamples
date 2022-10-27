@@ -8,11 +8,11 @@
 
 namespace bs
 {
-	const float CameraFlyer::START_SPEED = 40.0f;
-	const float CameraFlyer::TOP_SPEED = 130.0f;
-	const float CameraFlyer::ACCELERATION = 10.0f;
-	const float CameraFlyer::FAST_MODE_MULTIPLIER = 2.0f;
-	const float CameraFlyer::ROTATION_SPEED = 3.0f;
+	const float CameraFlyer::kStartSpeed = 40.0f;
+	const float CameraFlyer::kTopSpeed = 130.0f;
+	const float CameraFlyer::kAcceleration = 10.0f;
+	const float CameraFlyer::kFastModeMultiplier = 2.0f;
+	const float CameraFlyer::kRotationSpeed = 3.0f;
 
 	/** Wraps an angle so it always stays in [0, 360) range. */
 	Degree wrapAngle(Degree angle)
@@ -69,17 +69,17 @@ namespace bs
 		float frameDelta = gTime().GetFrameDelta();
 		if(camRotating)
 		{
-			mYaw += Degree(gVirtualInput().GetAxisValue(mHorizontalAxis) * ROTATION_SPEED);
-			mPitch += Degree(gVirtualInput().GetAxisValue(mVerticalAxis) * ROTATION_SPEED);
+			mYaw += Degree(gVirtualInput().GetAxisValue(mHorizontalAxis) * kRotationSpeed);
+			mPitch += Degree(gVirtualInput().GetAxisValue(mVerticalAxis) * kRotationSpeed);
 
 			mYaw = wrapAngle(mYaw);
 			mPitch = wrapAngle(mPitch);
 
 			Quaternion yRot;
-			yRot.FromAxisAngle(Vector3::UNIT_Y, Radian(mYaw));
+			yRot.FromAxisAngle(Vector3::kUnitY, Radian(mYaw));
 
 			Quaternion xRot;
-			xRot.FromAxisAngle(Vector3::UNIT_X, Radian(mPitch));
+			xRot.FromAxisAngle(Vector3::kUnitX, Radian(mPitch));
 
 			Quaternion camRot = yRot * xRot;
 			camRot.Normalize();
@@ -90,7 +90,7 @@ namespace bs
 		const Transform& tfrm = SO()->GetTransform();
 
 		// If the movement button is pressed, determine direction to move in
-		Vector3 direction = Vector3::ZERO;
+		Vector3 direction = Vector3::kZero;
 		if(goingForward) direction += tfrm.GetForward();
 		if(goingBack) direction -= tfrm.GetForward();
 		if(goingRight) direction += tfrm.GetRight();
@@ -104,10 +104,10 @@ namespace bs
 			// Apply fast move multiplier if the fast move button is held.
 			float multiplier = 1.0f;
 			if(fastMove)
-				multiplier = FAST_MODE_MULTIPLIER;
+				multiplier = kFastModeMultiplier;
 
 			// Calculate current speed of the camera
-			mCurrentSpeed = Math::Clamp(mCurrentSpeed + ACCELERATION * frameDelta, START_SPEED, TOP_SPEED);
+			mCurrentSpeed = Math::Clamp(mCurrentSpeed + kAcceleration * frameDelta, kStartSpeed, kTopSpeed);
 			mCurrentSpeed *= multiplier;
 		}
 		else

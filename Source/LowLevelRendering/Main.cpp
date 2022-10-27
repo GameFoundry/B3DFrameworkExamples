@@ -242,7 +242,7 @@ namespace bs
 			u8* positions = vbData + vertexDesc->GetElementOffsetFromStream(VES_POSITION);
 			u8* uvs = vbData + vertexDesc->GetElementOffsetFromStream(VES_TEXCOORD);
 
-			AABox box(Vector3::ONE * -10.0f, Vector3::ONE * 10.0f);
+			AABox box(Vector3::kOne * -10.0f, Vector3::kOne * 10.0f);
 			writeBoxVertices(box, positions, uvs, vertexStride);
 
 			gVertexBuffer->Unlock();
@@ -260,10 +260,10 @@ namespace bs
 
 			// Create a simple 2x2 checkerboard texture to map to the object we're about to render
 			SPtr<PixelData> pixelData = PixelData::Create(2, 2, 1, PF_RGBA8);
-			pixelData->SetColorAt(Color::White, 0, 0);
-			pixelData->SetColorAt(Color::Black, 1, 0);
-			pixelData->SetColorAt(Color::White, 1, 1);
-			pixelData->SetColorAt(Color::Black, 0, 1);
+			pixelData->SetColorAt(Color::kWhite, 0, 0);
+			pixelData->SetColorAt(Color::kBlack, 1, 0);
+			pixelData->SetColorAt(Color::kWhite, 1, 1);
+			pixelData->SetColorAt(Color::kBlack, 0, 1);
 
 			gSurfaceTex = Texture::Create(pixelData);
 
@@ -332,7 +332,7 @@ namespace bs
 
 			// Bind render surface & clear it
 			rapi.SetRenderTarget(gRenderTarget, 0, RT_NONE, cmds);
-			rapi.ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::Blue, 1, 0, 0xFF, cmds);
+			rapi.ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kBlue, 1, 0, 0xFF, cmds);
 
 			// Bind the pipeline state
 			rapi.SetGraphicsPipeline(gPipelineState, cmds);
@@ -604,8 +604,8 @@ void main()
 
 			Matrix4 view = Matrix4::View(cameraPos, cameraRot);
 
-			Quaternion rotation(Vector3::UNIT_Y, Degree(gTime().GetTime() * 90.0f));
-			Matrix4 world = Matrix4::TRS(Vector3::ZERO, rotation, Vector3::ONE);
+			Quaternion rotation(Vector3::kUnitY, Degree(gTime().GetTime() * 90.0f));
+			Matrix4 world = Matrix4::TRS(Vector3::kZero, rotation, Vector3::kOne);
 
 			Matrix4 viewProj = proj * view * world;
 

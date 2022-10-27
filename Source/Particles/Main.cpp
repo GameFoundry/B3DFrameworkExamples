@@ -123,7 +123,7 @@ namespace bs
 		HShader particleLitShader = gBuiltinResources().GetBuiltinShader(BuiltinShader::ParticlesLitOpaque);
 		assets.LitParticleEmissiveMat = Material::Create(particleLitShader);
 		assets.LitParticleEmissiveMat->SetTexture("gEmissiveMaskTex", gBuiltinResources().GetTexture(BuiltinTexture::White));
-		assets.LitParticleEmissiveMat->SetColor("gEmissiveColor", Color::White * 10.0f);
+		assets.LitParticleEmissiveMat->SetColor("gEmissiveColor", Color::kWhite * 10.0f);
 
 		// 3D particle system assets
 		//// Create another lit material using a plain white albedo texture
@@ -134,7 +134,7 @@ namespace bs
 		HShader standardShader = gBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
 		assets.LightMat = Material::Create(standardShader);
 		assets.LightMat->SetTexture("gEmissiveMaskTex", gBuiltinResources().GetTexture(BuiltinTexture::White));
-		assets.LightMat->SetColor("gEmissiveColor", Color::Red * 5.0f);
+		assets.LightMat->SetColor("gEmissiveColor", Color::kRed * 5.0f);
 
 		//// Import a vector field used in the GPU simulation
 		assets.VectorField = ExampleFramework::LoadResource<VectorField>(ExampleResource::VectorField);
@@ -169,7 +169,7 @@ namespace bs
 		planeMaterial->SetTexture("gAlbedoTex", gridPattern);
 
 		// Tile the texture so every tile covers a 2x2m area
-		planeMaterial->SetVec2("gUVTile", Vector2::ONE * GROUND_PLANE_SCALE * 0.5f);
+		planeMaterial->SetVec2("gUVTile", Vector2::kOne * GROUND_PLANE_SCALE * 0.5f);
 
 		// Load the floor mesh
 		HMesh planeMesh = gBuiltinResources().GetMesh(BuiltinMesh::Quad);
@@ -333,7 +333,7 @@ namespace bs
 		emitter->SetInitialLifetime(5.0f);
 
 		// Particles will initially have no tint
-		emitter->SetInitialColor(Color::White);
+		emitter->SetInitialColor(Color::kWhite);
 
 		// Set up a shape that determines the position and initial travel direction of newly spawned particles. In this
 		// case we're using a cone shape.
@@ -379,7 +379,7 @@ namespace bs
 		// Modify particle tint from white (no tint) to dark gray over first 40% of their lifetime
 		PARTICLE_COLOR_DESC colorDesc;
 		colorDesc.Color = ColorGradient(
-			{ ColorGradientKey(Color::White, 0.0f),
+			{ ColorGradientKey(Color::kWhite, 0.0f),
 			  ColorGradientKey(Color(0.1f, 0.1f, 0.1f, 1.0f), 0.4f) });
 
 		// Create and add the color evolver
@@ -390,8 +390,8 @@ namespace bs
 		PARTICLE_FORCE_DESC forceDesc;
 		forceDesc.Force = TAnimationCurve<Vector3>(
 			{
-				TKeyframe<Vector3>{ Vector3::ZERO, Vector3::ZERO, Vector3::ONE, 0.0f },
-				TKeyframe<Vector3>{ Vector3(100.0f, 0.0f, 0.0f), -Vector3::ONE, Vector3::ZERO, 0.5f },
+				TKeyframe<Vector3>{ Vector3::kZero, Vector3::kZero, Vector3::kOne, 0.0f },
+				TKeyframe<Vector3>{ Vector3(100.0f, 0.0f, 0.0f), -Vector3::kOne, Vector3::kZero, 0.5f },
 			});
 
 		// Lets the system know the provided force direction is in world space
@@ -495,7 +495,7 @@ namespace bs
 		SPtr<ParticleCollisions> collisionEvolver = bs_shared_ptr_new<ParticleCollisions>(collisionsDesc);
 
 		// Assign the plane the particles will collide with
-		collisionEvolver->SetPlanes({ Plane(Vector3::UNIT_Y, 0.0f) });
+		collisionEvolver->SetPlanes({ Plane(Vector3::kUnitY, 0.0f) });
 
 		// Register the collision evolver
 		evolvers.push_back(collisionEvolver);
@@ -522,12 +522,12 @@ namespace bs
 		//// Create the scene object, position and scale it
 		HSceneObject lightSO = SceneObject::Create("Radial light");
 		lightSO->SetPosition(pos - Vector3(0.0f, 0.8f, 0.0f));
-		lightSO->SetScale(Vector3::ONE * 0.02f);
+		lightSO->SetScale(Vector3::kOne * 0.02f);
 
 		//// Add the light component, emitting a red light
 		HLight light = lightSO->AddComponent<CLight>();
 		light->SetIntensity(30.0f);
-		light->SetColor(Color::Red);
+		light->SetColor(Color::kRed);
 		light->SetUseAutoAttenuation(false);
 		light->SetAttenuationRadius(20.0f);
 
