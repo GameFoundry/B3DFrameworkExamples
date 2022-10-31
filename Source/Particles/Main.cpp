@@ -318,7 +318,7 @@ namespace bs
 		HParticleSystem particleSystem = particleSystemSO->AddComponent<CParticleSystem>();
 
 		// Set up the emitter
-		SPtr<ParticleEmitter> emitter = bs_shared_ptr_new<ParticleEmitter>();
+		SPtr<ParticleEmitter> emitter = B3DMakeShared<ParticleEmitter>();
 
 		// All newly spawned particles will have the size of 1m
 		emitter->SetInitialSize(1.0f);
@@ -361,7 +361,7 @@ namespace bs
 		texAnimDesc.NumCycles = 1;
 
 		// Create and add the texture animation evolver
-		SPtr<ParticleEvolver> texAnimEvolver = bs_shared_ptr_new<ParticleTextureAnimation>(texAnimDesc);
+		SPtr<ParticleEvolver> texAnimEvolver = B3DMakeShared<ParticleTextureAnimation>(texAnimDesc);
 		evolvers.push_back(texAnimEvolver);
 
 		// Scale particles from size 1 to size 4 over their lifetime
@@ -373,7 +373,7 @@ namespace bs
 			});
 
 		// Create and add the size evolver
-		SPtr<ParticleEvolver> sizeEvolver = bs_shared_ptr_new<ParticleSize>(sizeDesc);
+		SPtr<ParticleEvolver> sizeEvolver = B3DMakeShared<ParticleSize>(sizeDesc);
 		evolvers.push_back(sizeEvolver);
 
 		// Modify particle tint from white (no tint) to dark gray over first 40% of their lifetime
@@ -383,7 +383,7 @@ namespace bs
 			  ColorGradientKey(Color(0.1f, 0.1f, 0.1f, 1.0f), 0.4f) });
 
 		// Create and add the color evolver
-		SPtr<ParticleEvolver> colorEvolver = bs_shared_ptr_new<ParticleColor>(colorDesc);
+		SPtr<ParticleEvolver> colorEvolver = B3DMakeShared<ParticleColor>(colorDesc);
 		evolvers.push_back(colorEvolver);
 
 		// Apply force moving the particles to the right
@@ -398,7 +398,7 @@ namespace bs
 		forceDesc.WorldSpace = true;
 
 		// Create and add the force evolver
-		SPtr<ParticleEvolver> forceEvolver = bs_shared_ptr_new<ParticleForce>(forceDesc);
+		SPtr<ParticleEvolver> forceEvolver = B3DMakeShared<ParticleForce>(forceDesc);
 		evolvers.push_back(forceEvolver);
 
 		// Register all the evolvers with the particle system
@@ -439,7 +439,7 @@ namespace bs
 		HParticleSystem particleSystem = particleSystemSO->AddComponent<CParticleSystem>();
 
 		// Set up the emitter
-		SPtr<ParticleEmitter> emitter = bs_shared_ptr_new<ParticleEmitter>();
+		SPtr<ParticleEmitter> emitter = B3DMakeShared<ParticleEmitter>();
 
 		// All newly spawned particles will have the size of 2cm
 		emitter->SetInitialSize(0.02f);
@@ -478,7 +478,7 @@ namespace bs
 		gravityDesc.Scale = 1.0f;
 
 		// Create and add the gravity evolver
-		SPtr<ParticleGravity> gravityEvolver = bs_shared_ptr_new<ParticleGravity>(gravityDesc);
+		SPtr<ParticleGravity> gravityEvolver = B3DMakeShared<ParticleGravity>(gravityDesc);
 		evolvers.push_back(gravityEvolver);
 
 		// Set up an evolver that allows the particles to collide with the ground.
@@ -492,7 +492,7 @@ namespace bs
 		collisionsDesc.Radius = 0.02f;
 
 		// Create the collision evolver
-		SPtr<ParticleCollisions> collisionEvolver = bs_shared_ptr_new<ParticleCollisions>(collisionsDesc);
+		SPtr<ParticleCollisions> collisionEvolver = B3DMakeShared<ParticleCollisions>(collisionsDesc);
 
 		// Assign the plane the particles will collide with
 		collisionEvolver->SetPlanes({ Plane(Vector3::kUnitY, 0.0f) });
@@ -554,7 +554,7 @@ namespace bs
 		HParticleSystem particleSystem = particleSystemSO->AddComponent<CParticleSystem>();
 
 		// Set up the emitter
-		SPtr<ParticleEmitter> emitter = bs_shared_ptr_new<ParticleEmitter>();
+		SPtr<ParticleEmitter> emitter = B3DMakeShared<ParticleEmitter>();
 
 		// All newly spawned particles will have the size of 1cm
 		emitter->SetInitialSize(0.01f);
