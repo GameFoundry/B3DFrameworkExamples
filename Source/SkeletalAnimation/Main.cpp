@@ -63,7 +63,7 @@ namespace bs
 
 		// The FBX file contains multiple resources (a mesh and an animation clip), therefore we use importAll() method,
 		// which imports all resources in a file.
-		SPtr<MultiResource> modelResources = gImporter().ImportAll(modelPath, meshImportOptions);
+		SPtr<MultiResource> modelResources = GetImporter().ImportAll(modelPath, meshImportOptions);
 		for(auto& entry : modelResources->Entries)
 		{
 			if(rtti_is_of_type<Mesh>(entry.Value.Get()))
@@ -79,7 +79,7 @@ namespace bs
 		assets.ExampleMetalnessTex = ExampleFramework::LoadTexture(ExampleTexture::DroneMetalness, false);
 
 		// Create a material using the default physically based shader, and apply the PBR textures we just loaded
-		HShader shader = gBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
+		HShader shader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
 		assets.ExampleMaterial = Material::Create(shader);
 
 		assets.ExampleMaterial->SetTexture("gAlbedoTex", assets.ExampleAlbedoTex);
@@ -142,7 +142,7 @@ namespace bs
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = gApplication().GetPrimaryWindow();
+		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).

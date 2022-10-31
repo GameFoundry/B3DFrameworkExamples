@@ -45,7 +45,7 @@ namespace bs
 	void ObjectRotator::Update()
 	{
 		// Check if any movement or rotation keys are being held
-		bool isRotating = gVirtualInput().IsButtonHeld(mRotateObj);
+		bool isRotating = GetVirtualInput().IsButtonHeld(mRotateObj);
 
 		// If switch to or from rotation mode, hide or show the cursor
 		if(isRotating != mLastButtonState)
@@ -62,8 +62,8 @@ namespace bs
 		// vertical/horizontal axes.
 		if(isRotating)
 		{
-			mYaw -= Degree(gVirtualInput().GetAxisValue(mHorizontalAxis) * ROTATION_SPEED);
-			mPitch -= Degree(gVirtualInput().GetAxisValue(mVerticalAxis) * ROTATION_SPEED);
+			mYaw -= Degree(GetVirtualInput().GetAxisValue(mHorizontalAxis) * ROTATION_SPEED);
+			mPitch -= Degree(GetVirtualInput().GetAxisValue(mVerticalAxis) * ROTATION_SPEED);
 
 			mYaw = wrapAngle2(mYaw);
 			mPitch = wrapAngle2(mPitch);

@@ -46,12 +46,12 @@ namespace bs
 	void CameraFlyer::Update()
 	{
 		// Check if any movement or rotation keys are being held
-		bool goingForward = gVirtualInput().IsButtonHeld(mMoveForward);
-		bool goingBack = gVirtualInput().IsButtonHeld(mMoveBack);
-		bool goingLeft = gVirtualInput().IsButtonHeld(mMoveLeft);
-		bool goingRight = gVirtualInput().IsButtonHeld(mMoveRight);
-		bool fastMove = gVirtualInput().IsButtonHeld(mFastMove);
-		bool camRotating = gVirtualInput().IsButtonHeld(mRotateCam);
+		bool goingForward = GetVirtualInput().IsButtonHeld(mMoveForward);
+		bool goingBack = GetVirtualInput().IsButtonHeld(mMoveBack);
+		bool goingLeft = GetVirtualInput().IsButtonHeld(mMoveLeft);
+		bool goingRight = GetVirtualInput().IsButtonHeld(mMoveRight);
+		bool fastMove = GetVirtualInput().IsButtonHeld(mFastMove);
+		bool camRotating = GetVirtualInput().IsButtonHeld(mRotateCam);
 
 		// If switch to or from rotation mode, hide or show the cursor
 		if(camRotating != mLastButtonState)
@@ -66,11 +66,11 @@ namespace bs
 
 		// If camera is rotating, apply new pitch/yaw rotation values depending on the amount of rotation from the
 		// vertical/horizontal axes.
-		float frameDelta = gTime().GetFrameDelta();
+		float frameDelta = GetTime().GetFrameDelta();
 		if(camRotating)
 		{
-			mYaw += Degree(gVirtualInput().GetAxisValue(mHorizontalAxis) * kRotationSpeed);
-			mPitch += Degree(gVirtualInput().GetAxisValue(mVerticalAxis) * kRotationSpeed);
+			mYaw += Degree(GetVirtualInput().GetAxisValue(mHorizontalAxis) * kRotationSpeed);
+			mPitch += Degree(GetVirtualInput().GetAxisValue(mVerticalAxis) * kRotationSpeed);
 
 			mYaw = wrapAngle(mYaw);
 			mPitch = wrapAngle(mPitch);

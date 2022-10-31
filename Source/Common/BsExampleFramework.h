@@ -88,7 +88,7 @@ namespace bs
 			else
 				manifest = ResourceManifest::Create("ExampleAssets");
 
-			gResources().RegisterResourceManifest(manifest);
+			GetResources().RegisterResourceManifest(manifest);
 		}
 
 		/** Saves the current resource manifest. */
@@ -108,7 +108,7 @@ namespace bs
 			// bsf allows you to use VirtualInput system which will map input device buttons and axes to arbitrary names,
 			// which allows you to change input buttons without affecting the code that uses it, since the code is only
 			// aware of the virtual names.  If you want more direct input, see Input class.
-			auto inputConfig = gVirtualInput().GetConfiguration();
+			auto inputConfig = GetVirtualInput().GetConfiguration();
 
 			// Camera controls for buttons (digital 0-1 input, e.g. keyboard or gamepad button)
 			inputConfig->RegisterButton("Forward", BC_W);
@@ -150,7 +150,7 @@ namespace bs
 			Path assetPath = srcAssetPath;
 			assetPath.SetExtension(srcAssetPath.GetExtension() + ".asset");
 
-			HMesh model = gResources().Load<Mesh>(assetPath);
+			HMesh model = GetResources().Load<Mesh>(assetPath);
 			if(model == nullptr) // Mesh file doesn't exist, import from the source file.
 			{
 				// When importing you may specify optional import options that control how is the asset imported.
@@ -165,10 +165,10 @@ namespace bs
 					importOptions->ImportScale = scale;
 				}
 
-				model = gImporter().Import<Mesh>(srcAssetPath, meshImportOptions);
+				model = GetImporter().Import<Mesh>(srcAssetPath, meshImportOptions);
 
 				// Save for later use, so we don't have to import on the next run.
-				gResources().Save(model, assetPath, true);
+				GetResources().Save(model, assetPath, true);
 
 				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
 				// the application was restarted, which is important if resource was referenced in some serialized object.
@@ -224,7 +224,7 @@ namespace bs
 			Path assetPath = srcAssetPath;
 			assetPath.SetExtension(srcAssetPath.GetExtension() + ".asset");
 
-			HTexture texture = gResources().Load<Texture>(assetPath);
+			HTexture texture = GetResources().Load<Texture>(assetPath);
 			if(texture == nullptr) // Texture file doesn't exist, import from the source file.
 			{
 				// When importing you may specify optional import options that control how is the asset imported.
@@ -257,10 +257,10 @@ namespace bs
 				}
 
 				// Import texture with specified import options
-				texture = gImporter().Import<Texture>(srcAssetPath, textureImportOptions);
+				texture = GetImporter().Import<Texture>(srcAssetPath, textureImportOptions);
 
 				// Save for later use, so we don't have to import on the next run.
-				gResources().Save(texture, assetPath, true);
+				GetResources().Save(texture, assetPath, true);
 
 				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
 				// the application was restarted, which is important if resource was referenced in some serialized object.
@@ -291,13 +291,13 @@ namespace bs
 			Path assetPath = srcAssetPath;
 			assetPath.SetExtension(srcAssetPath.GetExtension() + ".asset");
 
-			HShader shader = gResources().Load<Shader>(assetPath);
+			HShader shader = GetResources().Load<Shader>(assetPath);
 			if(shader == nullptr) // Shader file doesn't exist, import from the source file.
 			{
-				shader = gImporter().Import<Shader>(srcAssetPath);
+				shader = GetImporter().Import<Shader>(srcAssetPath);
 
 				// Save for later use, so we don't have to import on the next run.
-				gResources().Save(shader, assetPath, true);
+				GetResources().Save(shader, assetPath, true);
 
 				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
 				// the application was restarted, which is important if resource was referenced in some serialized object.
@@ -329,17 +329,17 @@ namespace bs
 			Path assetPath = srcAssetPath;
 			assetPath.SetExtension(srcAssetPath.GetExtension() + ".asset");
 
-			HFont font = gResources().Load<Font>(assetPath);
+			HFont font = GetResources().Load<Font>(assetPath);
 			if(font == nullptr) // Font file doesn't exist, import from the source file.
 			{
 				// When importing you may specify optional import options that control how is the asset imported.
 				SPtr<FontImportOptions> fontImportOptions = FontImportOptions::Create();
 				fontImportOptions->FontSizes = fontSizes;
 
-				font = gImporter().Import<Font>(srcAssetPath, fontImportOptions);
+				font = GetImporter().Import<Font>(srcAssetPath, fontImportOptions);
 
 				// Save for later use, so we don't have to import on the next run.
-				gResources().Save(font, assetPath, true);
+				GetResources().Save(font, assetPath, true);
 
 				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
 				// the application was restarted, which is important if resource was referenced in some serialized object.
@@ -360,7 +360,7 @@ namespace bs
 							String fontName = srcAssetPath.GetFilename(false);
 							texPageOutputPath.SetFilename(fontName + "_" + toString(size) + "_texpage_" + toString(pageIdx) + ".asset");
 
-							gResources().Save(tex, texPageOutputPath, true);
+							GetResources().Save(tex, texPageOutputPath, true);
 							manifest->RegisterResource(tex.GetUuid(), texPageOutputPath);
 
 							pageIdx++;
@@ -390,13 +390,13 @@ namespace bs
 			Path assetPath = srcAssetPath;
 			assetPath.SetExtension(srcAssetPath.GetExtension() + ".asset");
 
-			ResourceHandle<T> resource = gResources().Load<T>(assetPath);
+			ResourceHandle<T> resource = GetResources().Load<T>(assetPath);
 			if(resource == nullptr) // Shader file doesn't exist, import from the source file.
 			{
-				resource = gImporter().Import<T>(srcAssetPath);
+				resource = GetImporter().Import<T>(srcAssetPath);
 
 				// Save for later use, so we don't have to import on the next run.
-				gResources().Save(resource, assetPath, true);
+				GetResources().Save(resource, assetPath, true);
 
 				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
 				// the application was restarted, which is important if resource was referenced in some serialized object.

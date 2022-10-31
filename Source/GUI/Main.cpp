@@ -49,7 +49,7 @@ namespace bs
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = gApplication().GetPrimaryWindow();
+		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).
@@ -166,7 +166,7 @@ namespace bs
 
 		// Grab the default GUI skin to which we'll append the new style to. You could also create a new GUI skin and
 		// add the style to it, but that would also require adding default styles for all the GUI element types.
-		HGUISkin skin = gBuiltinResources().GetGuiSkin();
+		HGUISkin skin = GetBuiltinResources().GetGuiSkin();
 		skin->SetStyle("HeaderLabelStyle", headerLabelStyle);
 
 		// Create and position the label

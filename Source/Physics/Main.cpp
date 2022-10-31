@@ -59,7 +59,7 @@ namespace bs
 		HTexture gridPattern2 = ExampleFramework::LoadTexture(ExampleTexture::GridPattern2);
 
 		// Grab the default PBR shader
-		HShader shader = gBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
+		HShader shader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
 
 		// Create a set of materials to apply to renderables used
 		HMaterial planeMaterial = Material::Create(shader);
@@ -74,9 +74,9 @@ namespace bs
 		HMaterial sphereMaterial = Material::Create(shader);
 
 		// Load meshes we'll used for our rendered objects
-		HMesh boxMesh = gBuiltinResources().GetMesh(BuiltinMesh::Box);
-		HMesh planeMesh = gBuiltinResources().GetMesh(BuiltinMesh::Quad);
-		HMesh sphereMesh = gBuiltinResources().GetMesh(BuiltinMesh::Sphere);
+		HMesh boxMesh = GetBuiltinResources().GetMesh(BuiltinMesh::Box);
+		HMesh planeMesh = GetBuiltinResources().GetMesh(BuiltinMesh::Quad);
+		HMesh sphereMesh = GetBuiltinResources().GetMesh(BuiltinMesh::Sphere);
 
 		// Create a physics material we'll use for the box geometry, as well as the floor. The material has high
 		// static and dynamic friction, with low restitution (low bounciness). Simulates a harder, rough, solid surface.
@@ -185,7 +185,7 @@ namespace bs
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = gApplication().GetPrimaryWindow();
+		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).
@@ -239,7 +239,7 @@ namespace bs
 		/************************************************************************/
 
 		// Hook up input that launches a sphere when user clicks the mouse, and Esc key to quit
-		gInput().OnButtonUp.Connect([=](const ButtonEvent& ev)
+		GetInput().OnButtonUp.Connect([=](const ButtonEvent& ev)
 									{
 			if(ev.ButtonCode == BC_MOUSE_LEFT)
 			{
@@ -276,7 +276,7 @@ namespace bs
 			else if(ev.ButtonCode == BC_ESCAPE)
 			{
 				// Quit the application when Escape key is pressed
-				gApplication().QuitRequested();
+				GetApplication().QuitRequested();
 			} });
 
 		/************************************************************************/

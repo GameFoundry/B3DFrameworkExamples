@@ -43,11 +43,11 @@ namespace bs
 	void FPSWalker::FixedUpdate()
 	{
 		// Check if any movement keys are being held
-		bool goingForward = gVirtualInput().IsButtonHeld(mMoveForward);
-		bool goingBack = gVirtualInput().IsButtonHeld(mMoveBack);
-		bool goingLeft = gVirtualInput().IsButtonHeld(mMoveLeft);
-		bool goingRight = gVirtualInput().IsButtonHeld(mMoveRight);
-		bool fastMove = gVirtualInput().IsButtonHeld(mFastMove);
+		bool goingForward = GetVirtualInput().IsButtonHeld(mMoveForward);
+		bool goingBack = GetVirtualInput().IsButtonHeld(mMoveBack);
+		bool goingLeft = GetVirtualInput().IsButtonHeld(mMoveLeft);
+		bool goingRight = GetVirtualInput().IsButtonHeld(mMoveRight);
+		bool fastMove = GetVirtualInput().IsButtonHeld(mFastMove);
 
 		const Transform& tfrm = SO()->GetTransform();
 
@@ -62,7 +62,7 @@ namespace bs
 		direction.Y = 0.0f;
 		direction.Normalize();
 
-		const float frameDelta = gTime().GetFixedFrameDelta();
+		const float frameDelta = GetTime().GetFixedFrameDelta();
 
 		// If a direction is chosen, normalize it to determine final direction.
 		if(direction.SquaredLength() != 0)

@@ -49,7 +49,7 @@ namespace bs
 		/** Triggered once per frame. */
 		void Update() override
 		{
-			const float time = gTime().GetTime();
+			const float time = GetTime().GetTime();
 
 			const float x = cos(time);
 			const float z = sin(time);
@@ -81,7 +81,7 @@ namespace bs
 		musicImportOptions->ReadMode = AudioReadMode::Stream;
 		musicImportOptions->Is3D = false;
 
-		HAudioClip musicClip = gImporter().Import<AudioClip>(musicClipPath, musicImportOptions);
+		HAudioClip musicClip = GetImporter().Import<AudioClip>(musicClipPath, musicImportOptions);
 
 		// Import a loopable environment ambient sound. Compress the imported data to Vorbis format to save space, at the
 		// cost of decoding performance. Same as the music clip, this is also a longer clip, but instead of streaming we
@@ -92,14 +92,14 @@ namespace bs
 		environmentImportOptions->ReadMode = AudioReadMode::LoadCompressed;
 		environmentImportOptions->Is3D = true;
 
-		HAudioClip environmentClip = gImporter().Import<AudioClip>(environmentClipPath, environmentImportOptions);
+		HAudioClip environmentClip = GetImporter().Import<AudioClip>(environmentClipPath, environmentImportOptions);
 
 		// Import a short audio cue. Use the uncompressed PCM audio format for fast playback, at the cost of memory.
 		SPtr<AudioClipImportOptions> cueImportOptions = AudioClipImportOptions::Create();
 		cueImportOptions->Format = AudioFormat::PCM;
 		cueImportOptions->Is3D = true;
 
-		HAudioClip cueClip = gImporter().Import<AudioClip>(cueClipPath, cueImportOptions);
+		HAudioClip cueClip = GetImporter().Import<AudioClip>(cueClipPath, cueImportOptions);
 
 		/************************************************************************/
 		/* 									CAMERA	                     		*/
@@ -111,7 +111,7 @@ namespace bs
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = gApplication().GetPrimaryWindow();
+		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).
@@ -159,7 +159,7 @@ namespace bs
 		/************************************************************************/
 
 		// Hook up input commands that toggle between the different audio sources.
-		gInput().OnButtonUp.Connect([=](const ButtonEvent& event)
+		GetInput().OnButtonUp.Connect([=](const ButtonEvent& event)
 									{
 			switch(event.ButtonCode)
 			{
@@ -176,7 +176,7 @@ namespace bs
 			case BC_MOUSE_LEFT:
 				// Play a one-shot sound at origin. We don't use an AudioSource component because it's a short sound cue
 				// that we don't require additional control over.
-				gAudio().Play(cueClip, Vector3::kZero);
+				GetAudio().Play(cueClip, Vector3::kZero);
 				break;
 			default:
 				break;

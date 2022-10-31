@@ -58,7 +58,7 @@ namespace bs
 		HTexture gridPattern2 = ExampleFramework::LoadTexture(ExampleTexture::GridPattern2);
 
 		// Grab the default PBR shader
-		HShader shader = gBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
+		HShader shader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
 
 		// Create a set of materials to apply to renderables used
 		HMaterial planeMaterial = Material::Create(shader);
@@ -68,7 +68,7 @@ namespace bs
 		planeMaterial->SetVec2("gUVTile", Vector2::kOne * GROUND_PLANE_SCALE * 0.5f);
 
 		// Load meshes we'll used for our rendered objects
-		HMesh planeMesh = gBuiltinResources().GetMesh(BuiltinMesh::Quad);
+		HMesh planeMesh = GetBuiltinResources().GetMesh(BuiltinMesh::Quad);
 
 		/************************************************************************/
 		/* 									FLOOR	                    		*/
@@ -91,7 +91,7 @@ namespace bs
 		HMaterial sphereMaterial = Material::Create(shader);
 
 		// Load meshes we'll used for our rendered objects
-		HMesh boxMesh = gBuiltinResources().GetMesh(BuiltinMesh::Box);
+		HMesh boxMesh = GetBuiltinResources().GetMesh(BuiltinMesh::Box);
 		HSceneObject boxSO = SceneObject::Create("Box");
 
 		HRenderable boxRenderable = boxSO->AddComponent<CRenderable>();
@@ -132,7 +132,7 @@ namespace bs
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = gApplication().GetPrimaryWindow();
+		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).
@@ -183,7 +183,7 @@ namespace bs
 		HTexture decalNormalTex = ExampleFramework::LoadTexture(ExampleTexture::DecalNormal, false);
 
 		// Create a material using the built-in decal shader and assign the textures
-		HShader decalShader = gBuiltinResources().GetBuiltinShader(BuiltinShader::Decal);
+		HShader decalShader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Decal);
 		HMaterial decalMaterial = Material::Create(decalShader);
 		decalMaterial->SetTexture("gAlbedoTex", decalAlbedoTex);
 		decalMaterial->SetTexture("gNormalTex", decalNormalTex);
@@ -212,12 +212,12 @@ namespace bs
 		/************************************************************************/
 
 		// Hook up input that launches a sphere when user clicks the mouse, and Esc key to quit
-		gInput().OnButtonUp.Connect([=](const ButtonEvent& ev)
+		GetInput().OnButtonUp.Connect([=](const ButtonEvent& ev)
 									{
 			if(ev.ButtonCode == BC_ESCAPE)
 			{
 				// Quit the application when Escape key is pressed
-				gApplication().QuitRequested();
+				GetApplication().QuitRequested();
 			} });
 	}
 } // namespace bs

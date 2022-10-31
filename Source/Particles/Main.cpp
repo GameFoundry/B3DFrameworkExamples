@@ -66,7 +66,7 @@ namespace bs
 		{
 			Vector3 position = mCenter + mRadius * Vector3(Math::Cos(mAngle), 0.0f, Math::Sin(mAngle));
 
-			mAngle += Degree(gTime().GetFrameDelta() * 90.0f);
+			mAngle += Degree(GetTime().GetFrameDelta() * 90.0f);
 
 			SO()->SetWorldPosition(position);
 		}
@@ -110,7 +110,7 @@ namespace bs
 		assets.SmokeTex->SetAnimationPlayback(SpriteAnimationPlayback::None);
 
 		//// Set up a shader without lighting and enable soft particle rendering
-		HShader particleUnlitShader = gBuiltinResources().GetBuiltinShader(BuiltinShader::ParticlesUnlit);
+		HShader particleUnlitShader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::ParticlesUnlit);
 		assets.SmokeMat = Material::Create(particleUnlitShader);
 		assets.SmokeMat->SetVariation(ShaderVariation(
 			{ ShaderVariation::Param("SOFT", true) }));
@@ -120,27 +120,27 @@ namespace bs
 		assets.SmokeMat->SetSpriteTexture("gTexture", assets.SmokeTex);
 
 		// Set up an emissive material used in the GPU vector field example
-		HShader particleLitShader = gBuiltinResources().GetBuiltinShader(BuiltinShader::ParticlesLitOpaque);
+		HShader particleLitShader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::ParticlesLitOpaque);
 		assets.LitParticleEmissiveMat = Material::Create(particleLitShader);
-		assets.LitParticleEmissiveMat->SetTexture("gEmissiveMaskTex", gBuiltinResources().GetTexture(BuiltinTexture::White));
+		assets.LitParticleEmissiveMat->SetTexture("gEmissiveMaskTex", GetBuiltinResources().GetTexture(BuiltinTexture::White));
 		assets.LitParticleEmissiveMat->SetColor("gEmissiveColor", Color::kWhite * 10.0f);
 
 		// 3D particle system assets
 		//// Create another lit material using a plain white albedo texture
 		assets.Particles3DMat = Material::Create(particleLitShader);
-		assets.Particles3DMat->SetTexture("gAlbedoTex", gBuiltinResources().GetTexture(BuiltinTexture::White));
+		assets.Particles3DMat->SetTexture("gAlbedoTex", GetBuiltinResources().GetTexture(BuiltinTexture::White));
 
 		//// Create a material used for rendering the light sphere itself
-		HShader standardShader = gBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
+		HShader standardShader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
 		assets.LightMat = Material::Create(standardShader);
-		assets.LightMat->SetTexture("gEmissiveMaskTex", gBuiltinResources().GetTexture(BuiltinTexture::White));
+		assets.LightMat->SetTexture("gEmissiveMaskTex", GetBuiltinResources().GetTexture(BuiltinTexture::White));
 		assets.LightMat->SetColor("gEmissiveColor", Color::kRed * 5.0f);
 
 		//// Import a vector field used in the GPU simulation
 		assets.VectorField = ExampleFramework::LoadResource<VectorField>(ExampleResource::VectorField);
 
 		//// Import a sphere mesh used for the 3D particles and the light sphere
-		assets.SphereMesh = gBuiltinResources().GetMesh(BuiltinMesh::Sphere);
+		assets.SphereMesh = GetBuiltinResources().GetMesh(BuiltinMesh::Sphere);
 
 		return assets;
 	}
@@ -162,7 +162,7 @@ namespace bs
 		HTexture gridPattern = ExampleFramework::LoadTexture(ExampleTexture::GridPattern2);
 
 		// Grab the default PBR shader
-		HShader shader = gBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
+		HShader shader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
 
 		// Create a material for rendering the ground and apply the ground texture
 		HMaterial planeMaterial = Material::Create(shader);
@@ -172,7 +172,7 @@ namespace bs
 		planeMaterial->SetVec2("gUVTile", Vector2::kOne * GROUND_PLANE_SCALE * 0.5f);
 
 		// Load the floor mesh
-		HMesh planeMesh = gBuiltinResources().GetMesh(BuiltinMesh::Quad);
+		HMesh planeMesh = GetBuiltinResources().GetMesh(BuiltinMesh::Quad);
 
 		// Load assets used by the particle systems
 		ParticleSystemAssets assets = loadParticleSystemAssets();
@@ -220,7 +220,7 @@ namespace bs
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = gApplication().GetPrimaryWindow();
+		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).
@@ -293,12 +293,12 @@ namespace bs
 		/************************************************************************/
 
 		// Hook up Esc key to quit
-		gInput().OnButtonUp.Connect([=](const ButtonEvent& ev)
+		GetInput().OnButtonUp.Connect([=](const ButtonEvent& ev)
 									{
 			if(ev.ButtonCode == BC_ESCAPE)
 			{
 				// Quit the application when Escape key is pressed
-				gApplication().QuitRequested();
+				GetApplication().QuitRequested();
 			} });
 	}
 

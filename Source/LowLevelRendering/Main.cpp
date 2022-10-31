@@ -73,14 +73,14 @@ namespace bs
 
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the "core
 			// thread"), we don't call the method directly, but rather queue it for execution using the CoreThread class.
-			gCoreThread().QueueCommand(std::bind(&ct::setup, renderWindowCore));
+			GetCoreThread().QueueCommand(std::bind(&ct::setup, renderWindowCore));
 		}
 
 		// Called when the engine is about to be shut down
 		void OnShutDown() override
 		{
 			// Queue the method for execution on the core thread
-			gCoreThread().QueueCommand(&ct::shutdown);
+			GetCoreThread().QueueCommand(&ct::shutdown);
 
 			// Shut-down engine components
 			Application::OnShutDown();
@@ -90,7 +90,7 @@ namespace bs
 		void PreUpdate() override
 		{
 			// Queue the method for execution on the core thread
-			gCoreThread().QueueCommand(&ct::render);
+			GetCoreThread().QueueCommand(&ct::render);
 
 			// Call the default version of this method to handle normal functionality
 			Application::PreUpdate();
@@ -360,7 +360,7 @@ namespace bs
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
-			gRendererUtility().Blit(colorTexture);
+			GetRendererUtility().Blit(colorTexture);
 
 			// Present the rendered image to the user
 			rapi.SwapBuffers(gRenderWindow);
@@ -604,7 +604,7 @@ void main()
 
 			Matrix4 view = Matrix4::View(cameraPos, cameraRot);
 
-			Quaternion rotation(Vector3::kUnitY, Degree(gTime().GetTime() * 90.0f));
+			Quaternion rotation(Vector3::kUnitY, Degree(GetTime().GetTime() * 90.0f));
 			Matrix4 world = Matrix4::TRS(Vector3::kZero, rotation, Vector3::kOne);
 
 			Matrix4 viewProj = proj * view * world;

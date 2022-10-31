@@ -38,8 +38,8 @@ namespace bs
 	{
 		// If camera is rotating, apply new pitch/yaw rotation values depending on the amount of rotation from the
 		// vertical/horizontal axes.
-		mYaw += Degree(gVirtualInput().GetAxisValue(mHorizontalAxis) * ROTATION_SPEED);
-		mPitch += Degree(gVirtualInput().GetAxisValue(mVerticalAxis) * ROTATION_SPEED);
+		mYaw += Degree(GetVirtualInput().GetAxisValue(mHorizontalAxis) * ROTATION_SPEED);
+		mPitch += Degree(GetVirtualInput().GetAxisValue(mVerticalAxis) * ROTATION_SPEED);
 
 		ApplyAngles();
 	}

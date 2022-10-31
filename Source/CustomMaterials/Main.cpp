@@ -90,7 +90,7 @@ namespace bs
 
 		// Create a set of materials we'll be using for rendering the object
 		//// Create a standard PBR material
-		HShader standardShader = gBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
+		HShader standardShader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
 		assets.StandardMaterial = createPBRMaterial(standardShader, assets);
 
 		//// Create a material that overrides the vertex transform of the rendered model. This creates a wobble in the model
@@ -181,7 +181,7 @@ namespace bs
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = gApplication().GetPrimaryWindow();
+		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).
@@ -278,7 +278,7 @@ namespace bs
 		case 3:
 			// Deferred lighting material. Apply it globally and reset the surface material back to standard.
 			gRenderable->SetMaterial(gAssets.StandardMaterial);
-			ct::gRenderer()->SetGlobalShaderOverride(gAssets.DeferredLightingShader.GetInternalPtr());
+			ct::GetRenderer()->SetGlobalShaderOverride(gAssets.DeferredLightingShader.GetInternalPtr());
 			break;
 		case 4:
 			// Forward surface/lighting material. Simply apply to renderable. Also clear the deferred lighting material
@@ -288,7 +288,7 @@ namespace bs
 			// Clear previous overrides
 			const Vector<SubShader>& subShaders = gAssets.DeferredLightingShader->GetSubShaders();
 			for(auto& entry : subShaders)
-				ct::gRenderer()->SetGlobalShaderOverride(entry.Name, nullptr);
+				ct::GetRenderer()->SetGlobalShaderOverride(entry.Name, nullptr);
 
 			break;
 		}
@@ -306,10 +306,10 @@ namespace bs
 		static VirtualButton SwitchMaterialButton("SwitchMaterial");
 
 		// Register a key for toggling between different materials
-		auto inputConfig = gVirtualInput().GetConfiguration();
+		auto inputConfig = GetVirtualInput().GetConfiguration();
 		inputConfig->RegisterButton("SwitchMaterial", BC_Q);
 
-		gVirtualInput().OnButtonUp.Connect(
+		GetVirtualInput().OnButtonUp.Connect(
 			[](const VirtualButton& btn, u32 deviceIdx)
 			{
 				if(btn == SwitchMaterialButton)
