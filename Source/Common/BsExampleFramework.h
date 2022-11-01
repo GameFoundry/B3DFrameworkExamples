@@ -156,9 +156,9 @@ namespace bs
 				// When importing you may specify optional import options that control how is the asset imported.
 				SPtr<ImportOptions> meshImportOptions = Importer::Instance().CreateImportOptions(srcAssetPath);
 
-				// rtti_is_of_type checks if the import options are of valid type, in case the provided path is pointing to a
+				// B3DRTTIIsOfType checks if the import options are of valid type, in case the provided path is pointing to a
 				// non-mesh resource. This is similar to dynamic_cast but uses Banshee internal RTTI system for type checking.
-				if(rtti_is_of_type<MeshImportOptions>(meshImportOptions))
+				if(B3DRTTIIsOfType<MeshImportOptions>(meshImportOptions))
 				{
 					MeshImportOptions* importOptions = static_cast<MeshImportOptions*>(meshImportOptions.get());
 
@@ -230,9 +230,9 @@ namespace bs
 				// When importing you may specify optional import options that control how is the asset imported.
 				SPtr<ImportOptions> textureImportOptions = Importer::Instance().CreateImportOptions(srcAssetPath);
 
-				// rtti_is_of_type checks if the import options are of valid type, in case the provided path is pointing to a
+				// B3DRTTIIsOfType checks if the import options are of valid type, in case the provided path is pointing to a
 				// non-texture resource. This is similar to dynamic_cast but uses Banshee internal RTTI system for type checking.
-				if(rtti_is_of_type<TextureImportOptions>(textureImportOptions))
+				if(B3DRTTIIsOfType<TextureImportOptions>(textureImportOptions))
 				{
 					TextureImportOptions* importOptions = static_cast<TextureImportOptions*>(textureImportOptions.get());
 

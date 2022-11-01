@@ -66,9 +66,9 @@ namespace bs
 		SPtr<MultiResource> modelResources = GetImporter().ImportAll(modelPath, meshImportOptions);
 		for(auto& entry : modelResources->Entries)
 		{
-			if(rtti_is_of_type<Mesh>(entry.Value.Get()))
+			if(B3DRTTIIsOfType<Mesh>(entry.Value.Get()))
 				assets.ExampleModel = static_resource_cast<Mesh>(entry.Value);
-			else if(rtti_is_of_type<AnimationClip>(entry.Value.Get()))
+			else if(B3DRTTIIsOfType<AnimationClip>(entry.Value.Get()))
 				assets.ExampleAnimClip = static_resource_cast<AnimationClip>(entry.Value);
 		}
 
