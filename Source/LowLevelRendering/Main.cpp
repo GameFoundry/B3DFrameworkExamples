@@ -42,9 +42,9 @@ namespace bs
 	// on the core thread (ct = core thread). Every object usable on the core thread lives in this namespace.
 	namespace ct
 	{
-		void setup(const SPtr<RenderWindow>& renderWindow);
-		void render();
-		void shutdown();
+		void Setup(const SPtr<RenderWindow>& renderWindow);
+		void Render();
+		void Shutdown();
 	} // namespace ct
 
 	// Override the default Application so we can get notified when engine starts-up, shuts-down and when it executes
@@ -73,14 +73,14 @@ namespace bs
 
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the "core
 			// thread"), we don't call the method directly, but rather queue it for execution using the CoreThread class.
-			GetCoreThread().QueueCommand(std::bind(&ct::setup, renderWindowCore));
+			GetCoreThread().QueueCommand(std::bind(&ct::Setup, renderWindowCore));
 		}
 
 		// Called when the engine is about to be shut down
 		void OnShutDown() override
 		{
 			// Queue the method for execution on the core thread
-			GetCoreThread().QueueCommand(&ct::shutdown);
+			GetCoreThread().QueueCommand(&ct::Shutdown);
 
 			// Shut-down engine components
 			Application::OnShutDown();
@@ -90,7 +90,7 @@ namespace bs
 		void PreUpdate() override
 		{
 			// Queue the method for execution on the core thread
-			GetCoreThread().QueueCommand(&ct::render);
+			GetCoreThread().QueueCommand(&ct::Render);
 
 			// Call the default version of this method to handle normal functionality
 			Application::PreUpdate();
@@ -135,11 +135,11 @@ namespace bs
 	namespace ct
 	{
 		// Declarations for some helper methods we'll use during setup
-		void writeBoxVertices(const AABox& box, u8* positions, u8* uvs, u32 stride);
-		void writeBoxIndices(u32* indices);
-		const char* getVertexProgSource();
-		const char* getFragmentProgSource();
-		Matrix4 createWorldViewProjectionMatrix();
+		void WriteBoxVertices(const AABox& box, u8* positions, u8* uvs, u32 stride);
+		void WriteBoxIndices(u32* indices);
+		const char* GetVertexProgSource();
+		const char* GetFragmentProgSource();
+		Matrix4 CreateWorldViewProjectionMatrix();
 
 		// Fields where we'll store the resources required during calls to render(). These are initialized in setup()
 		// and cleaned up in shutDown()
@@ -166,7 +166,7 @@ namespace bs
 		};
 
 		// Initializes any resources required for rendering
-		void setup(const SPtr<RenderWindow>& renderWindow)
+		void Setup(const SPtr<RenderWindow>& renderWindow)
 		{
 			// Determine which shading language to use (depending on the RenderAPI chosen during build)
 			gUseHLSL = strcmp(BS_RENDER_API_MODULE, "bsfD3D11RenderAPI") == 0;
@@ -176,7 +176,7 @@ namespace bs
 			gRenderWindow = renderWindow;
 
 			// Create a vertex GPU program
-			const char* vertProgSrc = getVertexProgSource();
+			const char* vertProgSrc = GetVertexProgSource();
 
 			GPU_PROGRAM_DESC vertProgDesc;
 			vertProgDesc.Type = GPT_VERTEX_PROGRAM;
@@ -188,7 +188,7 @@ namespace bs
 			SPtr<GpuProgram> vertProg = GpuProgram::Create(vertProgDesc);
 
 			// Create a fragment GPU program
-			const char* fragProgSrc = getFragmentProgSource();
+			const char* fragProgSrc = GetFragmentProgSource();
 
 			GPU_PROGRAM_DESC fragProgDesc;
 			fragProgDesc.Type = GPT_FRAGMENT_PROGRAM;
@@ -243,7 +243,7 @@ namespace bs
 			u8* uvs = vbData + vertexDesc->GetElementOffsetFromStream(VES_TEXCOORD);
 
 			AABox box(Vector3::kOne * -10.0f, Vector3::kOne * 10.0f);
-			writeBoxVertices(box, positions, uvs, vertexStride);
+			WriteBoxVertices(box, positions, uvs, vertexStride);
 
 			gVertexBuffer->Unlock();
 
@@ -254,7 +254,7 @@ namespace bs
 
 			gIndexBuffer = IndexBuffer::Create(ibDesc);
 			u32* ibData = (u32*)gIndexBuffer->Lock(0, NUM_INDICES * sizeof(u32), GBL_WRITE_ONLY_DISCARD);
-			writeBoxIndices(ibData);
+			WriteBoxIndices(ibData);
 
 			gIndexBuffer->Unlock();
 
@@ -301,11 +301,11 @@ namespace bs
 		}
 
 		// Render the box, called every frame
-		void render()
+		void Render()
 		{
 			// Fill out the uniform block variables
 			UniformBlock uniformBlock;
-			uniformBlock.GMatWvp = createWorldViewProjectionMatrix();
+			uniformBlock.GMatWvp = CreateWorldViewProjectionMatrix();
 			uniformBlock.GTint = Color(1.0f, 1.0f, 1.0f, 0.5f);
 
 			// Create a uniform block buffer for holding the uniform variables
@@ -367,7 +367,7 @@ namespace bs
 		}
 
 		// Clean up any resources
-		void shutdown()
+		void Shutdown()
 		{
 			gPipelineState = nullptr;
 			gSurfaceTex = nullptr;
@@ -383,7 +383,7 @@ namespace bs
 		/////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////HELPER METHODS/////////////////////////////////////
 		/////////////////////////////////////////////////////////////////////////////////////
-		void writeBoxVertices(const AABox& box, UINT8* positions, UINT8* uvs, u32 stride)
+		void WriteBoxVertices(const AABox& box, UINT8* positions, UINT8* uvs, u32 stride)
 		{
 			AABox::Corner vertOrder[] = {
 				AABox::NEAR_LEFT_BOTTOM, AABox::NEAR_RIGHT_BOTTOM, AABox::NEAR_RIGHT_TOP, AABox::NEAR_LEFT_TOP,
@@ -424,7 +424,7 @@ namespace bs
 			}
 		}
 
-		void writeBoxIndices(u32* indices)
+		void WriteBoxIndices(u32* indices)
 		{
 			for(u32 face = 0; face < 6; face++)
 			{
@@ -439,7 +439,7 @@ namespace bs
 			}
 		}
 
-		const char* getVertexProgSource()
+		const char* GetVertexProgSource()
 		{
 			if(gUseHLSL)
 			{
@@ -520,7 +520,7 @@ void main()
 			}
 		}
 
-		const char* getFragmentProgSource()
+		const char* GetFragmentProgSource()
 		{
 			if(gUseHLSL)
 			{
@@ -591,7 +591,7 @@ void main()
 			}
 		}
 
-		Matrix4 createWorldViewProjectionMatrix()
+		Matrix4 CreateWorldViewProjectionMatrix()
 		{
 			Matrix4 proj = Matrix4::ProjectionPerspective(Degree(75.0f), 16.0f / 9.0f, 0.05f, 1000.0f);
 			bs::RenderAPI::ConvertProjectionMatrix(proj, proj);

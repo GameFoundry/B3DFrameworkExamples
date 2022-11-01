@@ -358,7 +358,7 @@ namespace bs
 						for(const auto& tex : fontData->TexturePages)
 						{
 							String fontName = srcAssetPath.GetFilename(false);
-							texPageOutputPath.SetFilename(fontName + "_" + toString(size) + "_texpage_" + toString(pageIdx) + ".asset");
+							texPageOutputPath.SetFilename(fontName + "_" + ToString(size) + "_texpage_" + ToString(pageIdx) + ".asset");
 
 							GetResources().Save(tex, texPageOutputPath, true);
 							manifest->RegisterResource(tex.GetUuid(), texPageOutputPath);

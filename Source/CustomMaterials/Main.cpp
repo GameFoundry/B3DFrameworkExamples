@@ -62,7 +62,7 @@ namespace bs
 	Assets gAssets;
 
 	/** Helper method that creates a material from the provided shader, and assigns the relevant PBR textures. */
-	HMaterial createPBRMaterial(const HShader& shader, const Assets& assets)
+	HMaterial CreatePbrMaterial(const HShader& shader, const Assets& assets)
 	{
 		HMaterial material = Material::Create(shader);
 
@@ -75,7 +75,7 @@ namespace bs
 	}
 
 	/** Load the resources we'll be using throughout the example. */
-	Assets loadAssets()
+	Assets LoadAssets()
 	{
 		Assets assets;
 
@@ -91,17 +91,17 @@ namespace bs
 		// Create a set of materials we'll be using for rendering the object
 		//// Create a standard PBR material
 		HShader standardShader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
-		assets.StandardMaterial = createPBRMaterial(standardShader, assets);
+		assets.StandardMaterial = CreatePbrMaterial(standardShader, assets);
 
 		//// Create a material that overrides the vertex transform of the rendered model. This creates a wobble in the model
 		//// geometry, but doesn't otherwise change the lighting properties (i.e. it still uses the PBR lighting model).
 		HShader vertexShader = ExampleFramework::LoadShader(ExampleShader::CustomVertex);
-		assets.VertexMaterial = createPBRMaterial(vertexShader, assets);
+		assets.VertexMaterial = CreatePbrMaterial(vertexShader, assets);
 
 		//// Create a material that overrides the surface data that gets used by the lighting evaluation. The material
 		//// ignores the albedo texture provided, and instead uses a noise function to generate the albedo values.
 		HShader deferredSurfaceShader = ExampleFramework::LoadShader(ExampleShader::CustomDeferredSurface);
-		assets.DeferredSurfaceMaterial = createPBRMaterial(deferredSurfaceShader, assets);
+		assets.DeferredSurfaceMaterial = CreatePbrMaterial(deferredSurfaceShader, assets);
 
 		//// Create a material that overrides the lighting calculation by implementing a custom BRDF function, in this case
 		//// using a basic Lambert BRDF. Note that lighting calculations for the deferred pipeline are done globally, so
@@ -115,7 +115,7 @@ namespace bs
 		//// and lighting portions in a single shader (unlike with deferred). This custom shader overrides both, using a
 		//// noise function for generating the surface albedo, and overriding the PBR BRDF with a basic Lambert BRDF.
 		HShader forwardSurfaceAndLighting = ExampleFramework::LoadShader(ExampleShader::CustomForward);
-		assets.ForwardMaterial = createPBRMaterial(forwardSurfaceAndLighting, assets);
+		assets.ForwardMaterial = CreatePbrMaterial(forwardSurfaceAndLighting, assets);
 
 		// Load an environment map
 		assets.SkyTex = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentPaperMill, false, true, true);
@@ -128,7 +128,7 @@ namespace bs
 	u32 gMaterialIdx = 0;
 
 	/** Set up the 3D object used by the example, and the camera to view the world through. */
-	void setUp3DScene(const Assets& assets)
+	void SetUp3DScene(const Assets& assets)
 	{
 		/************************************************************************/
 		/* 									RENDERABLE                  		*/
@@ -216,7 +216,7 @@ namespace bs
 	}
 
 	/** Sets up or rebuilds any GUI elements used by the example. */
-	void updateGUI()
+	void UpdateGui()
 	{
 		GUIPanel* mainPanel = gGUI->GetPanel();
 
@@ -249,7 +249,7 @@ namespace bs
 	}
 
 	/** Switches the material used for rendering the renderable object. */
-	void switchMaterial()
+	void SwitchMaterial()
 	{
 		HMaterial materialLookup[] = {
 			gAssets.StandardMaterial,
@@ -294,11 +294,11 @@ namespace bs
 		}
 
 		// Update GUI with current material name
-		updateGUI();
+		UpdateGui();
 	}
 
 	/** Register relevant mouse/keyboard buttons used for controlling the example. */
-	void setupInput()
+	void SetupInput()
 	{
 		// Registers a default set of input controls
 		ExampleFramework::SetupInputConfig();
@@ -313,7 +313,7 @@ namespace bs
 			[](const VirtualButton& btn, u32 deviceIdx)
 			{
 				if(btn == SwitchMaterialButton)
-					switchMaterial();
+					SwitchMaterial();
 			});
 	}
 } // namespace bs
@@ -338,16 +338,16 @@ int main()
 	Application::StartUp(videoMode, "Example", false);
 
 	// Register buttons for controlling the example
-	setupInput();
+	SetupInput();
 
 	// Load a model and textures, create materials
-	gAssets = loadAssets();
+	gAssets = LoadAssets();
 
 	// Set up the scene with an object to render and a camera
-	setUp3DScene(gAssets);
+	SetUp3DScene(gAssets);
 
 	// Sets up any GUI elements used by the example.
-	updateGUI();
+	UpdateGui();
 
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
 	// window or exits in some other way.

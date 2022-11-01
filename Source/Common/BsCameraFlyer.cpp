@@ -15,7 +15,7 @@ namespace bs
 	const float CameraFlyer::kRotationSpeed = 3.0f;
 
 	/** Wraps an angle so it always stays in [0, 360) range. */
-	Degree wrapAngle(Degree angle)
+	Degree WrapAngle(Degree angle)
 	{
 		if(angle.ValueDegrees() < -360.0f)
 			angle += Degree(360.0f);
@@ -72,8 +72,8 @@ namespace bs
 			mYaw += Degree(GetVirtualInput().GetAxisValue(mHorizontalAxis) * kRotationSpeed);
 			mPitch += Degree(GetVirtualInput().GetAxisValue(mVerticalAxis) * kRotationSpeed);
 
-			mYaw = wrapAngle(mYaw);
-			mPitch = wrapAngle(mPitch);
+			mYaw = WrapAngle(mYaw);
+			mPitch = WrapAngle(mPitch);
 
 			Quaternion yRot;
 			yRot.FromAxisAngle(Vector3::kUnitY, Radian(mYaw));

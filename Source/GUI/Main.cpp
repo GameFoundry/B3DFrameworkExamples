@@ -37,7 +37,7 @@ namespace bs
 	u32 windowResHeight = 720;
 
 	/** Set up the GUI elements and the camera. */
-	void setUpGUI()
+	void SetUpGui()
 	{
 		/************************************************************************/
 		/* 									CAMERA	                     		*/
@@ -299,7 +299,7 @@ int main()
 	ExampleFramework::LoadResourceManifest();
 
 	// Set up the GUI elements
-	setUpGUI();
+	SetUpGui();
 
 	// Save the manifest, in case we did any asset importing during the setup stage
 	ExampleFramework::SaveResourceManifest();

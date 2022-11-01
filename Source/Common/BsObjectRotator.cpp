@@ -10,7 +10,7 @@ namespace bs
 	const float ObjectRotator::ROTATION_SPEED = 1.0f;
 
 	/** Wraps an angle so it always stays in [0, 360) range. */
-	Degree wrapAngle2(Degree angle)
+	Degree WrapAngle2(Degree angle)
 	{
 		if(angle.ValueDegrees() < -360.0f)
 			angle += Degree(360.0f);
@@ -65,8 +65,8 @@ namespace bs
 			mYaw -= Degree(GetVirtualInput().GetAxisValue(mHorizontalAxis) * ROTATION_SPEED);
 			mPitch -= Degree(GetVirtualInput().GetAxisValue(mVerticalAxis) * ROTATION_SPEED);
 
-			mYaw = wrapAngle2(mYaw);
-			mPitch = wrapAngle2(mPitch);
+			mYaw = WrapAngle2(mYaw);
+			mPitch = WrapAngle2(mPitch);
 
 			Quaternion yRot;
 			yRot.FromAxisAngle(Vector3::kUnitY, Radian(mYaw));

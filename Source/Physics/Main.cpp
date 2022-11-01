@@ -46,7 +46,7 @@ namespace bs
 	u32 windowResHeight = 720;
 
 	/** Set up the scene used by the example, and the camera to view the world through. */
-	void setUpScene()
+	void SetUpScene()
 	{
 		/************************************************************************/
 		/* 									ASSETS	                    		*/
@@ -330,7 +330,7 @@ int main()
 	ExampleFramework::SetupInputConfig();
 
 	// Set up the scene with an object to render and a camera
-	setUpScene();
+	SetUpScene();
 
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
 	// window or exits in some other way.

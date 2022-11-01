@@ -95,7 +95,7 @@ namespace bs
 	};
 
 	/** Load the assets used by the particle systems. */
-	ParticleSystemAssets loadParticleSystemAssets()
+	ParticleSystemAssets LoadParticleSystemAssets()
 	{
 		ParticleSystemAssets assets;
 
@@ -145,12 +145,12 @@ namespace bs
 		return assets;
 	}
 
-	void setupGPUParticleEffect(const Vector3& pos, const ParticleSystemAssets& assets);
-	void setup3DParticleEffect(const Vector3& pos, const ParticleSystemAssets& assets);
-	void setupSmokeEffect(const Vector3& pos, const ParticleSystemAssets& assets);
+	void SetupGpuParticleEffect(const Vector3& pos, const ParticleSystemAssets& assets);
+	void Setup3DParticleEffect(const Vector3& pos, const ParticleSystemAssets& assets);
+	void SetupSmokeEffect(const Vector3& pos, const ParticleSystemAssets& assets);
 
 	/** Set up the scene used by the example, and the camera to view the world through. */
-	void setUpScene()
+	void SetUpScene()
 	{
 		/************************************************************************/
 		/* 									ASSETS	                    		*/
@@ -175,7 +175,7 @@ namespace bs
 		HMesh planeMesh = GetBuiltinResources().GetMesh(BuiltinMesh::Quad);
 
 		// Load assets used by the particle systems
-		ParticleSystemAssets assets = loadParticleSystemAssets();
+		ParticleSystemAssets assets = LoadParticleSystemAssets();
 
 		/************************************************************************/
 		/* 									FLOOR	                    		*/
@@ -276,9 +276,9 @@ namespace bs
 		/************************************************************************/
 
 		// Set up different particle systems
-		setup3DParticleEffect(Vector3(-5.0f, 1.0f, 0.0f), assets);
-		setupGPUParticleEffect(Vector3(0.0f, 1.0f, 0.0f), assets);
-		setupSmokeEffect(Vector3(5.0f, 0.0f, 0.0f), assets);
+		Setup3DParticleEffect(Vector3(-5.0f, 1.0f, 0.0f), assets);
+		SetupGpuParticleEffect(Vector3(0.0f, 1.0f, 0.0f), assets);
+		SetupSmokeEffect(Vector3(5.0f, 0.0f, 0.0f), assets);
 
 		/************************************************************************/
 		/* 									CURSOR                       		*/
@@ -307,7 +307,7 @@ namespace bs
 	 * from the base and distributed towards a cone shape. After emission particle color, size and velocity is modified
 	 * through particle evolvers.
 	 */
-	void setupSmokeEffect(const Vector3& pos, const ParticleSystemAssets& assets)
+	void SetupSmokeEffect(const Vector3& pos, const ParticleSystemAssets& assets)
 	{
 		// Create the particle system scene object and position/orient it
 		HSceneObject particleSystemSO = SceneObject::Create("Smoke");
@@ -428,7 +428,7 @@ namespace bs
 	 * addition of an orbiting point light. Once emitted the particles are evolved through the gravity evolver, ensuring
 	 * they fall down. After which they collide with the ground plane by using the collider evolver.
 	 */
-	void setup3DParticleEffect(const Vector3& pos, const ParticleSystemAssets& assets)
+	void Setup3DParticleEffect(const Vector3& pos, const ParticleSystemAssets& assets)
 	{
 		// Create the particle system scene object and position/orient it
 		HSceneObject particleSystemSO = SceneObject::Create("3D particles");
@@ -544,7 +544,7 @@ namespace bs
 	 * Sets up a particle system that uses the GPU particle simulation. Particles are spawned on a surface of a sphere and
 	 * a vector field is used for evolving the particles during their lifetime.
 	 */
-	void setupGPUParticleEffect(const Vector3& pos, const ParticleSystemAssets& assets)
+	void SetupGpuParticleEffect(const Vector3& pos, const ParticleSystemAssets& assets)
 	{
 		// Create the particle system scene object and position/orient it
 		HSceneObject particleSystemSO = SceneObject::Create("Vector field");
@@ -645,7 +645,7 @@ int main()
 	ExampleFramework::SetupInputConfig();
 
 	// Set up the scene with an object to render and a camera
-	setUpScene();
+	SetUpScene();
 
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
 	// window or exits in some other way.

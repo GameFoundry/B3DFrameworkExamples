@@ -59,7 +59,7 @@ namespace bs
 	};
 
 	/** Import audio clips and set up the audio sources and listeners. */
-	void setUpScene()
+	void SetUpScene()
 	{
 		/************************************************************************/
 		/* 									ASSETS	                     		*/
@@ -232,7 +232,7 @@ int main()
 	Application::StartUp(videoMode, "Example", false);
 
 	// Custom example code goes here
-	setUpScene();
+	SetUpScene();
 
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
 	// window or exits in some other way.
