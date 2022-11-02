@@ -90,7 +90,7 @@ namespace bs
 			velocity = direction * mCurrentSpeed;
 
 		const SPtr<SceneInstance> sceneInstance = SceneManager::Instance().GetMainScene();
-		BS_ASSERT(sceneInstance != nullptr);
+		B3D_ASSERT(sceneInstance != nullptr);
 
 		const SPtr<PhysicsScene> physicsScene = sceneInstance->GetPhysicsScene();
 
