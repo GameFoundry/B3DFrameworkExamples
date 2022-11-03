@@ -169,8 +169,8 @@ namespace bs
 		void Setup(const SPtr<RenderWindow>& renderWindow)
 		{
 			// Determine which shading language to use (depending on the RenderAPI chosen during build)
-			gUseHLSL = strcmp(BS_RENDER_API_MODULE, "bsfD3D11RenderAPI") == 0;
-			gUseVKSL = strcmp(BS_RENDER_API_MODULE, "bsfVulkanRenderAPI") == 0;
+			gUseHLSL = strcmp(B3D_RENDER_BACKEND, "bsfD3D11RenderAPI") == 0;
+			gUseVKSL = strcmp(B3D_RENDER_BACKEND, "bsfVulkanRenderAPI") == 0;
 
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;

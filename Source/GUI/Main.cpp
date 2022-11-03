@@ -85,7 +85,7 @@ namespace bs
 		button->OnClick.Connect([]()
 								{
 			// Log a message when the user clicks the button
-			BS_LOG(Info, Uncategorized, "Button clicked!"); });
+			B3D_LOG(Info, Uncategorized, "Button clicked!"); });
 
 		button->SetPosition(10, 50);
 		button->SetSize(100, 30);
@@ -97,11 +97,11 @@ namespace bs
 			// Log a message when the user toggles the button
 			if(enabled)
 			{
-				BS_LOG(Info, Uncategorized, "Toggle turned on");
+				B3D_LOG(Info, Uncategorized, "Toggle turned on");
 			}
 			else
 			{
-				BS_LOG(Info, Uncategorized, "Toggle turned off");
+				B3D_LOG(Info, Uncategorized, "Toggle turned off");
 			} });
 
 		toggle->SetPosition(10, 90);
@@ -115,7 +115,7 @@ namespace bs
 		inputBox->OnValueChanged.Connect([](const String& value)
 										 {
 			// Log a message when the user enters new text in the input box
-			BS_LOG(Info, Uncategorized, "User entered: \"" + value + "\""); });
+			B3D_LOG(Info, Uncategorized, "User entered: \"" + value + "\""); });
 
 		inputBox->SetText("Type in me...");
 		inputBox->SetPosition(10, 115);
@@ -133,7 +133,7 @@ namespace bs
 		listBox->OnSelectionToggled.Connect([listBoxElements](u32 idx, bool enabled)
 											{
 												// Log a message when the user selects a new element
-												BS_LOG(Info, Uncategorized, "User selected element: \"" + listBoxElements[idx].GetValue() + "\"");
+												B3D_LOG(Info, Uncategorized, "User selected element: \"" + listBoxElements[idx].GetValue() + "\"");
 											});
 
 		listBox->SetPosition(10, 140);
