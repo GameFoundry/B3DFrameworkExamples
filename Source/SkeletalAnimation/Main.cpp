@@ -67,9 +67,9 @@ namespace bs
 		for(auto& entry : modelResources->Entries)
 		{
 			if(B3DRTTIIsOfType<Mesh>(entry.Value.Get()))
-				assets.ExampleModel = StaticResourceCast<Mesh>(entry.Value);
+				assets.ExampleModel = B3DStaticResourceCast<Mesh>(entry.Value);
 			else if(B3DRTTIIsOfType<AnimationClip>(entry.Value.Get()))
-				assets.ExampleAnimClip = StaticResourceCast<AnimationClip>(entry.Value);
+				assets.ExampleAnimClip = B3DStaticResourceCast<AnimationClip>(entry.Value);
 		}
 
 		// Load PBR textures for the 3D model
