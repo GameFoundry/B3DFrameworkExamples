@@ -178,7 +178,7 @@ namespace bs
 			// Create a vertex GPU program
 			const char* vertProgSrc = GetVertexProgSource();
 
-			GPU_PROGRAM_DESC vertProgDesc;
+			GpuProgramCreateInformation vertProgDesc;
 			vertProgDesc.Type = GPT_VERTEX_PROGRAM;
 			vertProgDesc.EntryPoint = "main";
 			vertProgDesc.Language = gUseHLSL ? "hlsl" : gUseVKSL ? "vksl"
@@ -190,7 +190,7 @@ namespace bs
 			// Create a fragment GPU program
 			const char* fragProgSrc = GetFragmentProgSource();
 
-			GPU_PROGRAM_DESC fragProgDesc;
+			GpuProgramCreateInformation fragProgDesc;
 			fragProgDesc.Type = GPT_FRAGMENT_PROGRAM;
 			fragProgDesc.EntryPoint = "main";
 			fragProgDesc.Language = gUseHLSL ? "hlsl" : gUseVKSL ? "vksl"
@@ -275,7 +275,7 @@ namespace bs
 			gSurfaceSampler = SamplerState::Create(samplerDesc);
 
 			// Create a color attachment texture for the render surface
-			TEXTURE_DESC colorAttDesc;
+			TextureCreateInformation colorAttDesc;
 			colorAttDesc.Width = windowResWidth;
 			colorAttDesc.Height = windowResHeight;
 			colorAttDesc.Format = PF_RGBA8;
@@ -284,7 +284,7 @@ namespace bs
 			SPtr<Texture> colorAtt = Texture::Create(colorAttDesc);
 
 			// Create a depth attachment texture for the render surface
-			TEXTURE_DESC depthAttDesc;
+			TextureCreateInformation depthAttDesc;
 			depthAttDesc.Width = windowResWidth;
 			depthAttDesc.Height = windowResHeight;
 			depthAttDesc.Format = PF_D32;
