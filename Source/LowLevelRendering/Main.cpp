@@ -232,8 +232,8 @@ namespace bs
 			// Create & fill the vertex buffer for a box mesh
 			u32 vertexStride = vertexDesc->GetVertexStride();
 
-			VERTEX_BUFFER_DESC vbDesc;
-			vbDesc.NumVerts = NUM_VERTICES;
+			VertexBufferCreateInformation vbDesc;
+			vbDesc.VertexCount = NUM_VERTICES;
 			vbDesc.VertexSize = vertexStride;
 
 			gVertexBuffer = VertexBuffer::Create(vbDesc);
@@ -248,8 +248,8 @@ namespace bs
 			gVertexBuffer->Unlock();
 
 			// Create & fill the index buffer for a box mesh
-			INDEX_BUFFER_DESC ibDesc;
-			ibDesc.NumIndices = NUM_INDICES;
+			IndexBufferCreateInformation ibDesc;
+			ibDesc.IndexCount = NUM_INDICES;
 			ibDesc.IndexType = IT_32BIT;
 
 			gIndexBuffer = IndexBuffer::Create(ibDesc);
