@@ -12,10 +12,10 @@ namespace bs
 	/** Wraps an angle so it always stays in [0, 360) range. */
 	Degree WrapAngle2(Degree angle)
 	{
-		if(angle.ValueDegrees() < -360.0f)
+		if(angle.GetValueInDegrees() < -360.0f)
 			angle += Degree(360.0f);
 
-		if(angle.ValueDegrees() > 360.0f)
+		if(angle.GetValueInDegrees() > 360.0f)
 			angle -= Degree(360.0f);
 
 		return angle;
