@@ -313,8 +313,8 @@ namespace bs
 			uniformBuffer->Write(0, &uniformBlock, sizeof(uniformBlock));
 
 			// Assign the uniform buffer & texture
-			gGpuParams->SetParamBlockBuffer(GPT_FRAGMENT_PROGRAM, "Params", uniformBuffer);
-			gGpuParams->SetParamBlockBuffer(GPT_VERTEX_PROGRAM, "Params", uniformBuffer);
+			gGpuParams->SetParameterBlockBuffer(GPT_FRAGMENT_PROGRAM, "Params", uniformBuffer);
+			gGpuParams->SetParameterBlockBuffer(GPT_VERTEX_PROGRAM, "Params", uniformBuffer);
 
 			gGpuParams->SetTexture(GPT_FRAGMENT_PROGRAM, "gMainTexture", gSurfaceTex);
 

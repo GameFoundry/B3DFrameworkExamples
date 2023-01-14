@@ -252,8 +252,8 @@ namespace bs
 		// Button size is fixed, and should match the size of the texture's we're using
 		customBtnStyle.FixedHeight = true;
 		customBtnStyle.FixedWidth = true;
-		customBtnStyle.Width = buttonNormalTex->GetProperties().GetWidth();
-		customBtnStyle.Height = buttonNormalTex->GetProperties().GetHeight();
+		customBtnStyle.Width = buttonNormalTex->GetProperties().Width;
+		customBtnStyle.Height = buttonNormalTex->GetProperties().Height;
 
 		// Make the button use a custom font for text
 		customBtnStyle.Font = ExampleFramework::LoadFont(ExampleFont::SegoeUILight, { 24 });
