@@ -188,11 +188,11 @@ namespace bs
 		decalMaterial->SetTexture("gAlbedoTex", decalAlbedoTex);
 		decalMaterial->SetTexture("gNormalTex", decalNormalTex);
 
-		decalMaterial->SetVariation(ShaderVariation(
+		decalMaterial->SetVariation(ShaderVariationParameters(
 			{ // Use the default, transparent blend mode that uses traditional PBR textures to project. Normally no need
 			  // to set the default explicitly but it's done here for example purposes. See the manual for all available
 			  // modes
-			  ShaderVariation::Param("BLEND_MODE", 0) }));
+			  ShaderVariationParameters::ShaderVariationParameter("BLEND_MODE", 0) }));
 
 		// Create the decal scene object, position and orient it, facing down
 		HSceneObject decalSO = SceneObject::Create("Decal");

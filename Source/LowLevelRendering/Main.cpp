@@ -347,7 +347,7 @@ namespace bs
 			rapi.SetGpuParams(gGpuParams, cmds);
 
 			// Draw
-			rapi.DrawIndexed(0, NUM_INDICES, 0, NUM_VERTICES, 1, cmds);
+			rapi.DrawIndexed(0, NUM_INDICES, 0, NUM_VERTICES, 1, 0, cmds);
 
 			// Submit the command buffer
 			rapi.SubmitCommandBuffer(cmds);

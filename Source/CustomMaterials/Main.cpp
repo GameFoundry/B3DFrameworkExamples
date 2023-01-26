@@ -278,18 +278,11 @@ namespace bs
 		case 3:
 			// Deferred lighting material. Apply it globally and reset the surface material back to standard.
 			gRenderable->SetMaterial(gAssets.StandardMaterial);
-			ct::GetRenderer()->SetGlobalShaderOverride(gAssets.DeferredLightingShader.GetInternalPtr());
 			break;
 		case 4:
 			// Forward surface/lighting material. Simply apply to renderable. Also clear the deferred lighting material
 			// override from the last material.
 			gRenderable->SetMaterial(gAssets.ForwardMaterial);
-
-			// Clear previous overrides
-			const Vector<SubShader>& subShaders = gAssets.DeferredLightingShader->GetSubShaders();
-			for(auto& entry : subShaders)
-				ct::GetRenderer()->SetGlobalShaderOverride(entry.Name, nullptr);
-
 			break;
 		}
 

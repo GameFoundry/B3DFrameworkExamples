@@ -112,8 +112,8 @@ namespace bs
 		//// Set up a shader without lighting and enable soft particle rendering
 		HShader particleUnlitShader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::ParticlesUnlit);
 		assets.SmokeMat = Material::Create(particleUnlitShader);
-		assets.SmokeMat->SetVariation(ShaderVariation(
-			{ ShaderVariation::Param("SOFT", true) }));
+		assets.SmokeMat->SetVariation(ShaderVariationParameters(
+			{ ShaderVariationParameters::ShaderVariationParameter("SOFT", true) }));
 
 		//// Fade over the range of 2m (used for soft particle blending)
 		assets.SmokeMat->SetFloat("gInvDepthRange", 1.0f / 2.0f);
