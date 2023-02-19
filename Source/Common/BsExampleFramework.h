@@ -173,7 +173,7 @@ namespace bs
 				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
 				// the application was restarted, which is important if resource was referenced in some serialized object.
 				if(manifest)
-					manifest->RegisterResource(model.GetUuid(), assetPath);
+					manifest->RegisterResource(model.GetId(), assetPath);
 			}
 
 			return model;
@@ -265,7 +265,7 @@ namespace bs
 				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
 				// the application was restarted, which is important if resource was referenced in some serialized object.
 				if(manifest)
-					manifest->RegisterResource(texture.GetUuid(), assetPath);
+					manifest->RegisterResource(texture.GetId(), assetPath);
 			}
 
 			return texture;
@@ -302,7 +302,7 @@ namespace bs
 				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
 				// the application was restarted, which is important if resource was referenced in some serialized object.
 				if(manifest)
-					manifest->RegisterResource(shader.GetUuid(), assetPath);
+					manifest->RegisterResource(shader.GetId(), assetPath);
 			}
 
 			return shader;
@@ -345,7 +345,7 @@ namespace bs
 				// the application was restarted, which is important if resource was referenced in some serialized object.
 				if(manifest)
 				{
-					manifest->RegisterResource(font.GetUuid(), assetPath);
+					manifest->RegisterResource(font.GetId(), assetPath);
 
 					// Font has child resources, which also need to be registered
 					for(auto& size : fontSizes)
@@ -361,7 +361,7 @@ namespace bs
 							texPageOutputPath.SetFilename(fontName + "_" + ToString(size) + "_texpage_" + ToString(pageIdx) + ".asset");
 
 							GetResources().Save(tex, texPageOutputPath, true);
-							manifest->RegisterResource(tex.GetUuid(), texPageOutputPath);
+							manifest->RegisterResource(tex.GetId(), texPageOutputPath);
 
 							pageIdx++;
 						}
@@ -401,7 +401,7 @@ namespace bs
 				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
 				// the application was restarted, which is important if resource was referenced in some serialized object.
 				if(manifest)
-					manifest->RegisterResource(resource.GetUuid(), assetPath);
+					manifest->RegisterResource(resource.GetId(), assetPath);
 			}
 
 			return resource;
