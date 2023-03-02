@@ -268,7 +268,7 @@ namespace bs
 			gSurfaceTex = Texture::Create(pixelData);
 
 			// Create a sampler state for the texture above
-			SAMPLER_STATE_DESC samplerDesc;
+			SamplerStateInformation samplerDesc;
 			samplerDesc.MinFilter = FO_POINT;
 			samplerDesc.MagFilter = FO_POINT;
 
