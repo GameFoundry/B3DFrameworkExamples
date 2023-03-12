@@ -113,7 +113,7 @@ namespace bs
 		HShader particleUnlitShader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::ParticlesUnlit);
 		assets.SmokeMat = Material::Create(particleUnlitShader);
 		assets.SmokeMat->SetVariation(ShaderVariationParameters(
-			{ ShaderVariationParameters::ShaderVariationParameter("SOFT", true) }));
+			{ ShaderVariationParameter("SOFT", true) }));
 
 		//// Fade over the range of 2m (used for soft particle blending)
 		assets.SmokeMat->SetFloat("gInvDepthRange", 1.0f / 2.0f);
