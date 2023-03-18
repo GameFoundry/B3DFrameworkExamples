@@ -8,7 +8,7 @@
 #include "RenderAPI/BsGpuPipelineState.h"
 #include "RenderAPI/BsBlendState.h"
 #include "RenderAPI/BsDepthStencilState.h"
-#include "RenderAPI/BsGpuParamBlockBuffer.h"
+#include "RenderAPI/BsGpuBuffer.h"
 #include "RenderAPI/BsVertexDataDesc.h"
 #include "Mesh/BsMeshData.h"
 #include "Math/BsQuaternion.h"
@@ -306,14 +306,16 @@ namespace bs
 		// Render the box, called every frame
 		void Render()
 		{
+			const SPtr<GpuDevice>& gpuDevice = GetCoreApplication().GetPrimaryGpuDevice();
+
 			// Fill out the uniform block variables
 			UniformBlock uniformBlock;
 			uniformBlock.GMatWvp = CreateWorldViewProjectionMatrix();
 			uniformBlock.GTint = Color(1.0f, 1.0f, 1.0f, 0.5f);
 
 			// Create a uniform block buffer for holding the uniform variables
-			SPtr<GpuParamBlockBuffer> uniformBuffer = GpuParamBlockBuffer::Create(sizeof(UniformBlock));
-			uniformBuffer->Write(0, &uniformBlock, sizeof(uniformBlock));
+			SPtr<GpuBuffer> uniformBuffer = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateUniform(sizeof(UniformBlock)));
+			uniformBuffer->WriteToCache(0, sizeof(uniformBlock), &uniformBlock);
 
 			// Assign the uniform buffer & texture
 			gGpuParams->SetUniformBuffer(GPT_FRAGMENT_PROGRAM, "Params", uniformBuffer);
