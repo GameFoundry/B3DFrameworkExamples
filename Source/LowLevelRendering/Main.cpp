@@ -149,7 +149,7 @@ namespace bs
 		SPtr<GpuParams> gGpuParams;
 		SPtr<VertexDeclaration> gVertexDecl;
 		SPtr<VertexBuffer> gVertexBuffer;
-		SPtr<IndexBuffer> gIndexBuffer;
+		SPtr<GpuBuffer> gIndexBuffer;
 		SPtr<RenderTexture> gRenderTarget;
 		SPtr<RenderWindow> gRenderWindow;
 		bool gUseHLSL = true;
@@ -174,6 +174,8 @@ namespace bs
 
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;
+
+			const SPtr<GpuDevice> gpuDevice = GetCoreApplication().GetPrimaryGpuDevice();
 
 			// Create a vertex GPU program
 			const char* vertProgSrc = GetVertexProgSource();
@@ -248,11 +250,12 @@ namespace bs
 			gVertexBuffer->Unlock();
 
 			// Create & fill the index buffer for a box mesh
-			IndexBufferCreateInformation ibDesc;
-			ibDesc.IndexCount = NUM_INDICES;
-			ibDesc.IndexType = IT_32BIT;
+			GpuBufferCreateInformation ibDesc;
+			ibDesc.Type = GpuBufferType::Index;
+			ibDesc.Index.Count = NUM_INDICES;
+			ibDesc.Index.Type = IT_32BIT;
 
-			gIndexBuffer = IndexBuffer::Create(ibDesc);
+			gIndexBuffer = gpuDevice->CreateGpuBuffer(ibDesc);
 			u32* ibData = (u32*)gIndexBuffer->Lock(0, NUM_INDICES * sizeof(u32), GBL_WRITE_ONLY_DISCARD);
 			WriteBoxIndices(ibData);
 
