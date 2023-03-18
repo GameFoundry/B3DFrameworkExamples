@@ -316,10 +316,10 @@ namespace bs
 			uniformBuffer->Write(0, &uniformBlock, sizeof(uniformBlock));
 
 			// Assign the uniform buffer & texture
-			gGpuParams->SetParameterBlockBuffer(GPT_FRAGMENT_PROGRAM, "Params", uniformBuffer);
-			gGpuParams->SetParameterBlockBuffer(GPT_VERTEX_PROGRAM, "Params", uniformBuffer);
+			gGpuParams->SetUniformBuffer(GPT_FRAGMENT_PROGRAM, "Params", uniformBuffer);
+			gGpuParams->SetUniformBuffer(GPT_VERTEX_PROGRAM, "Params", uniformBuffer);
 
-			gGpuParams->SetTexture(GPT_FRAGMENT_PROGRAM, "gMainTexture", gSurfaceTex);
+			gGpuParams->SetSampledTexture(GPT_FRAGMENT_PROGRAM, "gMainTexture", gSurfaceTex);
 
 			// HLSL uses separate sampler states, so we need to use a different name for the sampler
 			if(gUseHLSL)
