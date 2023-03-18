@@ -9,7 +9,6 @@
 #include "RenderAPI/BsBlendState.h"
 #include "RenderAPI/BsDepthStencilState.h"
 #include "RenderAPI/BsGpuParamBlockBuffer.h"
-#include "RenderAPI/BsIndexBuffer.h"
 #include "RenderAPI/BsVertexDataDesc.h"
 #include "Mesh/BsMeshData.h"
 #include "Math/BsQuaternion.h"
@@ -148,7 +147,7 @@ namespace bs
 		SPtr<SamplerState> gSurfaceSampler;
 		SPtr<GpuParams> gGpuParams;
 		SPtr<VertexDeclaration> gVertexDecl;
-		SPtr<VertexBuffer> gVertexBuffer;
+		SPtr<GpuBuffer> gVertexBuffer;
 		SPtr<GpuBuffer> gIndexBuffer;
 		SPtr<RenderTexture> gRenderTarget;
 		SPtr<RenderWindow> gRenderWindow;
@@ -234,11 +233,12 @@ namespace bs
 			// Create & fill the vertex buffer for a box mesh
 			u32 vertexStride = vertexDesc->GetVertexStride();
 
-			VertexBufferCreateInformation vbDesc;
-			vbDesc.VertexCount = NUM_VERTICES;
-			vbDesc.VertexSize = vertexStride;
+			GpuBufferCreateInformation vertexBufferCreateInformation;
+			vertexBufferCreateInformation.Type = GpuBufferType::Vertex;
+			vertexBufferCreateInformation.Vertex.Count = NUM_VERTICES;
+			vertexBufferCreateInformation.Vertex.ElementSize = vertexStride;
 
-			gVertexBuffer = VertexBuffer::Create(vbDesc);
+			gVertexBuffer = gpuDevice->CreateGpuBuffer(vertexBufferCreateInformation);
 
 			u8* vbData = (u8*)gVertexBuffer->Lock(0, vertexStride * NUM_VERTICES, GBL_WRITE_ONLY_DISCARD);
 			u8* positions = vbData + vertexDesc->GetElementOffsetFromStream(VES_POSITION);
