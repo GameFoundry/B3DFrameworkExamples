@@ -9,7 +9,7 @@
 #include "RenderAPI/BsBlendState.h"
 #include "RenderAPI/BsDepthStencilState.h"
 #include "RenderAPI/BsGpuBuffer.h"
-#include "RenderAPI/BsVertexDataDesc.h"
+#include "RenderAPI/BsVertexDescription.h"
 #include "Mesh/BsMeshData.h"
 #include "Math/BsQuaternion.h"
 #include "Utility/BsTime.h"
@@ -228,7 +228,7 @@ namespace bs
 			vertexElements.Add(VertexElement(VET_FLOAT3, VES_POSITION));
 			vertexElements.Add(VertexElement(VET_FLOAT2, VES_TEXCOORD));
 
-			SPtr<VertexDataDesc> vertexDescription = B3DMakeShared<VertexDataDesc>(vertexElements);
+			SPtr<VertexDescription> vertexDescription = B3DMakeShared<VertexDescription>(vertexElements);
 			gVertexDecl = VertexDeclaration::Create(vertexDescription);
 
 			// Create & fill the vertex buffer for a box mesh
