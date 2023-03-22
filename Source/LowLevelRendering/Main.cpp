@@ -224,14 +224,15 @@ namespace bs
 			gGpuParams = GpuParams::Create(gPipelineState);
 
 			// Create a vertex declaration for shader inputs
-			SPtr<VertexDataDesc> vertexDesc = VertexDataDesc::Create();
-			vertexDesc->AddVertElem(VET_FLOAT3, VES_POSITION);
-			vertexDesc->AddVertElem(VET_FLOAT2, VES_TEXCOORD);
+			SmallVector<VertexElement, 8> vertexElements;
+			vertexElements.Add(VertexElement(VET_FLOAT3, VES_POSITION));
+			vertexElements.Add(VertexElement(VET_FLOAT2, VES_TEXCOORD));
 
-			gVertexDecl = VertexDeclaration::Create(vertexDesc);
+			SPtr<VertexDataDesc> vertexDescription = B3DMakeShared<VertexDataDesc>(vertexElements);
+			gVertexDecl = VertexDeclaration::Create(vertexDescription);
 
 			// Create & fill the vertex buffer for a box mesh
-			u32 vertexStride = vertexDesc->GetVertexStride();
+			u32 vertexStride = vertexDescription->GetVertexStride();
 
 			GpuBufferCreateInformation vertexBufferCreateInformation;
 			vertexBufferCreateInformation.Type = GpuBufferType::Vertex;
@@ -241,8 +242,8 @@ namespace bs
 			gVertexBuffer = gpuDevice->CreateGpuBuffer(vertexBufferCreateInformation);
 
 			u8* vbData = (u8*)gVertexBuffer->Lock(0, vertexStride * NUM_VERTICES, GBL_WRITE_ONLY_DISCARD);
-			u8* positions = vbData + vertexDesc->GetElementOffsetFromStream(VES_POSITION);
-			u8* uvs = vbData + vertexDesc->GetElementOffsetFromStream(VES_TEXCOORD);
+			u8* positions = vbData + vertexDescription->GetElementOffsetFromStream(VES_POSITION);
+			u8* uvs = vbData + vertexDescription->GetElementOffsetFromStream(VES_TEXCOORD);
 
 			AABox box(Vector3::kOne * -10.0f, Vector3::kOne * 10.0f);
 			WriteBoxVertices(box, positions, uvs, vertexStride);
