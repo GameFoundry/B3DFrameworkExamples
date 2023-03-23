@@ -146,7 +146,7 @@ namespace bs
 		SPtr<Texture> gSurfaceTex;
 		SPtr<SamplerState> gSurfaceSampler;
 		SPtr<GpuParams> gGpuParams;
-		SPtr<VertexDeclaration> gVertexDecl;
+		SPtr<VertexDescription> gVertexDescription;
 		SPtr<GpuBuffer> gVertexBuffer;
 		SPtr<GpuBuffer> gIndexBuffer;
 		SPtr<RenderTexture> gRenderTarget;
@@ -228,11 +228,10 @@ namespace bs
 			vertexElements.Add(VertexElement(VET_FLOAT3, VES_POSITION));
 			vertexElements.Add(VertexElement(VET_FLOAT2, VES_TEXCOORD));
 
-			SPtr<VertexDescription> vertexDescription = B3DMakeShared<VertexDescription>(vertexElements);
-			gVertexDecl = VertexDeclaration::Create(vertexDescription);
+			gVertexDescription = B3DMakeShared<VertexDescription>(vertexElements);
 
 			// Create & fill the vertex buffer for a box mesh
-			u32 vertexStride = vertexDescription->GetVertexStride();
+			u32 vertexStride = gVertexDescription->GetVertexStride();
 
 			GpuBufferCreateInformation vertexBufferCreateInformation;
 			vertexBufferCreateInformation.Type = GpuBufferType::Vertex;
@@ -242,8 +241,8 @@ namespace bs
 			gVertexBuffer = gpuDevice->CreateGpuBuffer(vertexBufferCreateInformation);
 
 			u8* vbData = (u8*)gVertexBuffer->Lock(0, vertexStride * NUM_VERTICES, GBL_WRITE_ONLY_DISCARD);
-			u8* positions = vbData + vertexDescription->GetElementOffsetFromStream(VES_POSITION);
-			u8* uvs = vbData + vertexDescription->GetElementOffsetFromStream(VES_TEXCOORD);
+			u8* positions = vbData + gVertexDescription->GetElementOffsetFromStream(VES_POSITION);
+			u8* uvs = vbData + gVertexDescription->GetElementOffsetFromStream(VES_TEXCOORD);
 
 			AABox box(Vector3::kOne * -10.0f, Vector3::kOne * 10.0f);
 			WriteBoxVertices(box, positions, uvs, vertexStride);
@@ -316,7 +315,7 @@ namespace bs
 
 			// Create a uniform block buffer for holding the uniform variables
 			SPtr<GpuBuffer> uniformBuffer = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateUniform(sizeof(UniformBlock)));
-			uniformBuffer->WriteToCache(0, sizeof(uniformBlock), &uniformBlock);
+			uniformBuffer->WriteCached(0, sizeof(uniformBlock), &uniformBlock);
 
 			// Assign the uniform buffer & texture
 			gGpuParams->SetUniformBuffer(GPT_FRAGMENT_PROGRAM, "Params", uniformBuffer);
@@ -346,7 +345,7 @@ namespace bs
 			// Set the vertex & index buffers, as well as vertex declaration and draw type
 			rapi.SetVertexBuffers(0, &gVertexBuffer, 1, cmds);
 			rapi.SetIndexBuffer(gIndexBuffer, cmds);
-			rapi.SetVertexDeclaration(gVertexDecl, cmds);
+			rapi.SetVertexDeclaration(gVertexDescription, cmds);
 			rapi.SetDrawOperation(DOT_TRIANGLE_LIST, cmds);
 
 			// Bind the GPU program parameters (i.e. resource descriptors)
@@ -378,7 +377,7 @@ namespace bs
 			gPipelineState = nullptr;
 			gSurfaceTex = nullptr;
 			gGpuParams = nullptr;
-			gVertexDecl = nullptr;
+			gVertexDescription = nullptr;
 			gVertexBuffer = nullptr;
 			gIndexBuffer = nullptr;
 			gRenderTarget = nullptr;
