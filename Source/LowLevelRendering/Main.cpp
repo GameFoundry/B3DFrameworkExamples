@@ -221,7 +221,7 @@ namespace bs
 			gPipelineState = GraphicsPipelineState::Create(pipelineDesc);
 
 			// Create an object containing GPU program parameters
-			gGpuParams = GpuParams::Create(gPipelineState);
+			gGpuParams = gpuDevice->CreateGpuParameters(gPipelineState->GetParamInfo());
 
 			// Create a vertex declaration for shader inputs
 			SmallVector<VertexElement, 8> vertexElements;
