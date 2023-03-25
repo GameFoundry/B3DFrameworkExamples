@@ -179,26 +179,26 @@ namespace bs
 			// Create a vertex GPU program
 			const char* vertProgSrc = GetVertexProgSource();
 
-			GpuProgramCreateInformation vertProgDesc;
-			vertProgDesc.Type = GPT_VERTEX_PROGRAM;
-			vertProgDesc.EntryPoint = "main";
-			vertProgDesc.Language = gUseHLSL ? "hlsl" : gUseVKSL ? "vksl"
+			GpuProgramCreateInformation vertexProgramCreateInformation;
+			vertexProgramCreateInformation.Type = GPT_VERTEX_PROGRAM;
+			vertexProgramCreateInformation.EntryPoint = "main";
+			vertexProgramCreateInformation.Language = gUseHLSL ? "hlsl" : gUseVKSL ? "vksl"
 																 : "glsl4_1";
-			vertProgDesc.Source = vertProgSrc;
+			vertexProgramCreateInformation.Source = vertProgSrc;
 
-			SPtr<GpuProgram> vertProg = GpuProgram::Create(vertProgDesc);
+			SPtr<GpuProgram> vertProg = gpuDevice->CreateGpuProgram(vertexProgramCreateInformation);
 
 			// Create a fragment GPU program
 			const char* fragProgSrc = GetFragmentProgSource();
 
-			GpuProgramCreateInformation fragProgDesc;
-			fragProgDesc.Type = GPT_FRAGMENT_PROGRAM;
-			fragProgDesc.EntryPoint = "main";
-			fragProgDesc.Language = gUseHLSL ? "hlsl" : gUseVKSL ? "vksl"
+			GpuProgramCreateInformation fragmentProgramCreateInformation;
+			fragmentProgramCreateInformation.Type = GPT_FRAGMENT_PROGRAM;
+			fragmentProgramCreateInformation.EntryPoint = "main";
+			fragmentProgramCreateInformation.Language = gUseHLSL ? "hlsl" : gUseVKSL ? "vksl"
 																 : "glsl4_1";
-			fragProgDesc.Source = fragProgSrc;
+			fragmentProgramCreateInformation.Source = fragProgSrc;
 
-			SPtr<GpuProgram> fragProg = GpuProgram::Create(fragProgDesc);
+			SPtr<GpuProgram> fragProg = gpuDevice->CreateGpuProgram(fragmentProgramCreateInformation);
 
 			// Create a graphics pipeline state
 			BLEND_STATE_DESC blendDesc;
