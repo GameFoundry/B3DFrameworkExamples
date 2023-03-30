@@ -142,7 +142,7 @@ namespace bs
 
 		// Fields where we'll store the resources required during calls to render(). These are initialized in setup()
 		// and cleaned up in shutDown()
-		SPtr<GraphicsPipelineState> gPipelineState;
+		SPtr<GpuGraphicsPipelineState> gPipelineState;
 		SPtr<Texture> gSurfaceTex;
 		SPtr<SamplerState> gSurfaceSampler;
 		SPtr<GpuParams> gGpuParams;
@@ -212,13 +212,13 @@ namespace bs
 			depthStencilDesc.DepthWriteEnable = false;
 			depthStencilDesc.DepthReadEnable = false;
 
-			PIPELINE_STATE_DESC pipelineDesc;
+			GpuGraphicsPipelineStateInformation pipelineDesc;
 			pipelineDesc.BlendState = BlendState::Create(blendDesc);
 			pipelineDesc.DepthStencilState = DepthStencilState::Create(depthStencilDesc);
 			pipelineDesc.VertexProgram = vertProg;
 			pipelineDesc.FragmentProgram = fragProg;
 
-			gPipelineState = GraphicsPipelineState::Create(pipelineDesc);
+			gPipelineState = GpuGraphicsPipelineState::Create(pipelineDesc);
 
 			// Create an object containing GPU program parameters
 			gGpuParams = gpuDevice->CreateGpuParameters(gPipelineState->GetParameterLayout());
