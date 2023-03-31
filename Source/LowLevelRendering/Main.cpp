@@ -6,8 +6,6 @@
 #include "RenderAPI/BsCommandBuffer.h"
 #include "RenderAPI/BsGpuProgram.h"
 #include "RenderAPI/BsGpuPipelineState.h"
-#include "RenderAPI/BsBlendState.h"
-#include "RenderAPI/BsDepthStencilState.h"
 #include "RenderAPI/BsGpuBuffer.h"
 #include "RenderAPI/BsVertexDescription.h"
 #include "Mesh/BsMeshData.h"
@@ -145,7 +143,7 @@ namespace bs
 		SPtr<GpuGraphicsPipelineState> gPipelineState;
 		SPtr<Texture> gSurfaceTex;
 		SPtr<SamplerState> gSurfaceSampler;
-		SPtr<GpuParams> gGpuParams;
+		SPtr<GpuParameters> gGpuParams;
 		SPtr<VertexDescription> gVertexDescription;
 		SPtr<GpuBuffer> gVertexBuffer;
 		SPtr<GpuBuffer> gIndexBuffer;
@@ -208,17 +206,17 @@ namespace bs
 			blendDesc.RenderTargets[0].ColorSourceFactor = BF_SOURCE_ALPHA;
 			blendDesc.RenderTargets[0].ColorDestinationFactor = BF_INV_SOURCE_ALPHA;
 
-			DEPTH_STENCIL_STATE_DESC depthStencilDesc;
+			DepthStencilStateInformation depthStencilDesc;
 			depthStencilDesc.DepthWriteEnable = false;
 			depthStencilDesc.DepthReadEnable = false;
 
 			GpuGraphicsPipelineStateInformation pipelineDesc;
-			pipelineDesc.BlendState = BlendState::Create(blendDesc);
-			pipelineDesc.DepthStencilState = DepthStencilState::Create(depthStencilDesc);
+			pipelineDesc.BlendState = blendDesc;
+			pipelineDesc.DepthStencilState = depthStencilDesc;
 			pipelineDesc.VertexProgram = vertProg;
 			pipelineDesc.FragmentProgram = fragProg;
 
-			gPipelineState = GpuGraphicsPipelineState::Create(pipelineDesc);
+			gPipelineState = gpuDevice->CreateGpuGraphicsPipelineState(pipelineDesc);
 
 			// Create an object containing GPU program parameters
 			gGpuParams = gpuDevice->CreateGpuParameters(gPipelineState->GetParameterLayout());
@@ -345,7 +343,7 @@ namespace bs
 			// Set the vertex & index buffers, as well as vertex declaration and draw type
 			rapi.SetVertexBuffers(0, &gVertexBuffer, 1, cmds);
 			rapi.SetIndexBuffer(gIndexBuffer, cmds);
-			rapi.SetVertexDeclaration(gVertexDescription, cmds);
+			rapi.SetVertexDescription(gVertexDescription, cmds);
 			rapi.SetDrawOperation(DOT_TRIANGLE_LIST, cmds);
 
 			// Bind the GPU program parameters (i.e. resource descriptors)
