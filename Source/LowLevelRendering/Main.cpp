@@ -201,12 +201,12 @@ namespace bs
 			SPtr<GpuProgram> fragProg = gpuDevice->CreateGpuProgram(fragmentProgramCreateInformation);
 
 			// Create a graphics pipeline state
-			BLEND_STATE_DESC blendDesc;
-			blendDesc.RenderTargetDesc[0].BlendEnable = true;
-			blendDesc.RenderTargetDesc[0].RenderTargetWriteMask = 0b0111; // RGB, don't write to alpha
-			blendDesc.RenderTargetDesc[0].BlendOp = BO_ADD;
-			blendDesc.RenderTargetDesc[0].SrcBlend = BF_SOURCE_ALPHA;
-			blendDesc.RenderTargetDesc[0].DstBlend = BF_INV_SOURCE_ALPHA;
+			BlendStateInformation blendDesc;
+			blendDesc.RenderTargets[0].BlendEnable = true;
+			blendDesc.RenderTargets[0].RenderTargetWriteMask = 0b0111; // RGB, don't write to alpha
+			blendDesc.RenderTargets[0].ColorBlendOperation = BO_ADD;
+			blendDesc.RenderTargets[0].ColorSourceFactor = BF_SOURCE_ALPHA;
+			blendDesc.RenderTargets[0].ColorDestinationFactor = BF_INV_SOURCE_ALPHA;
 
 			DEPTH_STENCIL_STATE_DESC depthStencilDesc;
 			depthStencilDesc.DepthWriteEnable = false;
