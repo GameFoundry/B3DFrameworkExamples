@@ -363,7 +363,7 @@ namespace bs
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
-			GetRendererUtility().Blit(colorTexture);
+			GetRendererUtility().Blit(*GetRenderAPI().GetMainCommandBuffer(), colorTexture);
 
 			// Present the rendered image to the user
 			rapi.SwapBuffers(gRenderWindow);
