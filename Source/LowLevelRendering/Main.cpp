@@ -338,7 +338,7 @@ namespace bs
 			rapi.ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kBlue, 1, 0, 0xFF, cmds);
 
 			// Bind the pipeline state
-			rapi.SetGraphicsPipeline(gPipelineState, cmds);
+			cmds->SetGpuGraphicsPipelineState(gPipelineState);
 
 			// Set the vertex & index buffers, as well as vertex declaration and draw type
 			rapi.SetVertexBuffers(0, &gVertexBuffer, 1, cmds);
@@ -347,7 +347,7 @@ namespace bs
 			rapi.SetDrawOperation(DOT_TRIANGLE_LIST, cmds);
 
 			// Bind the GPU program parameters (i.e. resource descriptors)
-			rapi.SetGpuParams(gGpuParams, cmds);
+			cmds->SetGpuParameters(gGpuParams);
 
 			// Draw
 			rapi.DrawIndexed(0, NUM_INDICES, 0, NUM_VERTICES, 1, 0, cmds);
