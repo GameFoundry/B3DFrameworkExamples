@@ -344,7 +344,7 @@ namespace bs
 			cmds->SetVertexBuffers(0, &gVertexBuffer, 1);
 			cmds->SetIndexBuffer(gIndexBuffer);
 			cmds->SetVertexDescription(gVertexDescription);
-			rapi.SetDrawOperation(DOT_TRIANGLE_LIST, cmds);
+			cmds->SetDrawOperation(DOT_TRIANGLE_LIST);
 
 			// Bind the GPU program parameters (i.e. resource descriptors)
 			cmds->SetGpuParameters(gGpuParams);
