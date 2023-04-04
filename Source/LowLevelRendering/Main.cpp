@@ -341,9 +341,9 @@ namespace bs
 			cmds->SetGpuGraphicsPipelineState(gPipelineState);
 
 			// Set the vertex & index buffers, as well as vertex declaration and draw type
-			rapi.SetVertexBuffers(0, &gVertexBuffer, 1, cmds);
-			rapi.SetIndexBuffer(gIndexBuffer, cmds);
-			rapi.SetVertexDescription(gVertexDescription, cmds);
+			cmds->SetVertexBuffers(0, &gVertexBuffer, 1);
+			cmds->SetIndexBuffer(gIndexBuffer);
+			cmds->SetVertexDescription(gVertexDescription);
 			rapi.SetDrawOperation(DOT_TRIANGLE_LIST, cmds);
 
 			// Bind the GPU program parameters (i.e. resource descriptors)
