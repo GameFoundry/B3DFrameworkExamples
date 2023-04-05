@@ -334,8 +334,8 @@ namespace bs
 			RenderAPI& rapi = RenderAPI::Instance();
 
 			// Bind render surface & clear it
-			rapi.SetRenderTarget(gRenderTarget, 0, RT_NONE, cmds);
-			rapi.ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kBlue, 1, 0, 0xFF, cmds);
+			cmds->SetRenderTarget(gRenderTarget, 0, RT_NONE);
+			cmds->ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kBlue, 1, 0, 0xFF);
 
 			// Bind the pipeline state
 			cmds->SetGpuGraphicsPipelineState(gPipelineState);
@@ -350,20 +350,20 @@ namespace bs
 			cmds->SetGpuParameters(gGpuParams);
 
 			// Draw
-			rapi.DrawIndexed(0, NUM_INDICES, 0, NUM_VERTICES, 1, 0, cmds);
-
-			// Submit the command buffer
-			rapi.SubmitCommandBuffer(cmds);
+			cmds->DrawIndexed(0, NUM_INDICES, 0, NUM_VERTICES, 1, 0);
 
 			// Blit the image from the render texture, to the render window
-			rapi.SetRenderTarget(gRenderWindow);
+			cmds->SetRenderTarget(gRenderWindow);
 
 			// Get the color attachment
 			SPtr<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
-			GetRendererUtility().Blit(*GetRenderAPI().GetMainCommandBuffer(), colorTexture);
+			GetRendererUtility().Blit(*cmds, colorTexture);
+
+			// Submit the command buffer
+			rapi.SubmitCommandBuffer(cmds);
 
 			// Present the rendered image to the user
 			rapi.SwapBuffers(gRenderWindow);
