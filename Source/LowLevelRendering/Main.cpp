@@ -238,14 +238,15 @@ namespace bs
 
 			gVertexBuffer = gpuDevice->CreateGpuBuffer(vertexBufferCreateInformation);
 
-			u8* vbData = (u8*)gVertexBuffer->Lock(0, vertexStride * NUM_VERTICES, GBL_WRITE_ONLY_DISCARD);
+			u8* vbData = (u8*)B3DStackAllocate(vertexStride * NUM_VERTICES);
 			u8* positions = vbData + gVertexDescription->GetElementOffsetFromStream(VES_POSITION);
 			u8* uvs = vbData + gVertexDescription->GetElementOffsetFromStream(VES_TEXCOORD);
 
 			AABox box(Vector3::kOne * -10.0f, Vector3::kOne * 10.0f);
 			WriteBoxVertices(box, positions, uvs, vertexStride);
 
-			gVertexBuffer->Unlock();
+			gVertexBuffer->WriteData(0, vertexStride * NUM_VERTICES, vbData, BWT_DISCARD);
+			B3DStackFree(vbData);
 
 			// Create & fill the index buffer for a box mesh
 			GpuBufferCreateInformation ibDesc;
@@ -254,10 +255,11 @@ namespace bs
 			ibDesc.Index.Type = IT_32BIT;
 
 			gIndexBuffer = gpuDevice->CreateGpuBuffer(ibDesc);
-			u32* ibData = (u32*)gIndexBuffer->Lock(0, NUM_INDICES * sizeof(u32), GBL_WRITE_ONLY_DISCARD);
+			u32* ibData = (u32*)B3DStackAllocate(NUM_INDICES * sizeof(u32));
 			WriteBoxIndices(ibData);
 
-			gIndexBuffer->Unlock();
+			gIndexBuffer->WriteData(0, NUM_INDICES * sizeof(u32), ibData, BWT_DISCARD);
+			B3DStackFree(ibData);
 
 			// Create a simple 2x2 checkerboard texture to map to the object we're about to render
 			SPtr<PixelData> pixelData = PixelData::Create(2, 2, 1, PF_RGBA8);
