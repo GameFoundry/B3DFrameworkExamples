@@ -330,7 +330,7 @@ namespace bs
 				gGpuParams->SetSamplerState(GPT_FRAGMENT_PROGRAM, "gMainTexture", gSurfaceSampler);
 
 			// Create a command buffer
-			SPtr<CommandBuffer> cmds = CommandBuffer::Create(GQT_GRAPHICS);
+			SPtr<GpuCommandBuffer> cmds = GpuCommandBuffer::Create(GQT_GRAPHICS);
 
 			// Get the primary render API access point
 			RenderAPI& rapi = RenderAPI::Instance();
