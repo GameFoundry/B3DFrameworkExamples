@@ -13,6 +13,8 @@
 #include "Utility/BsTime.h"
 #include "Renderer/BsRendererUtility.h"
 #include "BsEngineConfig.h"
+#include "Renderer/BsRenderer.h"
+#include "Renderer/BsRendererManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This example uses the low-level rendering API to render a textured cube mesh. This is opposed to using scene objects
@@ -330,42 +332,43 @@ namespace bs
 				gGpuParams->SetSamplerState(GPT_FRAGMENT_PROGRAM, "gMainTexture", gSurfaceSampler);
 
 			// Create a command buffer
-			SPtr<GpuCommandBuffer> cmds = GpuCommandBuffer::Create(GQT_GRAPHICS);
+			const SPtr<GpuCommandBufferPool>& commandBufferPool = RendererManager::Instance().GetActive()->GetCommandBufferPool();
+			SPtr<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("LowLevelRendering"));
 
 			// Get the primary render API access point
 			RenderAPI& rapi = RenderAPI::Instance();
 
 			// Bind render surface & clear it
-			cmds->SetRenderTarget(gRenderTarget, 0, RT_NONE);
-			cmds->ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kBlue, 1, 0, 0xFF);
+			commandBuffer->SetRenderTarget(gRenderTarget, 0, RT_NONE);
+			commandBuffer->ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kBlue, 1, 0, 0xFF);
 
 			// Bind the pipeline state
-			cmds->SetGpuGraphicsPipelineState(gPipelineState);
+			commandBuffer->SetGpuGraphicsPipelineState(gPipelineState);
 
 			// Set the vertex & index buffers, as well as vertex declaration and draw type
-			cmds->SetVertexBuffers(0, &gVertexBuffer, 1);
-			cmds->SetIndexBuffer(gIndexBuffer);
-			cmds->SetVertexDescription(gVertexDescription);
-			cmds->SetDrawOperation(DOT_TRIANGLE_LIST);
+			commandBuffer->SetVertexBuffers(0, &gVertexBuffer, 1);
+			commandBuffer->SetIndexBuffer(gIndexBuffer);
+			commandBuffer->SetVertexDescription(gVertexDescription);
+			commandBuffer->SetDrawOperation(DOT_TRIANGLE_LIST);
 
 			// Bind the GPU program parameters (i.e. resource descriptors)
-			cmds->SetGpuParameters(gGpuParams);
+			commandBuffer->SetGpuParameters(gGpuParams);
 
 			// Draw
-			cmds->DrawIndexed(0, NUM_INDICES, 0, NUM_VERTICES, 1, 0);
+			commandBuffer->DrawIndexed(0, NUM_INDICES, 0, NUM_VERTICES, 1, 0);
 
 			// Blit the image from the render texture, to the render window
-			cmds->SetRenderTarget(gRenderWindow);
+			commandBuffer->SetRenderTarget(gRenderWindow);
 
 			// Get the color attachment
 			SPtr<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
-			GetRendererUtility().Blit(*cmds, colorTexture);
+			GetRendererUtility().Blit(*commandBuffer, colorTexture);
 
 			// Submit the command buffer
-			rapi.SubmitCommandBuffer(cmds);
+			rapi.SubmitCommandBuffer(commandBuffer);
 
 			// Present the rendered image to the user
 			rapi.SwapBuffers(gRenderWindow);
