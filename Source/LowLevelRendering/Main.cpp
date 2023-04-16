@@ -3,7 +3,7 @@
 #include "CoreThread/BsCoreThread.h"
 #include "RenderAPI/BsRenderAPI.h"
 #include "RenderAPI/BsRenderWindow.h"
-#include "RenderAPI/BsCommandBuffer.h"
+#include "RenderAPI/BsGpuCommandBuffer.h"
 #include "RenderAPI/BsGpuProgram.h"
 #include "RenderAPI/BsGpuPipelineState.h"
 #include "RenderAPI/BsGpuBuffer.h"
