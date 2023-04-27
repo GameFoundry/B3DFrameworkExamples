@@ -368,7 +368,7 @@ namespace bs
 			GetRendererUtility().Blit(*commandBuffer, colorTexture);
 
 			// Submit the command buffer
-			rapi.SubmitCommandBuffer(commandBuffer);
+			gpuDevice->SubmitCommandBuffer(commandBuffer);
 
 			// Present the rendered image to the user
 			rapi.SwapBuffers(gRenderWindow);
