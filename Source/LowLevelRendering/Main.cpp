@@ -270,7 +270,7 @@ namespace bs
 			pixelData->SetColorAt(Color::kWhite, 1, 1);
 			pixelData->SetColorAt(Color::kBlack, 0, 1);
 
-			gSurfaceTex = Texture::Create(pixelData);
+			gSurfaceTex = gpuDevice->CreateTexture(pixelData);
 
 			// Create a sampler state for the texture above
 			SamplerStateInformation samplerDesc;
@@ -286,7 +286,7 @@ namespace bs
 			colorAttDesc.Format = PF_RGBA8;
 			colorAttDesc.Usage = TU_RENDERTARGET;
 
-			SPtr<Texture> colorAtt = Texture::Create(colorAttDesc);
+			SPtr<Texture> colorAtt = gpuDevice->CreateTexture(colorAttDesc);
 
 			// Create a depth attachment texture for the render surface
 			TextureCreateInformation depthAttDesc;
@@ -295,7 +295,7 @@ namespace bs
 			depthAttDesc.Format = PF_D32;
 			depthAttDesc.Usage = TU_DEPTHSTENCIL;
 
-			SPtr<Texture> depthAtt = Texture::Create(depthAttDesc);
+			SPtr<Texture> depthAtt = gpuDevice->CreateTexture(depthAttDesc);
 
 			// Create the render surface
 			RENDER_TEXTURE_DESC desc;
