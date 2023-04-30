@@ -273,11 +273,11 @@ namespace bs
 			gSurfaceTex = gpuDevice->CreateTexture(pixelData);
 
 			// Create a sampler state for the texture above
-			SamplerStateInformation samplerDesc;
-			samplerDesc.MinFilter = FO_POINT;
-			samplerDesc.MagFilter = FO_POINT;
+			SamplerStateCreateInformation samplerStateCreateInformation;
+			samplerStateCreateInformation.MinFilter = FO_POINT;
+			samplerStateCreateInformation.MagFilter = FO_POINT;
 
-			gSurfaceSampler = SamplerState::Create(samplerDesc);
+			gSurfaceSampler = gpuDevice->FindOrCreateSamplerState(samplerStateCreateInformation);
 
 			// Create a color attachment texture for the render surface
 			TextureCreateInformation colorAttDesc;
