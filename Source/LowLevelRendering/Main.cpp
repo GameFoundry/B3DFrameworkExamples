@@ -602,7 +602,8 @@ void main()
 		Matrix4 CreateWorldViewProjectionMatrix()
 		{
 			Matrix4 proj = Matrix4::ProjectionPerspective(Degree(75.0f), 16.0f / 9.0f, 0.05f, 1000.0f);
-			bs::RenderAPI::ConvertProjectionMatrix(proj, proj);
+			if(const SPtr<GpuDevice> gpuDevice = GetCoreApplication().GetPrimaryGpuDevice())
+				gpuDevice->ConvertProjectionMatrix(proj, proj);
 
 			Vector3 cameraPos = Vector3(0.0f, -20.0f, 50.0f);
 			Vector3 lookDir = -Vector3::Normalize(cameraPos);
