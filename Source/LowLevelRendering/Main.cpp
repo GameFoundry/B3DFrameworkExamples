@@ -371,7 +371,7 @@ namespace bs
 			gpuDevice->SubmitCommandBuffer(commandBuffer);
 
 			// Present the rendered image to the user
-			rapi.SwapBuffers(gRenderWindow);
+			gpuDevice->PresentRenderWindow(gRenderWindow);
 		}
 
 		// Clean up any resources
