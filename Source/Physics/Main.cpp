@@ -16,7 +16,6 @@
 #include "GUI/BsGUILayoutY.h"
 #include "GUI/BsGUILabel.h"
 #include "Physics/BsPhysicsMaterial.h"
-#include "RenderAPI/BsRenderAPI.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
 #include "Platform/BsCursor.h"

@@ -1,7 +1,6 @@
 #include "BsApplication.h"
 #include "Material/BsMaterial.h"
 #include "CoreThread/BsCoreThread.h"
-#include "RenderAPI/BsRenderAPI.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "RenderAPI/BsGpuCommandBuffer.h"
 #include "RenderAPI/BsGpuProgram.h"
@@ -334,9 +333,6 @@ namespace bs
 			// Create a command buffer
 			const SPtr<GpuCommandBufferPool>& commandBufferPool = RendererManager::Instance().GetActive()->GetCommandBufferPool();
 			SPtr<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("LowLevelRendering"));
-
-			// Get the primary render API access point
-			RenderAPI& rapi = RenderAPI::Instance();
 
 			// Bind render surface & clear it
 			commandBuffer->SetRenderTarget(gRenderTarget, 0, RT_NONE);

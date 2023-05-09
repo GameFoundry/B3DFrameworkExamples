@@ -14,7 +14,6 @@
 #include "Particles/BsParticleSystem.h"
 #include "Particles/BsParticleEmitter.h"
 #include "Particles/BsParticleEvolver.h"
-#include "RenderAPI/BsRenderAPI.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
 #include "Platform/BsCursor.h"

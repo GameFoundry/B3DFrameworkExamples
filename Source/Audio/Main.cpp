@@ -8,7 +8,6 @@
 #include "Components/BsCCamera.h"
 #include "Components/BsCAudioSource.h"
 #include "Components/BsCAudioListener.h"
-#include "RenderAPI/BsRenderAPI.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
 #include "Importer/BsImporter.h"

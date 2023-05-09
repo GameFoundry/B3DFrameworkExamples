@@ -11,7 +11,6 @@
 #include "Components/BsCCharacterController.h"
 #include "Components/BsCRigidbody.h"
 #include "Physics/BsPhysicsMaterial.h"
-#include "RenderAPI/BsRenderAPI.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
 #include "Input/BsInput.h"
