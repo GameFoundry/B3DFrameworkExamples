@@ -12,6 +12,8 @@
 #include "Utility/BsTime.h"
 #include "Renderer/BsRendererUtility.h"
 #include "BsEngineConfig.h"
+#include "Image/BsTexture.h"
+#include "RenderAPI/BsRenderTexture.h"
 #include "Renderer/BsRenderer.h"
 #include "Renderer/BsRendererManager.h"
 
@@ -71,14 +73,14 @@ namespace bs
 
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the "core
 			// thread"), we don't call the method directly, but rather queue it for execution using the CoreThread class.
-			GetCoreThread().QueueCommand(std::bind(&ct::Setup, renderWindowCore));
+			GetCoreThread().PostCommand(std::bind(&ct::Setup, renderWindowCore));
 		}
 
 		// Called when the engine is about to be shut down
 		void OnShutDown() override
 		{
 			// Queue the method for execution on the core thread
-			GetCoreThread().QueueCommand(&ct::Shutdown);
+			GetCoreThread().PostCommand(&ct::Shutdown);
 
 			// Shut-down engine components
 			Application::OnShutDown();
@@ -88,7 +90,7 @@ namespace bs
 		void PreUpdate() override
 		{
 			// Queue the method for execution on the core thread
-			GetCoreThread().QueueCommand(&ct::Render);
+			GetCoreThread().PostCommand(&ct::Render);
 
 			// Call the default version of this method to handle normal functionality
 			Application::PreUpdate();
