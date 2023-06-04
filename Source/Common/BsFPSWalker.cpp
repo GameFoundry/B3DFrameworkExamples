@@ -60,14 +60,13 @@ namespace bs
 
 		// Eliminate vertical movement
 		direction.Y = 0.0f;
-		direction.Normalize();
 
 		const float frameDelta = GetTime().GetFixedFrameDelta();
 
 		// If a direction is chosen, normalize it to determine final direction.
 		if(direction.SquaredLength() != 0)
 		{
-			direction.Normalize();
+			direction.NormalizeChecked();
 
 			// Apply fast move multiplier if the fast move button is held.
 			float multiplier = 1.0f;
