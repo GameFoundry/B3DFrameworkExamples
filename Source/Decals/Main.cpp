@@ -38,8 +38,8 @@ namespace bs
 {
 	constexpr float GROUND_PLANE_SCALE = 50.0f;
 
-	u32 windowResWidth = 1280;
-	u32 windowResHeight = 720;
+	u32 kWindowWidth = 1280;
+	u32 kWindowHeight = 720;
 
 	SPtr<Decal> decal;
 
@@ -147,7 +147,7 @@ namespace bs
 		sceneCamera->SetFarClipDistance(1000);
 
 		// Set aspect ratio depending on the current resolution
-		sceneCamera->SetAspectRatio(windowResWidth / (float)windowResHeight);
+		sceneCamera->SetAspectRatio(kWindowWidth / (float)kWindowHeight);
 
 		// Add a component that allows the camera to be rotated using the mouse
 		sceneCameraSO->SetRotation(Quaternion(Degree(-10.0f), Degree(0.0f), Degree(0.0f)));
@@ -237,7 +237,7 @@ int main()
 	using namespace bs;
 
 	// Initializes the application and creates a window with the specified properties
-	VideoMode videoMode(windowResWidth, windowResHeight);
+	VideoMode videoMode(kWindowWidth, kWindowHeight);
 	Application::StartUp(videoMode, "Example", false);
 
 	// Registers a default set of input controls

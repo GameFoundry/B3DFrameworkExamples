@@ -32,8 +32,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace bs
 {
-	u32 windowResWidth = 1280;
-	u32 windowResHeight = 720;
+	u32 kWindowWidth = 1280;
+	u32 kWindowHeight = 720;
 
 	/** Set up the GUI elements and the camera. */
 	void SetUpGui()
@@ -291,7 +291,7 @@ int main()
 	using namespace bs;
 
 	// Initializes the application and creates a window with the specified properties
-	VideoMode videoMode(windowResWidth, windowResHeight);
+	VideoMode videoMode(kWindowWidth, kWindowHeight);
 	Application::StartUp(videoMode, "Example", false);
 
 	// Load a resource manifest so previously saved Fonts can find their child Texture resources

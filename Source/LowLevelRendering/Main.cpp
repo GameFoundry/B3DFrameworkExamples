@@ -35,8 +35,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace bs
 {
-	u32 windowResWidth = 1280;
-	u32 windowResHeight = 720;
+	u32 kWindowWidth = 1280;
+	u32 kWindowHeight = 720;
 
 	// Declare the methods we'll use to do work on the core thread. Note the "ct" namespace, which we use because we render
 	// on the core thread (ct = core thread). Every object usable on the core thread lives in this namespace.
@@ -114,7 +114,7 @@ int main()
 	using namespace bs;
 
 	// Define a video mode for the resolution of the primary rendering window.
-	VideoMode videoMode(windowResWidth, windowResHeight);
+	VideoMode videoMode(kWindowWidth, kWindowHeight);
 
 	// Start-up the engine using our custom MyApplication class. This will also create the primary rendering window.
 	// We provide the initial resolution of the window, its title and fullscreen state.
@@ -282,8 +282,8 @@ namespace bs
 
 			// Create a color attachment texture for the render surface
 			TextureCreateInformation colorAttDesc;
-			colorAttDesc.Width = windowResWidth;
-			colorAttDesc.Height = windowResHeight;
+			colorAttDesc.Width = kWindowWidth;
+			colorAttDesc.Height = kWindowHeight;
 			colorAttDesc.Format = PF_RGBA8;
 			colorAttDesc.Usage = TU_RENDERTARGET;
 
@@ -291,8 +291,8 @@ namespace bs
 
 			// Create a depth attachment texture for the render surface
 			TextureCreateInformation depthAttDesc;
-			depthAttDesc.Width = windowResWidth;
-			depthAttDesc.Height = windowResHeight;
+			depthAttDesc.Width = kWindowWidth;
+			depthAttDesc.Height = kWindowHeight;
 			depthAttDesc.Format = PF_D32;
 			depthAttDesc.Usage = TU_DEPTHSTENCIL;
 

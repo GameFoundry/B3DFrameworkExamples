@@ -34,8 +34,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace bs
 {
-	u32 windowResWidth = 1280;
-	u32 windowResHeight = 720;
+	u32 kWindowWidth = 1280;
+	u32 kWindowHeight = 720;
 
 	/** Create a helper component that causes its scene object to move around in a circle around the world origin. */
 	class ObjectFlyer : public Component
@@ -227,7 +227,7 @@ int main()
 	using namespace bs;
 
 	// Initializes the application and creates a window with the specified properties
-	VideoMode videoMode(windowResWidth, windowResHeight);
+	VideoMode videoMode(kWindowWidth, kWindowHeight);
 	Application::StartUp(videoMode, "Example", false);
 
 	// Custom example code goes here

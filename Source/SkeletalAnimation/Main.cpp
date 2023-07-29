@@ -27,8 +27,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace bs
 {
-	u32 windowResWidth = 1280;
-	u32 windowResHeight = 720;
+	u32 kWindowWidth = 1280;
+	u32 kWindowHeight = 720;
 
 	/** Container for all resources used by the example. */
 	struct Assets
@@ -157,7 +157,7 @@ namespace bs
 		sceneCamera->SetFarClipDistance(1000);
 
 		// Set aspect ratio depending on the current resolution
-		sceneCamera->SetAspectRatio(windowResWidth / (float)windowResHeight);
+		sceneCamera->SetAspectRatio(kWindowWidth / (float)kWindowHeight);
 
 		// Enable indirect lighting so we get accurate diffuse lighting from the skybox environment map
 		const SPtr<RenderSettings>& renderSettings = sceneCamera->GetRenderSettings();
@@ -190,7 +190,7 @@ int main()
 	using namespace bs;
 
 	// Initializes the application and creates a window with the specified properties
-	VideoMode videoMode(windowResWidth, windowResHeight);
+	VideoMode videoMode(kWindowWidth, kWindowHeight);
 	Application::StartUp(videoMode, "Example", false);
 
 	// Registers a default set of input controls
