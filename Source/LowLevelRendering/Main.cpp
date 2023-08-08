@@ -321,16 +321,16 @@ namespace bs
 			uniformBuffer->WriteCached(0, sizeof(uniformBlock), &uniformBlock);
 
 			// Assign the uniform buffer & texture
-			gGpuParams->SetUniformBuffer(GPT_FRAGMENT_PROGRAM, "Params", uniformBuffer);
-			gGpuParams->SetUniformBuffer(GPT_VERTEX_PROGRAM, "Params", uniformBuffer);
+			gGpuParams->SetUniformBuffer("Params", uniformBuffer);
+			gGpuParams->SetUniformBuffer("Params", uniformBuffer);
 
-			gGpuParams->SetSampledTexture(GPT_FRAGMENT_PROGRAM, "gMainTexture", gSurfaceTex);
+			gGpuParams->SetSampledTexture("gMainTexture", gSurfaceTex);
 
 			// HLSL uses separate sampler states, so we need to use a different name for the sampler
 			if(gUseHLSL)
-				gGpuParams->SetSamplerState(GPT_FRAGMENT_PROGRAM, "gMainTexSamp", gSurfaceSampler);
+				gGpuParams->SetSamplerState("gMainTexSamp", gSurfaceSampler);
 			else
-				gGpuParams->SetSamplerState(GPT_FRAGMENT_PROGRAM, "gMainTexture", gSurfaceSampler);
+				gGpuParams->SetSamplerState("gMainTexture", gSurfaceSampler);
 
 			// Create a command buffer
 			const SPtr<GpuCommandBufferPool>& commandBufferPool = RendererManager::Instance().GetActive()->GetCommandBufferPool();
