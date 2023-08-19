@@ -162,9 +162,77 @@ namespace bs
 			gTestPath = B3DMakeShared<VectorPath>();
 
 			gTestPath->DrawRoundedRectangle(Rect2(200, 200, 200, 200), 20.0f)
+				.ClosePath()
 				.SetFillPaint(Color::kRed)
 				.SetStrokePaint(Color::kRed)
 				.DrawFill();
+			
+			gTestPath->DrawEllipse(Vector2(400.0f, 200.0f), Vector2(100.0f, 75.0f))
+				.ClosePath()
+				.SetStrokePaint(Color::kBlue)
+				.DrawStroke();
+
+			gTestPath->DrawEllipse(Vector2(400.0f, 400.0f), Vector2(100.0f, 75.0f))
+				.ClosePath()
+				.SetFillPaint(VectorGraphicsPaint::CreateRadialGradient(Color::kBlue, Color::kGreen, Vector2(400.0f, 400.0f), 25.0f, 75.0f))
+				.DrawFill();
+
+			// Non-convex shape
+			gTestPath->SetDrawCursor(Vector2(600.0f, 200.0f))
+				.DrawLineTo(Vector2(700.0f, 250.0f))
+				.DrawLineTo(Vector2(700.0f, 350.0f))
+				.DrawLineTo(Vector2(650.0f, 250.0f))
+				.DrawLineTo(Vector2(600.0f, 300.0f))
+				.DrawLineTo(Vector2(625.0f, 250.0f))
+				.ClosePath()
+				.SetFillPaint(Color::kGreen)
+				.DrawFill();
+
+			// Convex shape
+			gTestPath->SetDrawCursor(Vector2(600.0f, 400.0f))
+				.DrawLineTo(Vector2(700.0f, 450.0f))
+				.DrawLineTo(Vector2(700.0f, 550.0f))
+				.DrawLineTo(Vector2(650.0f, 575.0f))
+				.DrawLineTo(Vector2(575.0f, 500.0f))
+				.DrawLineTo(Vector2(550.0f, 450.0f))
+				.ClosePath()
+				.SetFillPaint(Color::kGreen)
+				.DrawFill()
+				.SetStrokePaint(Color::kBlack)
+				.DrawStroke();
+
+			// Shape with holes
+			gTestPath->DrawRoundedRectangle(Rect2(200, 500, 200, 200), 20.0f)
+				.DrawEllipse(Vector2(200.0f, 600.0f), Vector2(50.0f, 50.0f))
+				.SetSolidity(VectorGraphicsPathSolidity::Hole) // Affects the previous path
+				.ClosePath()
+				.SetFillPaint(Color::kRed)
+				.DrawFill();
+
+			// Shapes with no AA
+			gTestPath->SetDrawCursor(Vector2(800.0f, 200.0f))
+				.DrawLineTo(Vector2(900.0f, 250.0f))
+				.DrawLineTo(Vector2(900.0f, 350.0f))
+				.DrawLineTo(Vector2(850.0f, 250.0f))
+				.DrawLineTo(Vector2(800.0f, 300.0f))
+				.DrawLineTo(Vector2(825.0f, 250.0f))
+				.SetAntialiasShapes(false)
+				.ClosePath()
+				.SetFillPaint(Color::kBansheeOrange)
+				.DrawFill();
+
+			gTestPath->DrawRoundedRectangle(Rect2(800, 400, 100, 100), 20.0f)
+				.ClosePath()
+				.SetAntialiasShapes(false)
+				.SetFillPaint(Color::kRed)
+				.SetStrokePaint(Color::kRed)
+				.DrawFill();
+			
+			gTestPath->DrawEllipse(Vector2(800.0f, 400.0f), Vector2(50.0f, 50.0f))
+				.ClosePath()
+				.SetAntialiasShapes(false)
+				.SetStrokePaint(Color::kBlue)
+				.DrawStroke();
 
 			VectorGraphicsSettings settings;
 			settings.Size = Size2((float)kWindowWidth, (float)kWindowHeight);
