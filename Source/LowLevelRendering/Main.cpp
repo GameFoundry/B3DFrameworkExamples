@@ -299,7 +299,7 @@ namespace bs
 			SPtr<Texture> depthAtt = gpuDevice->CreateTexture(depthAttDesc);
 
 			// Create the render surface
-			RENDER_TEXTURE_DESC desc;
+			RenderTextureCreateInformation desc;
 			desc.ColorSurfaces[0].Texture = colorAtt;
 			desc.DepthStencilSurface.Texture = depthAtt;
 

@@ -152,7 +152,7 @@ namespace bs
 			const SPtr<Texture> stencilTexture = gpuDevice->CreateTexture(stencilTextureCreateInformation);
 
 			// Create the render surface
-			RENDER_TEXTURE_DESC renderTextureCreateInformation;
+			RenderTextureCreateInformation renderTextureCreateInformation;
 			renderTextureCreateInformation.ColorSurfaces[0].Texture = colorTexture;
 			renderTextureCreateInformation.DepthStencilSurface.Texture = stencilTexture;
 
