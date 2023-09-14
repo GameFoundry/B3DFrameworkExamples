@@ -225,7 +225,7 @@ namespace bs
 			gGpuParams = gpuDevice->CreateGpuParameters(gPipelineState->GetParameterLayout());
 
 			// Create a vertex declaration for shader inputs
-			SmallVector<VertexElement, 8> vertexElements;
+			TInlineArray<VertexElement, 8> vertexElements;
 			vertexElements.Add(VertexElement(VET_FLOAT3, VES_POSITION));
 			vertexElements.Add(VertexElement(VET_FLOAT2, VES_TEXCOORD));
 
