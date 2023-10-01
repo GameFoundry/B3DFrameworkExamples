@@ -12,7 +12,6 @@
 #include "Utility/BsTime.h"
 #include "Renderer/BsRendererUtility.h"
 #include "BsEngineConfig.h"
-#include "GUI/BsGUIStyleSheet.h"
 #include "Image/BsTexture.h"
 #include "RenderAPI/BsRenderTexture.h"
 #include "Renderer/BsRenderer.h"
@@ -60,9 +59,6 @@ namespace bs
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the "core
 			// thread"), we don't call the method directly, but rather queue it for execution using the CoreThread class.
 			GetCoreThread().PostCommand(std::bind(&ct::Setup, renderWindowCore));
-
-			GUIStyleSheet::Parse("D:/TestStyle.css");
-
 		}
 
 		// Called when the engine is about to be shut down
