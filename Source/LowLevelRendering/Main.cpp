@@ -1,6 +1,6 @@
 #include "BsApplication.h"
 #include "Material/BsMaterial.h"
-#include "CoreThread/BsCoreThread.h"
+#include "CoreThread/BsRenderThread.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "RenderAPI/BsGpuCommandBuffer.h"
 #include "RenderAPI/BsGpuProgram.h"

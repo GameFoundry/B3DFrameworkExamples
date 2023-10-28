@@ -1,6 +1,6 @@
 #include "BsApplication.h"
 #include "Material/BsMaterial.h"
-#include "CoreThread/BsCoreThread.h"
+#include "CoreThread/BsRenderThread.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "RenderAPI/BsGpuCommandBuffer.h"
 #include "RenderAPI/BsGpuProgram.h"
@@ -21,7 +21,10 @@
 namespace bs
 {
 	u32 kWindowWidth = 1280;
-	u32 kWindowHeight = 720;
+	u32 kWindowHeight = 1280;
+
+	u32 kCheckmarkWidth = 512;
+	u32 kCheckmarkHeight = 1024;
 
 	// Declare the methods we'll use to do work on the core thread. Note the "ct" namespace, which we use because we render
 	// on the core thread (ct = core thread). Every object usable on the core thread lives in this namespace.
@@ -122,7 +125,9 @@ namespace bs
 		// Fields where we'll store the resources required during calls to Render(). These are initialized in Setup()
 		// and cleaned up in ShutDown()
 		SPtr<VectorPath> gTestPath;
+		SPtr<VectorPath> gCheckmarkPath;
 		SPtr<VectorPathRenderable> gTestPathRenderable;
+		SPtr<VectorPathRenderable> gCheckmarkPathRenderable;
 
 		SPtr<RenderTexture> gRenderTarget;
 		SPtr<RenderWindow> gRenderWindow;
@@ -133,33 +138,39 @@ namespace bs
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;
 
-			const SPtr<GpuDevice> gpuDevice = GetCoreApplication().GetPrimaryGpuDevice();
+			auto fnCreateRenderTexture = [](u32 width, u32 height)
+			{
+				const SPtr<GpuDevice> gpuDevice = GetCoreApplication().GetPrimaryGpuDevice();
 
-			TextureCreateInformation colorTextureCreateInformation;
-			colorTextureCreateInformation.Width = kWindowWidth;
-			colorTextureCreateInformation.Height = kWindowHeight;
-			colorTextureCreateInformation.Format = PF_RGBA8;
-			colorTextureCreateInformation.Usage = TU_RENDERTARGET;
+				TextureCreateInformation colorTextureCreateInformation;
+				colorTextureCreateInformation.Width = width;
+				colorTextureCreateInformation.Height = height;
+				colorTextureCreateInformation.Format = PF_RGBA8;
+				colorTextureCreateInformation.Usage = TU_RENDERTARGET;
 
-			const SPtr<Texture> colorTexture = gpuDevice->CreateTexture(colorTextureCreateInformation);
+				const SPtr<Texture> colorTexture = gpuDevice->CreateTexture(colorTextureCreateInformation);
 
-			TextureCreateInformation stencilTextureCreateInformation;
-			stencilTextureCreateInformation.Width = kWindowWidth;
-			stencilTextureCreateInformation.Height = kWindowHeight;
-			stencilTextureCreateInformation.Format = PF_D32_S8X24;
-			stencilTextureCreateInformation.Usage = TU_DEPTHSTENCIL;
+				TextureCreateInformation stencilTextureCreateInformation;
+				stencilTextureCreateInformation.Width = width;
+				stencilTextureCreateInformation.Height = height;
+				stencilTextureCreateInformation.Format = PF_D32_S8X24;
+				stencilTextureCreateInformation.Usage = TU_DEPTHSTENCIL;
 
-			const SPtr<Texture> stencilTexture = gpuDevice->CreateTexture(stencilTextureCreateInformation);
+				const SPtr<Texture> stencilTexture = gpuDevice->CreateTexture(stencilTextureCreateInformation);
 
-			// Create the render surface
-			RenderTextureCreateInformation renderTextureCreateInformation;
-			renderTextureCreateInformation.ColorSurfaces[0].Texture = colorTexture;
-			renderTextureCreateInformation.DepthStencilSurface.Texture = stencilTexture;
+				// Create the render surface
+				RenderTextureCreateInformation renderTextureCreateInformation;
+				renderTextureCreateInformation.ColorSurfaces[0].Texture = colorTexture;
+				renderTextureCreateInformation.DepthStencilSurface.Texture = stencilTexture;
 
-			gRenderTarget = RenderTexture::Create(renderTextureCreateInformation);
+				return RenderTexture::Create(renderTextureCreateInformation);
+			};
+
+
+			gRenderTarget = fnCreateRenderTexture(kWindowWidth, kWindowHeight);
 
 			// Create the vector path
-			gTestPath = B3DMakeShared<VectorPath>();
+			gTestPath = VectorPath::CreateShared();
 
 			gTestPath->DrawRoundedRectangle(Rect2(200, 200, 200, 200), 20.0f)
 				.ClosePath()
@@ -234,11 +245,34 @@ namespace bs
 				.SetStrokePaint(Color::kBlue)
 				.DrawStroke();
 
-			VectorGraphicsSettings settings;
-			settings.Size = Size2((float)kWindowWidth, (float)kWindowHeight);
 
-			gTestPathRenderable = gTestPath->CreateRenderable(settings);
+			VectorGraphicsSettings testPathSettings;
+			testPathSettings.Size = Size2((float)kWindowWidth, (float)kWindowHeight);
+			testPathSettings.ScalingMode = VectorGraphicsRasterizationScaling::None;
+
+			gTestPathRenderable = gTestPath->CreateRenderable(testPathSettings);
+
+#if 0
+			// Checkmark
+			gCheckmarkPath = VectorPath::CreateShared(Size2(512.0f, 512.0f));
+
+			gCheckmarkPath->SetDrawCursor(Vector2(17.47f, 250.9f))
+				.DrawCubicBezierTo(Vector2(88.82f, 328.1f), Vector2(158.0f, 397.6f), Vector2(224.5f, 485.5f))
+				.DrawCubicBezierTo(Vector2(296.8f, 341.7f), Vector2(370.8f, 197.4f), Vector2(492.9f, 41.13f))
+				.DrawLineTo(Vector2(460.0f, 26.06f))
+				.DrawCubicBezierTo(Vector2(356.9f, 135.4f), Vector2(276.8f, 238.9f), Vector2(207.2f, 361.9f))
+				.DrawCubicBezierTo(Vector2(158.8f, 318.3f), Vector2(80.58f, 256.6f), Vector2(32.82f, 224.9f))
+				.ClosePath()
+				.SetFillPaint(Color::kBansheeOrange)
+				.DrawFill();
+
+			VectorGraphicsSettings checkmarkPathSettings;
+			checkmarkPathSettings.Size = Size2((float)kCheckmarkWidth, (float)kCheckmarkHeight);
+
+			gCheckmarkPathRenderable = gCheckmarkPath->CreateRenderable(checkmarkPathSettings);
+#endif
 		}
+		
 
 		// Render the box, called every frame
 		void Render()
@@ -253,17 +287,24 @@ namespace bs
 			commandBuffer->SetRenderTarget(gRenderTarget, 0, RT_NONE);
 			commandBuffer->ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kWhite, 1, 0, 0xFF);
 
-			// Draw the vector shape
+			// Draw the vector shapes
 			gTestPathRenderable->Render(*commandBuffer);
+
+			if(gCheckmarkPathRenderable != nullptr)
+			{
+				commandBuffer->SetViewport(Rect2(0.0f, 0.0f, (float)kCheckmarkWidth / (float)kWindowWidth, (float)kCheckmarkHeight / (float)kWindowHeight));
+				commandBuffer->ClearViewport(FBT_COLOR);
+				gCheckmarkPathRenderable->Render(*commandBuffer);
+			}
 
 			// Blit the image from the render texture, to the render window
 			commandBuffer->SetRenderTarget(gRenderWindow);
 
-			// Get the color attachment
 			SPtr<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
+			commandBuffer->SetViewport(Rect2(0.0f, 0.0f, 1.0f, 1.0f));
 			GetRendererUtility().Blit(*commandBuffer, colorTexture);
 
 			// Submit the command buffer
