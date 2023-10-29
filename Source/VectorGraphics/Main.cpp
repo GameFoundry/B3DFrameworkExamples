@@ -26,8 +26,9 @@ namespace bs
 	u32 kCheckmarkWidth = 512;
 	u32 kCheckmarkHeight = 1024;
 
-	// Declare the methods we'll use to do work on the core thread. Note the "ct" namespace, which we use because we render
-	// on the core thread (ct = core thread). Every object usable on the core thread lives in this namespace.
+	// Declare the methods we'll use to do work on the render thread. Normally methods and objects usable on the render thread
+	// will be in the "ct". This is not always true, especially for thread-safe objects, but it is almost always true if
+	// an object has variants of its type usable from main and render threads.
 	namespace ct
 	{
 		void Setup(const SPtr<RenderWindow>& renderWindow);
@@ -56,18 +57,18 @@ namespace bs
 			// rendering.
 			SPtr<RenderWindow> renderWindow = GetPrimaryWindow();
 
-			// Get the version of the render window usable on the core thread, and send it along to setup()
+			// Get the version of the render window usable on the render thread, and send it along to setup()
 			SPtr<ct::RenderWindow> renderWindowCore = renderWindow->GetCore();
 
-			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the "core
-			// thread"), we don't call the method directly, but rather queue it for execution using the CoreThread class.
+			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the render
+			// thread), we don't call the method directly, but rather queue it for execution using the RenderThread class.
 			GetRenderThread().PostCommand(std::bind(&ct::Setup, renderWindowCore));
 		}
 
 		// Called when the engine is about to be shut down
 		void OnShutDown() override
 		{
-			// Queue the method for execution on the core thread
+			// Queue the method for execution on the render thread
 			GetRenderThread().PostCommand(&ct::Shutdown);
 
 			// Shut-down engine components
@@ -77,7 +78,7 @@ namespace bs
 		// Called every frame, before any other engine system (optionally use postUpdate())
 		void PreUpdate() override
 		{
-			// Queue the method for execution on the core thread
+			// Queue the method for execution on the render thread
 			GetRenderThread().PostCommand(&ct::Render);
 
 			// Call the default version of this method to handle normal functionality
