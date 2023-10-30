@@ -58,11 +58,11 @@ namespace bs
 			SPtr<RenderWindow> renderWindow = GetPrimaryWindow();
 
 			// Get the version of the render window usable on the render thread, and send it along to setup()
-			SPtr<ct::RenderWindow> renderWindowCore = B3DGetRenderProxy(renderWindow);
+			SPtr<ct::RenderWindow> renderWindowRenderProxy = B3DGetRenderProxy(renderWindow);
 
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the render
 			// thread), we don't call the method directly, but rather queue it for execution using the RenderThread class.
-			GetRenderThread().PostCommand(std::bind(&ct::Setup, renderWindowCore));
+			GetRenderThread().PostCommand(std::bind(&ct::Setup, renderWindowRenderProxy));
 		}
 
 		// Called when the engine is about to be shut down
