@@ -26,8 +26,7 @@
 // In order to use the low-level rendering system we need to override the Application class so we get notified of updates
 // and start-up/shut-down events. This is normally not necessary for a high level scene object based model.
 //
-// The rendering is performed on the core (i.e. rendering) thread, as opposed to the main thread, where majority of
-// bsf's code executes.
+// The rendering is performed on the render thread, as opposed to the main thread, where majority of bsf's code executes.
 //
 // The example first sets up necessary resources, like GPU programs, pipeline state, vertex & index buffers. Then every
 // frame it binds the necessary rendering resources and executes the draw call.
