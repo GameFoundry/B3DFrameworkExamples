@@ -191,7 +191,7 @@ namespace bs
 			{ // Use the default, transparent blend mode that uses traditional PBR textures to project. Normally no need
 			  // to set the default explicitly but it's done here for example purposes. See the manual for all available
 			  // modes
-			  ShaderVariationParameters::ShaderVariationParameter("BLEND_MODE", 0) }));
+			  ShaderVariationParameter("BLEND_MODE", 0) }));
 
 		// Create the decal scene object, position and orient it, facing down
 		HSceneObject decalSO = SceneObject::Create("Decal");

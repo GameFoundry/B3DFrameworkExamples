@@ -125,8 +125,8 @@ namespace bs
 	{
 		// Fields where we'll store the resources required during calls to Render(). These are initialized in Setup()
 		// and cleaned up in ShutDown()
-		SPtr<VectorPath> gTestPath;
-		SPtr<VectorPath> gCheckmarkPath;
+		SPtr<bs::VectorPath> gTestPath;
+		SPtr<bs::VectorPath> gCheckmarkPath;
 		SPtr<VectorPathRenderable> gTestPathRenderable;
 		SPtr<VectorPathRenderable> gCheckmarkPathRenderable;
 
@@ -171,7 +171,7 @@ namespace bs
 			gRenderTarget = fnCreateRenderTexture(kWindowWidth, kWindowHeight);
 
 			// Create the vector path
-			gTestPath = VectorPath::CreateShared();
+			gTestPath = bs::VectorPath::CreateShared();
 
 			gTestPath->DrawRoundedRectangle(Rect2(200, 200, 200, 200), 20.0f)
 				.ClosePath()
