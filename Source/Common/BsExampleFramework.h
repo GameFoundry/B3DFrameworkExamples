@@ -350,7 +350,7 @@ namespace bs
 					// Font has child resources, which also need to be registered
 					for(auto& size : fontSizes)
 					{
-						SPtr<const FontBitmap> fontData = font->GetBitmap(size);
+						SPtr<const FontBitmapInformation> fontData = font->GetBitmap(size);
 
 						Path texPageOutputPath = Path(EXAMPLE_DATA_PATH) + "GUI/";
 
