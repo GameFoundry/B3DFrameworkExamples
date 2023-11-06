@@ -244,9 +244,9 @@ namespace bs
 		GUIElementStyle customBtnStyle;
 
 		// Set custom textures for 'normal', 'hover' and 'active' states of the button
-		customBtnStyle.Normal.Texture = SpriteTexture::Create(buttonNormalTex);
-		customBtnStyle.Hover.Texture = SpriteTexture::Create(buttonHoverTex);
-		customBtnStyle.Active.Texture = SpriteTexture::Create(buttonActiveTex);
+		customBtnStyle.Normal.Image = SpriteTexture::Create(buttonNormalTex);
+		customBtnStyle.Hover.Image = SpriteTexture::Create(buttonHoverTex);
+		customBtnStyle.Active.Image = SpriteTexture::Create(buttonActiveTex);
 
 		// Button size is fixed, and should match the size of the texture's we're using
 		customBtnStyle.FixedHeight = true;
