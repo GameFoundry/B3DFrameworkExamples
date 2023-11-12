@@ -315,7 +315,7 @@ namespace bs
 		 * Use the 'fontSizes' parameter to determine which sizes of this font should be imported. Note this option is only
 		 * relevant when a font is being imported (i.e. when the asset file is missing).
 		 */
-		static HFont LoadFont(ExampleFont type, Vector<u32> fontSizes)
+		static HFont LoadFont(ExampleFont type, Vector<float> fontSizes)
 		{
 			// Map from the enum to the actual file path
 			static Path assetPaths[] = {

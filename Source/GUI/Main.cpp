@@ -157,8 +157,8 @@ namespace bs
 		GUIElementStyle headerLabelStyle;
 
 		// Make it use a custom font with size 30
-		headerLabelStyle.Font = ExampleFramework::LoadFont(ExampleFont::SegoeUISemiBold, { 24 });
-		headerLabelStyle.FontSize = 24;
+		headerLabelStyle.Font = ExampleFramework::LoadFont(ExampleFont::SegoeUISemiBold, { 24.0f });
+		headerLabelStyle.FontSize = 24.0f;
 
 		// Set the default text color
 		headerLabelStyle.Normal.TextColor = Color::kWhite;
@@ -255,8 +255,8 @@ namespace bs
 		customBtnStyle.Height = buttonNormalTex->GetProperties().Height;
 
 		// Make the button use a custom font for text
-		customBtnStyle.Font = ExampleFramework::LoadFont(ExampleFont::SegoeUILight, { 24 });
-		customBtnStyle.FontSize = 24;
+		customBtnStyle.Font = ExampleFramework::LoadFont(ExampleFont::SegoeUILight, { 24.0f });
+		customBtnStyle.FontSize = 24.0f;
 
 		// Offset the position of the text within the button, to match the texture
 		customBtnStyle.ContentOffset.Top = 20;
