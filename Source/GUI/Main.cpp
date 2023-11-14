@@ -140,7 +140,7 @@ namespace bs
 
 		// Add a button with an image
 		HTexture icon = ExampleFramework::LoadTexture(ExampleTexture::GUIBansheeIcon, false, false, false, false);
-		HSpriteTexture iconSprite = SpriteTexture::Create(icon);
+		HSpriteImage iconSprite = SpriteTexture::Create(icon);
 
 		// Create a GUI content object that contains an icon to display on the button. Also an optional text and tooltip.
 		GUIContent buttonContent(iconSprite);

@@ -355,13 +355,13 @@ namespace bs
 						Path texPageOutputPath = Path(EXAMPLE_DATA_PATH) + "GUI/";
 
 						u32 pageIdx = 0;
-						for(const auto& tex : fontData->TexturePages)
+						for(const auto& page : fontData->TexturePages)
 						{
 							String fontName = srcAssetPath.GetFilename(false);
 							texPageOutputPath.SetFilename(fontName + "_" + ToString(size) + "_texpage_" + ToString(pageIdx) + ".asset");
 
-							GetResources().Save(tex, texPageOutputPath, true);
-							manifest->RegisterResource(tex.GetId(), texPageOutputPath);
+							GetResources().Save(page.Texture, texPageOutputPath, true);
+							manifest->RegisterResource(page.Texture.GetId(), texPageOutputPath);
 
 							pageIdx++;
 						}
