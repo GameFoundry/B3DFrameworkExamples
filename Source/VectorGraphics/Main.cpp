@@ -12,6 +12,7 @@
 #include "Utility/BsTime.h"
 #include "Renderer/BsRendererUtility.h"
 #include "BsEngineConfig.h"
+#include "GUI/StyleSheet/BsGUIStyleSheet.h"
 #include "Image/BsTexture.h"
 #include "RenderAPI/BsRenderTexture.h"
 #include "Renderer/BsRenderer.h"
@@ -246,6 +247,216 @@ namespace bs
 				.SetStrokePaint(Color::kBlue)
 				.DrawStroke();
 
+			// Rectangle with border
+			gTestPath->DrawRectangle(Rect2(800, 600, 149, 89))
+				.ClosePath()
+				.SetFillPaint(Color::kRed)
+				.DrawFill()
+				.SetStrokePaint(Color::kBlack)
+				.SetStrokeWidth(1)
+				.DrawStroke();
+
+			// Manually drawn rounded rectangle
+			{
+
+				const float width = 150.0f;
+				const float height = 90.0f;
+
+				const float halfWidth = Math::Abs(width) * 0.5f;
+				const float halfHeight = Math::Abs(height) * 0.5f;
+
+				GUIStyleSheetRules rules;
+				rules.BorderBottomLeftRadius = 15;
+				rules.BorderBottomRightRadius = 15;
+				rules.BorderTopLeftRadius = 15;
+				rules.BorderTopRightRadius = 15;
+
+				const Vector2 bottomLeft(
+					Math::Min(rules.BorderBottomLeftRadius, halfWidth) * Math::Sign(width),
+					Math::Min(rules.BorderBottomLeftRadius, halfHeight) * Math::Sign(height));
+
+				const Vector2 bottomRight(
+					Math::Min(rules.BorderBottomRightRadius, halfWidth) * Math::Sign(width),
+					Math::Min(rules.BorderBottomRightRadius, halfHeight) * Math::Sign(height));
+
+				const Vector2 topRight(
+					Math::Min(rules.BorderTopRightRadius, halfWidth) * Math::Sign(width),
+					Math::Min(rules.BorderTopRightRadius, halfHeight) * Math::Sign(height));
+
+				const Vector2 topLeft(
+					Math::Min(rules.BorderTopLeftRadius, halfWidth) * Math::Sign(width),
+					Math::Min(rules.BorderTopLeftRadius, halfHeight) * Math::Sign(height));
+
+				const float x = 800.0f;
+				const float y = 800.0f;
+
+				constexpr static float kKappa45 = 0.2652164900709011f;
+				constexpr static float kKappa90 = 0.5522847493f; // Length proportional to radius of a cubic bezier handle for 90deg arcs.
+
+				gTestPath->SetDrawCursor(Vector2(x, y + topLeft.Y));
+				gTestPath->DrawLineTo(Vector2(x, y + height - bottomLeft.Y));
+				gTestPath->DrawCubicBezierTo(Vector2(x, y + height - bottomLeft.Y * (1 - kKappa90)), Vector2(x + bottomLeft.X * (1 - kKappa90), y + height), Vector2(x + bottomLeft.X, y + height));
+				gTestPath->DrawLineTo(Vector2(x + width - bottomRight.X, y + height));
+				gTestPath->DrawCubicBezierTo(Vector2(x + width - bottomRight.X * (1 - kKappa90), y + height), Vector2(x + width, y + height - bottomRight.Y * (1 - kKappa90)), Vector2(x + width, y + height - bottomRight.Y));
+				gTestPath->DrawLineTo(Vector2(x + width, y + topRight.Y));
+				gTestPath->DrawCubicBezierTo(Vector2(x + width, y + topRight.Y * (1 - kKappa90)), Vector2(x + width - topRight.X * (1 - kKappa90), y), Vector2(x + width - topRight.X, y)),
+					gTestPath->DrawLineTo(Vector2(x + topLeft.X, y));
+				gTestPath->DrawCubicBezierTo(Vector2(x + topLeft.X * (1 - kKappa90), y), Vector2(x, y + topLeft.Y * (1 - kKappa90)), Vector2(x, y + topLeft.Y));
+				gTestPath->ClosePath();
+				gTestPath->SetAntialiasShapes(true);
+				gTestPath->DrawFill();
+			}
+
+			// Button with separate styles for border sides
+			{
+				GUIStyleSheetRules rules;
+				rules.BorderBottomLeftRadius = 15;
+				rules.BorderBottomRightRadius = 15;
+				rules.BorderTopLeftRadius = 15;
+				rules.BorderTopRightRadius = 15;
+				rules.BorderLeft.Width = 5;
+				rules.BorderRight.Width = 5;
+				rules.BorderTop.Width = 5;
+				rules.BorderBottom.Width = 5;
+
+				const float x = 800.0f;
+				const float y = 1000.0f;
+
+				const float width = 150.0f;
+				const float height = 90.0f;
+
+				const float leftBorderWidth = (float)rules.BorderLeft.Width;
+				const float rightBorderWidth = (float)rules.BorderRight.Width;
+				const float topBorderWidth = (float)rules.BorderTop.Width;
+				const float bottomBorderWidth = (float)rules.BorderBottom.Width;
+
+				const float innerX = x + leftBorderWidth;
+				const float innerY = y + topBorderWidth;
+
+				const float innerWidth = Math::Max(0.0f, width - leftBorderWidth - rightBorderWidth);
+				const float innerHeight = Math::Max(0.0f, height - topBorderWidth - bottomBorderWidth);
+
+				enum BorderCorner
+				{
+					BC_TopRight,
+					BC_TopLeft,
+					BC_BottomLeft,
+					BC_BottomRight,
+				};
+
+				enum BorderSide
+				{
+					BS_Top,
+					BS_Left,
+					BS_Bottom,
+					BS_Right,
+				};
+
+				constexpr BorderCorner kCornersPerSide[4][2]{
+					{ BC_TopRight, BC_TopLeft },
+					{ BC_TopLeft, BC_BottomLeft },
+					{ BC_BottomLeft, BC_BottomRight },
+					{ BC_BottomRight, BC_TopRight },
+				};
+
+				struct BorderInformation
+				{
+					Array<Vector2, 4> CornerCenters;
+				};
+
+				auto fnGenerateCornerInformation = [&rules](float x, float y, float width, float height) {
+					const float halfWidth = Math::Abs(width) * 0.5f;
+					const float halfHeight = Math::Abs(height) * 0.5f;
+
+					const float right = x + width;
+					const float bottom = y + height;
+
+					// TODO - Known issue if the radius is larger than the half height of the inner border, border will not match
+					// up with the rounded rectangle
+					Vector2 borderCornerOffset[4];
+					borderCornerOffset[BC_TopRight] = Vector2(
+						Math::Min(rules.BorderTopRightRadius, halfWidth) * Math::Sign(width),
+						Math::Min(rules.BorderTopRightRadius, halfHeight) * Math::Sign(height));
+
+					borderCornerOffset[BC_TopLeft] = Vector2(
+						Math::Min(rules.BorderTopLeftRadius, halfWidth) * Math::Sign(width),
+						Math::Min(rules.BorderTopLeftRadius, halfHeight) * Math::Sign(height));
+
+					borderCornerOffset[BC_BottomLeft] = Vector2(
+						Math::Min(rules.BorderBottomLeftRadius, halfWidth) * Math::Sign(width),
+						Math::Min(rules.BorderBottomLeftRadius, halfHeight) * Math::Sign(height));
+
+					borderCornerOffset[BC_BottomRight] = Vector2(
+						Math::Min(rules.BorderBottomRightRadius, halfWidth) * Math::Sign(width),
+						Math::Min(rules.BorderBottomRightRadius, halfHeight) * Math::Sign(height));
+
+					BorderInformation output;
+					output.CornerCenters[BC_TopRight] = Vector2(right - borderCornerOffset[BC_TopRight].X, y + borderCornerOffset[BC_TopRight].Y);
+					output.CornerCenters[BC_TopLeft] = Vector2(x + borderCornerOffset[BC_TopLeft].X, y + borderCornerOffset[BC_TopLeft].Y);
+					output.CornerCenters[BC_BottomLeft] = Vector2(x + borderCornerOffset[BC_BottomLeft].X, bottom - borderCornerOffset[BC_BottomLeft].Y);
+					output.CornerCenters[BC_BottomRight] = Vector2(right - borderCornerOffset[BC_BottomRight].X, bottom - borderCornerOffset[BC_BottomRight].Y);
+
+					return output;
+				};
+
+				const BorderInformation outerBorderInformation = fnGenerateCornerInformation(x, y, width, height);
+				const BorderInformation innerBorderInformation = fnGenerateCornerInformation(innerX, innerY, innerWidth, innerHeight);
+
+				float kCornerRadii[4];
+				kCornerRadii[BC_TopRight] = (float)rules.BorderTopRightRadius;
+				kCornerRadii[BC_TopLeft] = (float)rules.BorderTopLeftRadius;
+				kCornerRadii[BC_BottomLeft] = (float)rules.BorderBottomLeftRadius;
+				kCornerRadii[BC_BottomRight] = (float)rules.BorderBottomRightRadius;
+
+				Degree currentAngle(315.0f);
+				const Degree kAngle45(45.0f);
+				for(u32 side = 0; side < 4; ++side)
+				{
+					const u32 sideCornerA = kCornersPerSide[side][0];
+					const u32 sideCornerB = kCornersPerSide[side][1];
+
+					// Outer part of the border
+					gTestPath->DrawArc(
+						outerBorderInformation.CornerCenters[sideCornerA],
+						kCornerRadii[sideCornerA],
+						currentAngle,
+						currentAngle - kAngle45, VectorGraphicsPathWinding::Counterclockwise);
+					gTestPath->DrawArc(
+						outerBorderInformation.CornerCenters[sideCornerB],
+						kCornerRadii[sideCornerB],
+						currentAngle - kAngle45,
+						currentAngle - kAngle45 * 2.0f, VectorGraphicsPathWinding::Counterclockwise);
+
+					// Inner part of the border
+					gTestPath->DrawArc(
+						innerBorderInformation.CornerCenters[sideCornerB],
+						kCornerRadii[sideCornerB],
+						currentAngle - kAngle45 * 2.0,
+						currentAngle - kAngle45, VectorGraphicsPathWinding::Clockwise);
+					gTestPath->DrawArc(
+						innerBorderInformation.CornerCenters[sideCornerA],
+						kCornerRadii[sideCornerA],
+						currentAngle - kAngle45,
+						currentAngle, VectorGraphicsPathWinding::Clockwise);
+
+					gTestPath->ClosePath();
+					gTestPath->SetAntialiasShapes(true);
+					if(side % 2 == 0)
+						gTestPath->SetFillPaint(Color::kGreen);
+					else
+						gTestPath->SetFillPaint(Color::kBlue);
+
+					gTestPath->DrawFill();
+
+					currentAngle -= kAngle45 * 2.0f;
+				}
+
+				// Fill
+				gTestPath->DrawRoundedRectangle(Rect2(innerX, innerY, innerWidth, innerHeight), (float)rules.BorderTopLeftRadius, (float)rules.BorderTopRightRadius, (float)rules.BorderBottomLeftRadius, (float)rules.BorderBottomRightRadius);
+				gTestPath->SetFillPaint(Color::kRed);
+				//gTestPath->SetAlpha(0.5f);
+				gTestPath->DrawFill();
+			}
 
 			VectorGraphicsSettings testPathSettings;
 			testPathSettings.Size = Size2((float)kWindowWidth, (float)kWindowHeight);
