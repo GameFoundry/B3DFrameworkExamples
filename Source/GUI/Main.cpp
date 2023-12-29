@@ -90,7 +90,7 @@ namespace bs
 		button->SetSize(100, 30);
 
 		// Toggleable button
-		GUIToggle* toggle = mainPanel->AddNewElement<GUIToggle>(HString(""));
+		GUIToggle* toggle = mainPanel->AddNewElement<GUIToggle>();
 		toggle->OnToggled.Connect([](bool enabled)
 								  {
 			// Log a message when the user toggles the button
@@ -116,9 +116,10 @@ namespace bs
 			// Log a message when the user enters new text in the input box
 			B3D_LOG(Info, Uncategorized, "User entered: \"" + value + "\""); });
 
-		inputBox->SetText("Type in me...");
+		inputBox->SetText("Type in me...\nand some more\nand more\nand even more\nand the last line");
 		inputBox->SetPosition(10, 115);
 		inputBox->SetWidth(100);
+		inputBox->SetHeight(40);
 
 		// List box allowing you to select one of the specified elements
 		Vector<HString> listBoxElements = {
@@ -135,7 +136,7 @@ namespace bs
 												B3D_LOG(Info, Uncategorized, "User selected element: \"" + listBoxElements[idx].GetValue() + "\"");
 											});
 
-		listBox->SetPosition(10, 140);
+		listBox->SetPosition(10, 180);
 		listBox->SetWidth(100);
 
 		// Add a button with an image
@@ -146,7 +147,7 @@ namespace bs
 		GUIContent buttonContent(iconSprite);
 		GUIButton* iconButton = mainPanel->AddNewElement<GUIButton>(buttonContent);
 
-		iconButton->SetPosition(10, 170);
+		iconButton->SetPosition(10, 210);
 		iconButton->SetSize(70, 70);
 
 		/////////////////////////// Header label /////////////////////////////////
