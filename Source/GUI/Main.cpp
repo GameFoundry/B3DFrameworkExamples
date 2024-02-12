@@ -18,6 +18,7 @@
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
 #include "BsExampleFramework.h"
+#include "GUI/StyleSheet/BsGUIStyleSheet.h"
 #include "Image/BsSpriteTexture.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,9 +71,20 @@ namespace bs
 		/************************************************************************/
 		/* 									GUI		                     		*/
 		/************************************************************************/
+
 		// Add a GUIWidget component we will use for rendering the GUI
 		HSceneObject guiSO = SceneObject::Create("GUI");
 		HGUIWidget gui = guiSO->AddComponent<CGUIWidget>(sceneCamera);
+
+		// Load the custom style sheet file and apply it to the widget
+		SPtr<GUIStyleSheetCascade> customStyleSheetCascade = B3DMakeShared<GUIStyleSheetCascade>();
+		customStyleSheetCascade->RegisterStyleSheet(GetBuiltinResources().GetDefaultGUIStyleSheet(), GUIStyleSheet::kBuiltinImportance); // Anything not defined in the custom style sheet file will use the default style sheet
+
+		HGUIStyleSheet customStyleSheet = GUIStyleSheet::Parse(Path(EXAMPLE_DATA_PATH) + "GUI.css");
+		customStyleSheetCascade->RegisterStyleSheet(customStyleSheet, GUIStyleSheet::kDeveloperImportance);
+
+		// Register the style sheet with the GUI widget
+		gui->SetStyleSheetCascade(customStyleSheetCascade);
 
 		// Retrieve the primary panel onto which to attach GUI elements to. Panels allow free placement of elements in
 		// them (unlike layouts), and can also have depth, meaning you can overlay multiple panels over one another.
@@ -151,23 +163,7 @@ namespace bs
 		iconButton->SetSize(70, 70);
 
 		/////////////////////////// Header label /////////////////////////////////
-		// Create a custom style for a label we'll used for headers. Then add a header
-		// for the controls we added in the previous section.
-
-		// Create a new style
-		GUIElementStyle headerLabelStyle;
-
-		// Make it use a custom font with size 30
-		headerLabelStyle.Font = ExampleFramework::LoadFont(ExampleFont::SegoeUISemiBold, { 24.0f });
-		headerLabelStyle.FontSize = 24.0f;
-
-		// Set the default text color
-		headerLabelStyle.Normal.TextColor = Color::kWhite;
-
-		// Grab the default GUI skin to which we'll append the new style to. You could also create a new GUI skin and
-		// add the style to it, but that would also require adding default styles for all the GUI element types.
-		HGUISkin skin = GetBuiltinResources().GetGuiSkin();
-		skin->SetStyle("HeaderLabelStyle", headerLabelStyle);
+		// Add a header for the controls we added in the previous section.
 
 		// Create and position the label
 		GUILabel* basicControlsLbl = mainPanel->AddNewElement<GUILabel>(HString("Basic controls"), "HeaderLabelStyle");
@@ -203,7 +199,7 @@ namespace bs
 		GUILayoutX* horzLayout = mainPanel->AddNewElement<GUILayoutX>();
 		horzLayout->AddNewElement<GUIFlexibleSpace>();
 
-		// Add vive buttons to the layout
+		// Add five buttons to the layout
 		for(u32 i = 0; i < 5; i++)
 		{
 			horzLayout->AddNewElement<GUIButton>(HString("Click me!"));
@@ -237,34 +233,8 @@ namespace bs
 		scrollAreaLbl->SetPosition(550, 10);
 
 		///////////////////////////// Button using a custom style ///////////////////
-		HTexture buttonNormalTex = ExampleFramework::LoadTexture(ExampleTexture::GUIExampleButtonNormal, false, false, false, false);
-		HTexture buttonHoverTex = ExampleFramework::LoadTexture(ExampleTexture::GUIExampleButtonHover, false, false, false, false);
-		HTexture buttonActiveTex = ExampleFramework::LoadTexture(ExampleTexture::GUIExampleButtonActive, false, false, false, false);
 
-		// Create a new style
-		GUIElementStyle customBtnStyle;
-
-		// Set custom textures for 'normal', 'hover' and 'active' states of the button
-		customBtnStyle.Normal.Image = SpriteTexture::Create(buttonNormalTex);
-		customBtnStyle.Hover.Image = SpriteTexture::Create(buttonHoverTex);
-		customBtnStyle.Active.Image = SpriteTexture::Create(buttonActiveTex);
-
-		// Button size is fixed, and should match the size of the texture's we're using
-		customBtnStyle.FixedHeight = true;
-		customBtnStyle.FixedWidth = true;
-		customBtnStyle.Width = buttonNormalTex->GetProperties().Width;
-		customBtnStyle.Height = buttonNormalTex->GetProperties().Height;
-
-		// Make the button use a custom font for text
-		customBtnStyle.Font = ExampleFramework::LoadFont(ExampleFont::SegoeUILight, { 24.0f });
-		customBtnStyle.FontSize = 24.0f;
-
-		// Offset the position of the text within the button, to match the texture
-		customBtnStyle.ContentOffset.Top = 20;
-		customBtnStyle.ContentOffset.Left = 15;
-		customBtnStyle.ContentOffset.Right = 65;
-
-		skin->SetStyle("CustomButtonStyle", customBtnStyle);
+		// Custom style defined in Examples/Data/GUI.css
 
 		// Create the button that uses the custom style
 		GUIButton* customButton = mainPanel->AddNewElement<GUIButton>(HString("Click me!"), "CustomButtonStyle");

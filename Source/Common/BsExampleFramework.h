@@ -31,9 +31,6 @@ namespace bs
 		PistolMetalness,
 		EnvironmentPaperMill,
 		GUIBansheeIcon,
-		GUIExampleButtonNormal,
-		GUIExampleButtonHover,
-		GUIExampleButtonActive,
 		DroneAlbedo,
 		DroneNormal,
 		DroneRoughness,
@@ -84,7 +81,7 @@ namespace bs
 			const Path manifestPath = dataPath + "ResourceManifest.asset";
 
 			if(FileSystem::Exists(manifestPath))
-				manifest = ResourceManifest::Load(manifestPath, dataPath);
+				manifest = ResourceManifest::Load(manifestPath, dataPath, "/B3D/ExampleData/");
 			else
 				manifest = ResourceManifest::Create("ExampleAssets");
 
