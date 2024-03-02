@@ -21,6 +21,8 @@
 #include "GUI/StyleSheet/BsGUIStyleSheet.h"
 #include "Image/BsSpriteTexture.h"
 
+#include "Reflection/BsRTTIIteratorField.h"
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This example demonstrates how to set up a graphical user interface. It demoes a variety of common GUI elements, as well
 // as demonstrating the capability of layouts. It also shows how to customize the look of GUI elements.
