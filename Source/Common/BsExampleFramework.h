@@ -308,11 +308,8 @@ namespace bs
 		/**
 		 * Loads one of the builtin font assets. If the asset doesn't exist, the font will be re-imported from the
 		 * source file, and then saved so it can be loaded on the next call to this method.
-		 *
-		 * Use the 'fontSizes' parameter to determine which sizes of this font should be imported. Note this option is only
-		 * relevant when a font is being imported (i.e. when the asset file is missing).
 		 */
-		static HFont LoadFont(ExampleFont type, Vector<float> fontSizes)
+		static HFont LoadFont(ExampleFont type)
 		{
 			// Map from the enum to the actual file path
 			static Path assetPaths[] = {
@@ -331,8 +328,6 @@ namespace bs
 			{
 				// When importing you may specify optional import options that control how is the asset imported.
 				SPtr<FontImportOptions> fontImportOptions = FontImportOptions::Create();
-				fontImportOptions->FontSizes = fontSizes;
-
 				font = GetImporter().Import<Font>(srcAssetPath, fontImportOptions);
 
 				// Save for later use, so we don't have to import on the next run.
@@ -341,29 +336,7 @@ namespace bs
 				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
 				// the application was restarted, which is important if resource was referenced in some serialized object.
 				if(manifest)
-				{
 					manifest->RegisterResource(font.GetId(), assetPath);
-
-					// Font has child resources, which also need to be registered
-					for(auto& size : fontSizes)
-					{
-						SPtr<const FontBitmapInformation> fontData = font->GetBitmap(size);
-
-						Path texPageOutputPath = Path(EXAMPLE_DATA_PATH) + "GUI/";
-
-						u32 pageIdx = 0;
-						for(const auto& page : fontData->TexturePages)
-						{
-							String fontName = srcAssetPath.GetFilename(false);
-							texPageOutputPath.SetFilename(fontName + "_" + ToString(size) + "_texpage_" + ToString(pageIdx) + ".asset");
-
-							GetResources().Save(page.Texture, texPageOutputPath, true);
-							manifest->RegisterResource(page.Texture.GetId(), texPageOutputPath);
-
-							pageIdx++;
-						}
-					}
-				}
 			}
 
 			return font;
