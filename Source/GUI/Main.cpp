@@ -41,53 +41,6 @@ namespace bs
 	/** Set up the GUI elements and the camera. */
 	void SetUpGui()
 	{
-		Vector<int> values = { 5, 10, 33, 24, 16 };
-
-		TRTTIIterator vectorIterator(values);
-		for(auto iterator = vectorIterator; iterator.IsValid(); iterator.Increment())
-		{
-			B3D_LOG(Warning, GUI, "Value is {0}", *(const int*)iterator.GetValue());
-		}
-
-		vectorIterator.ResetToEnd();
-
-		int newValues[] = { 100, 200, 500 };
-		vectorIterator.SetValue(&newValues[0]);
-		vectorIterator.SetValue(&newValues[1]);
-		vectorIterator.SetValue(&newValues[2]);
-
-		vectorIterator.ResetToBeginning();
-		for(auto iterator = vectorIterator; iterator.IsValid(); iterator.Increment())
-		{
-			B3D_LOG(Warning, GUI, "Value is {0}", *(const int*)iterator.GetValue());
-		}
-
-		UnorderedMap<int, int> mapValues;
-		mapValues[5] = 500;
-		mapValues[10] = 1000;
-		mapValues[33] = 3300;
-		mapValues[24] = 2400;
-		mapValues[16] = 1600;
-
-		TRTTIIterator mapIterator(mapValues);
-		for(auto iterator = mapIterator; iterator.IsValid(); iterator.Increment())
-		{
-			B3D_LOG(Warning, GUI, "Value is {0}:{1}", (*(const std::pair<int, int>*)iterator.GetValue()).first, (*(const std::pair<int, int>*)iterator.GetValue()).second);
-		}
-
-		mapIterator.ResetToEnd();
-
-		std::pair<int, int> newMapValues[] = { std::make_pair(100, 10000), std::make_pair(200, 20000), std::make_pair(500, 50000) };
-		mapIterator.SetValue(&newMapValues[0]);
-		mapIterator.SetValue(&newMapValues[1]);
-		mapIterator.SetValue(&newMapValues[2]);
-
-		mapIterator.ResetToBeginning();
-		for(auto iterator = mapIterator; iterator.IsValid(); iterator.Increment())
-		{
-			B3D_LOG(Warning, GUI, "Value is {0}:{1}", (*(const std::pair<int, int>*)iterator.GetValue()).first, (*(const std::pair<int, int>*)iterator.GetValue()).second);
-		}
-
 		/************************************************************************/
 		/* 									CAMERA	                     		*/
 		/************************************************************************/
