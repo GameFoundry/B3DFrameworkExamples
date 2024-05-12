@@ -56,7 +56,7 @@ namespace bs
 			: Component(parent), mRadius(radius)
 		{}
 
-		void OnInitialized() override
+		void OnBeginPlay() override
 		{
 			mCenter = SO()->GetTransform().GetPosition();
 		}
