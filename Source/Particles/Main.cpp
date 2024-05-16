@@ -116,7 +116,7 @@ namespace bs
 
 		//// Fade over the range of 2m (used for soft particle blending)
 		assets.SmokeMat->SetFloat("gInvDepthRange", 1.0f / 2.0f);
-		assets.SmokeMat->SetSpriteTexture("gTexture", assets.SmokeTex);
+		assets.SmokeMat->SetSpriteImage("gTexture", assets.SmokeTex);
 
 		// Set up an emissive material used in the GPU vector field example
 		HShader particleLitShader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::ParticlesLitOpaque);
