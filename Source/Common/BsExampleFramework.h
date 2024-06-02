@@ -347,7 +347,7 @@ namespace bs
 		 * source file, and then saved so it can be loaded on the next call to this method.
 		 */
 		template <class T>
-		static ResourceHandle<T> LoadResource(ExampleResource type)
+		static TResourceHandle<T> LoadResource(ExampleResource type)
 		{
 			// Map from the enum to the actual file path
 			static Path assetPaths[] = {
@@ -360,7 +360,7 @@ namespace bs
 			Path assetPath = srcAssetPath;
 			assetPath.SetExtension(srcAssetPath.GetExtension() + ".asset");
 
-			ResourceHandle<T> resource = GetResources().Load<T>(assetPath);
+			TResourceHandle<T> resource = GetResources().Load<T>(assetPath);
 			if(resource == nullptr) // Shader file doesn't exist, import from the source file.
 			{
 				resource = GetImporter().Import<T>(srcAssetPath);
