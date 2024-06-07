@@ -267,14 +267,11 @@ int main()
 	VideoMode videoMode(kWindowWidth, kWindowHeight);
 	Application::StartUp(videoMode, "Example", false);
 
-	// Load a resource manifest so previously saved Fonts can find their child Texture resources
-	ExampleFramework::LoadResourceManifest();
+	// Load packages so we can find previously saved resources
+	ExampleFramework::LoadPackages();
 
 	// Set up the GUI elements
 	SetUpGui();
-
-	// Save the manifest, in case we did any asset importing during the setup stage
-	ExampleFramework::SaveResourceManifest();
 
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
 	// window or exits in some other way.

@@ -85,28 +85,13 @@ namespace bs
 			String Name;
 		};
 
-		/** Loads a manifest of all resources that were previously saved using this class. */
-		static void LoadResourceManifest()
+		/** Virtual path prefix that may be used for accessing all resources managed by this class. */
+		static constexpr const char* kVirtualPathPrefix = "/B3D/ExampleData/";
+
+		/** Loads all packages containing example data. */
+		static void LoadPackages()
 		{
-			const Path dataPath = EXAMPLE_DATA_PATH;
-			const Path manifestPath = dataPath + "ResourceManifest.asset";
-
-			if(FileSystem::Exists(manifestPath))
-				manifest = ResourceManifest::Load(manifestPath, dataPath, "/B3D/ExampleData/");
-			else
-				manifest = ResourceManifest::Create("ExampleAssets");
-
-			GetResources().RegisterResourceManifest(manifest);
-		}
-
-		/** Saves the current resource manifest. */
-		static void SaveResourceManifest()
-		{
-			const Path dataPath = EXAMPLE_DATA_PATH;
-			const Path manifestPath = dataPath + "ResourceManifest.asset";
-
-			if(manifest)
-				ResourceManifest::Save(manifest, manifestPath, dataPath);
+			GetPackageManager().LoadPackages(EXAMPLE_DATA_PATH, true, kVirtualPathPrefix, true);
 		}
 
 		/** Registers a common set of keys/buttons that are used for controlling the examples. */
@@ -148,21 +133,20 @@ namespace bs
 		{
 			// Map from the enum to the actual file path
 			static AssetFolderAndName assetPaths[] = {
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Pistol/", "Pistol01.fbx"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Cerberus/", "Cerberus.FBX")
+				AssetFolderAndName("Pistol/", "Pistol01.fbx"),
+				AssetFolderAndName("Cerberus/", "Cerberus.FBX")
 			};
 
 			const AssetFolderAndName& assetFolderAndName = assetPaths[(u32)type];
-			const Path& sourceAssetPath = Path::Combine(assetFolderAndName.Folder, assetFolderAndName.Name);
+			const Path& virtualAssetPath = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder, assetFolderAndName.Name);
 
 			// Attempt to load the previously processed asset
-			Path assetPath = sourceAssetPath;
-			assetPath.SetExtension(sourceAssetPath.GetExtension() + ".asset");
-
-			HMesh model = GetResources().Load<Mesh>(assetPath);
-			if(model == nullptr) // Mesh file doesn't exist, import from the source file.
+			if(GetResources().Exists(virtualAssetPath))
+				return GetResources().Load<Mesh>(virtualAssetPath, ResourceLoadOptions(false));
+			else // Mesh file doesn't exist, import from the source file.
 			{
 				// When importing you may specify optional import options that control how is the asset imported.
+				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
 				SPtr<ImportOptions> meshImportOptions = Importer::Instance().CreateImportOptions(sourceAssetPath);
 
 				// B3DRTTIIsOfType checks if the import options are of valid type, in case the provided path is pointing to a
@@ -174,19 +158,15 @@ namespace bs
 					importOptions->ImportScale = scale;
 				}
 
-				model = GetImporter().Import<Mesh>(sourceAssetPath, meshImportOptions);
+				HMesh mesh = GetImporter().Import<Mesh>(sourceAssetPath, meshImportOptions);
 
 				// Save for later use, so we don't have to import on the next run.
-				GetResources().Save(model, assetPath, true);
-				GetResources().SaveAsSinglePackage(model, assetFolderAndName.Folder, assetFolderAndName.Name);
+				ResourceSaveOptions resourceSaveOptions;
+				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
-				// the application was restarted, which is important if resource was referenced in some serialized object.
-				if(manifest)
-					manifest->RegisterResource(model.GetId(), assetPath);
+				GetResources().SaveAsSinglePackage(mesh, assetFolderAndName.Folder, assetFolderAndName.Name, resourceSaveOptions);
+				return mesh;
 			}
-
-			return model;
 		}
 
 		/**
@@ -202,43 +182,39 @@ namespace bs
 		{
 			// Map from the enum to the actual file path
 			static AssetFolderAndName assetPaths[] = {
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Pistol/", "Pistol_DFS.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Pistol/", "Pistol_NM.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Pistol/", "Pistol_RGH.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Pistol/", "Pistol_MTL.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Environments/", "PaperMill_E_3k.hdr"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "GUI/", "BansheeIcon.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "GUI/", "ExampleButtonNormal.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "GUI/", "ExampleButtonHover.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "GUI/", "ExampleButtonActive.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "MechDrone/", "Drone_diff.jpg"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "MechDrone/", "Drone_normal.jpg"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "MechDrone/", "Drone_rough.jpg"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "MechDrone/", "Drone_metal.jpg"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Grid/", "GridPattern.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Grid/", "GridPattern2.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Environments/", "daytime.hdr"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Environments/", "rathaus.hdr"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Cerberus/", "Cerberus_A.tga"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Cerberus/", "Cerberus_N.tga"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Cerberus/", "Cerberus_R.tga"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Cerberus/", "Cerberus_M.tga"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Particles/", "Smoke.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Decal/", "DecalAlbedo.png"),
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Decal/", "DecalNormal.png"),
+				AssetFolderAndName("Pistol/", "Pistol_DFS.png"),
+				AssetFolderAndName("Pistol/", "Pistol_NM.png"),
+				AssetFolderAndName("Pistol/", "Pistol_RGH.png"),
+				AssetFolderAndName("Pistol/", "Pistol_MTL.png"),
+				AssetFolderAndName("Environments/", "PaperMill_E_3k.hdr"),
+				AssetFolderAndName("GUI/", "BansheeIcon.png"),
+				AssetFolderAndName("MechDrone/", "Drone_diff.jpg"),
+				AssetFolderAndName("MechDrone/", "Drone_normal.jpg"),
+				AssetFolderAndName("MechDrone/", "Drone_rough.jpg"),
+				AssetFolderAndName("MechDrone/", "Drone_metal.jpg"),
+				AssetFolderAndName("Grid/", "GridPattern.png"),
+				AssetFolderAndName("Grid/", "GridPattern2.png"),
+				AssetFolderAndName("Environments/", "daytime.hdr"),
+				AssetFolderAndName("Environments/", "rathaus.hdr"),
+				AssetFolderAndName("Cerberus/", "Cerberus_A.tga"),
+				AssetFolderAndName("Cerberus/", "Cerberus_N.tga"),
+				AssetFolderAndName("Cerberus/", "Cerberus_R.tga"),
+				AssetFolderAndName("Cerberus/", "Cerberus_M.tga"),
+				AssetFolderAndName("Particles/", "Smoke.png"),
+				AssetFolderAndName("Decal/", "DecalAlbedo.png"),
+				AssetFolderAndName("Decal/", "DecalNormal.png"),
 			};
 
 			const AssetFolderAndName& assetFolderAndName = assetPaths[(u32)type];
-			const Path& sourceAssetPath = Path::Combine(assetFolderAndName.Folder, assetFolderAndName.Name);
+			const Path& virtualAssetPath = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder, assetFolderAndName.Name);
 
 			// Attempt to load the previously processed asset
-			Path assetPath = sourceAssetPath;
-			assetPath.SetExtension(sourceAssetPath.GetExtension() + ".asset");
-
-			HTexture texture = GetResources().Load<Texture>(assetPath);
-			if(texture == nullptr) // Texture file doesn't exist, import from the source file.
+			if(GetResources().Exists(virtualAssetPath))
+				return GetResources().Load<Texture>(virtualAssetPath, ResourceLoadOptions(false));
+			else // Texture file doesn't exist, import from the source file.
 			{
 				// When importing you may specify optional import options that control how is the asset imported.
+				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
 				SPtr<ImportOptions> textureImportOptions = Importer::Instance().CreateImportOptions(sourceAssetPath);
 
 				// B3DRTTIIsOfType checks if the import options are of valid type, in case the provided path is pointing to a
@@ -268,19 +244,15 @@ namespace bs
 				}
 
 				// Import texture with specified import options
-				texture = GetImporter().Import<Texture>(sourceAssetPath, textureImportOptions);
+				HTexture texture = GetImporter().Import<Texture>(sourceAssetPath, textureImportOptions);
 
 				// Save for later use, so we don't have to import on the next run.
-				GetResources().Save(texture, assetPath, true);
-				GetResources().SaveAsSinglePackage(texture, assetFolderAndName.Folder, assetFolderAndName.Name);
+				ResourceSaveOptions resourceSaveOptions;
+				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
-				// the application was restarted, which is important if resource was referenced in some serialized object.
-				if(manifest)
-					manifest->RegisterResource(texture.GetId(), assetPath);
+				GetResources().SaveAsSinglePackage(texture, assetFolderAndName.Folder, assetFolderAndName.Name, resourceSaveOptions);
+				return texture;
 			}
-
-			return texture;
 		}
 
 		/**
@@ -289,39 +261,32 @@ namespace bs
 		 */
 		static HShader LoadShader(ExampleShader type)
 		{
-			static const Path kShadersFolder = Path::Combine(EXAMPLE_DATA_PATH,"Shaders/");
-
 			// Map from the enum to the actual file path
-			static String assetNames[] = {
-				"CustomVertex.bsl",
-				"CustomDeferredSurface.bsl",
-				"CustomDeferredLighting.bsl",
-				"CustomForward.bsl",
+			static AssetFolderAndName assetPaths[] = {
+				AssetFolderAndName("Shaders/", "CustomVertex.bsl"),
+				AssetFolderAndName("Shaders/", "CustomDeferredSurface.bsl"),
+				AssetFolderAndName("Shaders/", "CustomDeferredLighting.bsl"),
+				AssetFolderAndName("Shaders/", "CustomForward.bsl"),
 			};
 
-			const String& assetName = assetNames[(u32)type];
-			const Path& sourceAssetPath = Path::Combine(kShadersFolder, assetName);
+			const AssetFolderAndName& assetFolderAndName = assetPaths[(u32)type];
+			const Path& virtualAssetPath = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder, assetFolderAndName.Name);
 
 			// Attempt to load the previously processed asset
-			Path assetPath = sourceAssetPath;
-			assetPath.SetExtension(sourceAssetPath.GetExtension() + ".asset");
-
-			HShader shader = GetResources().Load<Shader>(assetPath);
-			if(shader == nullptr) // Shader file doesn't exist, import from the source file.
+			if(GetResources().Exists(virtualAssetPath))
+				return GetResources().Load<Shader>(virtualAssetPath, ResourceLoadOptions(false));
+			else // Shader file doesn't exist, import from the source file.
 			{
-				shader = GetImporter().Import<Shader>(sourceAssetPath);
+				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
+				HShader shader = GetImporter().Import<Shader>(sourceAssetPath);
 
 				// Save for later use, so we don't have to import on the next run.
-				GetResources().Save(shader, assetPath, true);
-				GetResources().SaveAsSinglePackage(shader, kShadersFolder, assetName);
+				ResourceSaveOptions resourceSaveOptions;
+				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
-				// the application was restarted, which is important if resource was referenced in some serialized object.
-				if(manifest)
-					manifest->RegisterResource(shader.GetId(), assetPath);
+				GetResources().SaveAsSinglePackage(shader, assetFolderAndName.Folder, assetFolderAndName.Name, resourceSaveOptions);
+				return shader;
 			}
-
-			return shader;
 		}
 
 		/**
@@ -330,36 +295,33 @@ namespace bs
 		 */
 		static HFont LoadFont(ExampleFont type)
 		{
-			static const Path kFontFolder = Path::Combine(EXAMPLE_DATA_PATH,"GUI/");
-
 			// Map from the enum to the actual file path
-			static String assetNames[] = { "segoeuil.ttf", "seguisb.ttf" };
+			static AssetFolderAndName assetPaths[] = {
+				AssetFolderAndName("GUI/", "segoeuil.ttf"),
+				AssetFolderAndName("GUI/", "seguisb.ttf")
+			};
 
-			const String& assetName = assetNames[(u32)type];
-			const Path& sourceAssetPath = Path::Combine(kFontFolder, assetName);
+			const AssetFolderAndName& assetFolderAndName = assetPaths[(u32)type];
+			const Path& virtualAssetPath = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder, assetFolderAndName.Name);
 
 			// Attempt to load the previously processed asset
-			Path assetPath = sourceAssetPath;
-			assetPath.SetExtension(sourceAssetPath.GetExtension() + ".asset");
-
-			HFont font = GetResources().Load<Font>(assetPath);
-			if(font == nullptr) // Font file doesn't exist, import from the source file.
+			if(GetResources().Exists(virtualAssetPath))
+				return GetResources().Load<Font>(virtualAssetPath, ResourceLoadOptions(false));
+			else // Font file doesn't exist, import from the source file.
 			{
+				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
+
 				// When importing you may specify optional import options that control how is the asset imported.
 				SPtr<FontImportOptions> fontImportOptions = FontImportOptions::Create();
-				font = GetImporter().Import<Font>(sourceAssetPath, fontImportOptions);
+				HFont font = GetImporter().Import<Font>(sourceAssetPath, fontImportOptions);
 
 				// Save for later use, so we don't have to import on the next run.
-				GetResources().Save(font, assetPath, true);
-				GetResources().SaveAsSinglePackage(font, kFontFolder, assetName);
+				ResourceSaveOptions resourceSaveOptions;
+				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
-				// the application was restarted, which is important if resource was referenced in some serialized object.
-				if(manifest)
-					manifest->RegisterResource(font.GetId(), assetPath);
+				GetResources().SaveAsSinglePackage(font, assetFolderAndName.Folder, assetFolderAndName.Name, resourceSaveOptions);
+				return font;
 			}
-
-			return font;
 		}
 
 		/**
@@ -371,29 +333,24 @@ namespace bs
 		{
 			// Map from the enum to the actual file path
 			static AssetFolderAndName assetPaths[] = {
-				AssetFolderAndName(Path(EXAMPLE_DATA_PATH) + "Particles/", "VectorField.fga")
+				AssetFolderAndName("Particles/", "VectorField.fga")
 			};
 
 			const AssetFolderAndName& assetFolderAndName = assetPaths[(u32)type];
-			const Path& sourceAssetPath = Path::Combine(assetFolderAndName.Folder, assetFolderAndName.Name);
+			const Path& virtualAssetPath = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder, assetFolderAndName.Name);
 
 			// Attempt to load the previously processed asset
-			Path assetPath = sourceAssetPath;
-			assetPath.SetExtension(sourceAssetPath.GetExtension() + ".asset");
-
-			TResourceHandle<T> resource = GetResources().Load<T>(assetPath);
+			TResourceHandle<T> resource = GetResources().Load<T>(virtualAssetPath, ResourceLoadOptions(false));
 			if(resource == nullptr) // Shader file doesn't exist, import from the source file.
 			{
+				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
 				resource = GetImporter().Import<T>(sourceAssetPath);
 
 				// Save for later use, so we don't have to import on the next run.
-				GetResources().Save(resource, assetPath, true);
-				GetResources().SaveAsSinglePackage(resource, assetFolderAndName.Folder, assetFolderAndName.Name);
+				ResourceSaveOptions resourceSaveOptions;
+				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				// Register with manifest, if one is present. Manifest allows the engine to find the resource even after
-				// the application was restarted, which is important if resource was referenced in some serialized object.
-				if(manifest)
-					manifest->RegisterResource(resource.GetId(), assetPath);
+				GetResources().SaveAsSinglePackage(resource, assetFolderAndName.Folder, assetFolderAndName.Name, resourceSaveOptions);
 			}
 
 			return resource;

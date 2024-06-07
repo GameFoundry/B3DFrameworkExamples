@@ -329,6 +329,9 @@ int main()
 	VideoMode videoMode(kWindowWidth, kWindowHeight);
 	Application::StartUp(videoMode, "Example", false);
 
+	// Load packages so we can find previously saved resources
+	ExampleFramework::LoadPackages();
+
 	// Register buttons for controlling the example
 	SetupInput();
 
