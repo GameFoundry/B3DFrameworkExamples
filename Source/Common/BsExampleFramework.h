@@ -3,7 +3,6 @@
 #include "BsPrerequisites.h"
 #include "Reflection/BsRTTIType.h"
 #include "Resources/BsResources.h"
-#include "Resources/BsResourceManifest.h"
 #include "Mesh/BsMesh.h"
 #include "Importer/BsImporter.h"
 #include "Importer/BsMeshImportOptions.h"
@@ -355,10 +354,6 @@ namespace bs
 
 			return resource;
 		}
-
-	private:
-		static SPtr<ResourceManifest> manifest;
 	};
 
-	SPtr<ResourceManifest> ExampleFramework::manifest;
 } // namespace bs
