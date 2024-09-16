@@ -48,7 +48,7 @@ namespace bs
 		/** Triggered once per frame. */
 		void Update() override
 		{
-			const float time = GetTime().GetTime();
+			const float time = GetTime().GetRealTimeInSeconds();
 
 			const float x = cos(time);
 			const float z = sin(time);

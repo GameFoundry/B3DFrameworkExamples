@@ -611,7 +611,7 @@ void main()
 
 			Matrix4 view = Matrix4::View(cameraPos, cameraRot);
 
-			Quaternion rotation(Vector3::kUnitY, Degree(GetTime().GetTime() * 90.0f));
+			Quaternion rotation(Vector3::kUnitY, Degree(GetTime().GetRealTimeInSeconds() * 90.0f));
 			Matrix4 world = Matrix4::TRS(Vector3::kZero, rotation, Vector3::kOne);
 
 			Matrix4 viewProj = proj * view * world;
