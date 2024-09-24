@@ -103,22 +103,22 @@ namespace bs
 			auto inputConfig = GetVirtualInput().GetConfiguration();
 
 			// Camera controls for buttons (digital 0-1 input, e.g. keyboard or gamepad button)
-			inputConfig->RegisterButton("Forward", BC_W);
-			inputConfig->RegisterButton("Back", BC_S);
-			inputConfig->RegisterButton("Left", BC_A);
-			inputConfig->RegisterButton("Right", BC_D);
-			inputConfig->RegisterButton("Forward", BC_UP);
-			inputConfig->RegisterButton("Back", BC_DOWN);
-			inputConfig->RegisterButton("Left", BC_LEFT);
-			inputConfig->RegisterButton("Right", BC_RIGHT);
-			inputConfig->RegisterButton("FastMove", BC_LSHIFT);
-			inputConfig->RegisterButton("RotateObj", BC_MOUSE_LEFT);
-			inputConfig->RegisterButton("RotateCam", BC_MOUSE_RIGHT);
+			inputConfig->RegisterButton("Forward", ButtonCode::W);
+			inputConfig->RegisterButton("Back", ButtonCode::S);
+			inputConfig->RegisterButton("Left", ButtonCode::A);
+			inputConfig->RegisterButton("Right", ButtonCode::D);
+			inputConfig->RegisterButton("Forward", ButtonCode::ArrowUp);
+			inputConfig->RegisterButton("Back", ButtonCode::ArrowDown);
+			inputConfig->RegisterButton("Left", ButtonCode::ArrowLeft);
+			inputConfig->RegisterButton("Right", ButtonCode::ArrowRight);
+			inputConfig->RegisterButton("FastMove", ButtonCode::LeftShift);
+			inputConfig->RegisterButton("RotateObj", ButtonCode::MouseLeft);
+			inputConfig->RegisterButton("RotateCam", ButtonCode::MouseRight);
 
 			// Camera controls for axes (analog input, e.g. mouse or gamepad thumbstick)
 			// These return values in [-1.0, 1.0] range.
-			inputConfig->RegisterAxis("Horizontal", VIRTUAL_AXIS_DESC((u32)InputAxis::MouseX));
-			inputConfig->RegisterAxis("Vertical", VIRTUAL_AXIS_DESC((u32)InputAxis::MouseY));
+			inputConfig->RegisterAxis("Horizontal", VirtualAxisCreateInformation((u32)InputAxis::MouseX));
+			inputConfig->RegisterAxis("Vertical", VirtualAxisCreateInformation((u32)InputAxis::MouseY));
 		}
 
 		/**

@@ -299,7 +299,7 @@ namespace bs
 
 		// Register a key for toggling between different materials
 		auto inputConfig = GetVirtualInput().GetConfiguration();
-		inputConfig->RegisterButton("SwitchMaterial", BC_Q);
+		inputConfig->RegisterButton("SwitchMaterial", ButtonCode::Q);
 
 		GetVirtualInput().OnButtonUp.Connect(
 			[](const VirtualButton& btn, u32 deviceIdx)

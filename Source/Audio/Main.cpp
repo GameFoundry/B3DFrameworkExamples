@@ -162,17 +162,17 @@ namespace bs
 									{
 			switch(event.ButtonCode)
 			{
-			case BC_1:
+			case ButtonCode::Key1:
 				// Start or resume playing music, if not already playing. Stop the ambient sound playback.
 				environmentSource->Stop();
 				musicSource->Play();
 				break;
-			case BC_2:
+			case ButtonCode::Key2:
 				// Start playing ambient sound, if not already playing. Pause music playback.
 				musicSource->Pause();
 				environmentSource->Play();
 				break;
-			case BC_MOUSE_LEFT:
+			case ButtonCode::MouseLeft:
 				// Play a one-shot sound at origin. We don't use an AudioSource component because it's a short sound cue
 				// that we don't require additional control over.
 				GetAudio().Play(cueClip, Vector3::kZero);
