@@ -174,7 +174,7 @@ namespace bs
 			// Create the vector path
 			gTestPath = bs::VectorPath::CreateShared();
 
-			gTestPath->DrawRoundedRectangle(Rect2(200, 200, 200, 200), 20.0f)
+			gTestPath->DrawRoundedRectangle(Area2(200, 200, 200, 200), 20.0f)
 				.ClosePath()
 				.SetFillPaint(Color::kRed)
 				.SetStrokePaint(Color::kRed)
@@ -215,7 +215,7 @@ namespace bs
 				.DrawStroke();
 
 			// Shape with holes
-			gTestPath->DrawRoundedRectangle(Rect2(200, 500, 200, 200), 20.0f)
+			gTestPath->DrawRoundedRectangle(Area2(200, 500, 200, 200), 20.0f)
 				.DrawEllipse(Vector2(200.0f, 600.0f), Vector2(50.0f, 50.0f))
 				.SetSolidity(VectorGraphicsPathSolidity::Hole) // Affects the previous path
 				.ClosePath()
@@ -234,7 +234,7 @@ namespace bs
 				.SetFillPaint(Color::kBansheeOrange)
 				.DrawFill();
 
-			gTestPath->DrawRoundedRectangle(Rect2(800, 400, 100, 100), 20.0f)
+			gTestPath->DrawRoundedRectangle(Area2(800, 400, 100, 100), 20.0f)
 				.ClosePath()
 				.SetAntialiasShapes(false)
 				.SetFillPaint(Color::kRed)
@@ -248,7 +248,7 @@ namespace bs
 				.DrawStroke();
 
 			// Rectangle with border
-			gTestPath->DrawRectangle(Rect2(800, 600, 149, 89))
+			gTestPath->DrawRectangle(Area2(800, 600, 149, 89))
 				.ClosePath()
 				.SetFillPaint(Color::kRed)
 				.DrawFill()
@@ -452,7 +452,7 @@ namespace bs
 				}
 
 				// Fill
-				gTestPath->DrawRoundedRectangle(Rect2(innerX, innerY, innerWidth, innerHeight), (float)rules.BorderTopLeftRadius, (float)rules.BorderTopRightRadius, (float)rules.BorderBottomLeftRadius, (float)rules.BorderBottomRightRadius);
+				gTestPath->DrawRoundedRectangle(Area2(innerX, innerY, innerWidth, innerHeight), (float)rules.BorderTopLeftRadius, (float)rules.BorderTopRightRadius, (float)rules.BorderBottomLeftRadius, (float)rules.BorderBottomRightRadius);
 				gTestPath->SetFillPaint(Color::kRed);
 				//gTestPath->SetAlpha(0.5f);
 				gTestPath->DrawFill();
@@ -504,7 +504,7 @@ namespace bs
 
 			if(gCheckmarkPathRenderable != nullptr)
 			{
-				commandBuffer->SetViewport(Rect2(0.0f, 0.0f, (float)kCheckmarkWidth / (float)kWindowWidth, (float)kCheckmarkHeight / (float)kWindowHeight));
+				commandBuffer->SetViewport(Area2(0.0f, 0.0f, (float)kCheckmarkWidth / (float)kWindowWidth, (float)kCheckmarkHeight / (float)kWindowHeight));
 				commandBuffer->ClearViewport(FBT_COLOR);
 				gCheckmarkPathRenderable->Render(*commandBuffer);
 			}
@@ -516,7 +516,7 @@ namespace bs
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
-			commandBuffer->SetViewport(Rect2(0.0f, 0.0f, 1.0f, 1.0f));
+			commandBuffer->SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
 			GetRendererUtility().Blit(*commandBuffer, colorTexture);
 
 			// Submit the command buffer
