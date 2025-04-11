@@ -70,7 +70,7 @@ namespace bs
 
 		// Create a scroll area with items
 #if 1
-		GUIScrollArea* scrollArea = GUIScrollArea::Create(ScrollBarType::AlwaysShow, ScrollBarType::NeverShow);
+		GUIScrollArea* scrollArea = GUIScrollArea::Create(GUIScrollAreaContent(ScrollBarType::AlwaysShow, ScrollBarType::NeverShow));
 		mainPanel->AddElement(scrollArea);
 		scrollArea->SetEnableCulling(true);
 
