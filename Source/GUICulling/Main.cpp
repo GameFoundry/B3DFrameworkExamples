@@ -28,6 +28,8 @@ namespace bs
 	u32 kWindowWidth = 1280;
 	u32 kWindowHeight = 720;
 
+	static constexpr u32 kItemCount = 100;
+
 	/** Set up the GUI elements and the camera. */
 	void SetUpGui()
 	{
@@ -47,13 +49,13 @@ namespace bs
 
 		HSceneObject guiWidgetSceneObject = SceneObject::Create("GUI");
 		HGUIWidget guiWidget = guiWidgetSceneObject->AddComponent<CGUIWidget>(camera);
+		GUIPanel* mainPanel = guiWidget->GetPanel();
 
 		// Create a vertical GUI layout with items
-		GUIPanel* mainPanel = guiWidget->GetPanel();
+#if 1
 		GUILayoutY* itemLayout = mainPanel->AddNewElement<GUILayoutY>();
 		itemLayout->SetEnableCulling(true);
 
-		static constexpr u32 kItemCount = 100;
 		for(u32 itemIndex = 0; itemIndex < kItemCount; itemIndex++)
 		{
 			itemLayout->AddNewElement<GUIButton>(HString("Click me!"));
@@ -64,6 +66,21 @@ namespace bs
 
 		itemLayout->SetWidth(300);
 		itemLayout->SetHeight(200);
+#endif
+
+		// Create a scroll area with items
+#if 1
+		GUIScrollArea* scrollArea = GUIScrollArea::Create(ScrollBarType::AlwaysShow, ScrollBarType::NeverShow);
+		mainPanel->AddElement(scrollArea);
+		scrollArea->SetEnableCulling(true);
+
+		for(u32 itemIndex = 0; itemIndex < kItemCount; itemIndex++)
+			scrollArea->GetLayout().AddNewElement<GUIButton>(HString("Click me!"));
+
+		scrollArea->SetPosition(400, 0);
+		scrollArea->SetWidth(300);
+		scrollArea->SetHeight(200);
+#endif
 	}
 } // namespace bs
 
