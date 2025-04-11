@@ -33,14 +33,14 @@ namespace bs
 		SetName("CameraFlyer");
 
 		// Get handles for key bindings. Actual keys attached to these bindings will be registered during app start-up.
-		mMoveForward = VirtualButton("Forward");
-		mMoveBack = VirtualButton("Back");
-		mMoveLeft = VirtualButton("Left");
-		mMoveRight = VirtualButton("Right");
-		mFastMove = VirtualButton("FastMove");
-		mRotateCam = VirtualButton("RotateCam");
-		mHorizontalAxis = VirtualAxis("Horizontal");
-		mVerticalAxis = VirtualAxis("Vertical");
+		mMoveForward = VirtualInput::GetOrCreateVirtualButton("Forward");
+		mMoveBack = VirtualInput::GetOrCreateVirtualButton("Back");
+		mMoveLeft = VirtualInput::GetOrCreateVirtualButton("Left");
+		mMoveRight = VirtualInput::GetOrCreateVirtualButton("Right");
+		mFastMove = VirtualInput::GetOrCreateVirtualButton("FastMove");
+		mRotateCam = VirtualInput::GetOrCreateVirtualButton("RotateCam");
+		mHorizontalAxis = VirtualInput::GetOrCreateVirtualAxis("Horizontal");
+		mVerticalAxis = VirtualInput::GetOrCreateVirtualAxis("Vertical");
 	}
 
 	void CameraFlyer::Update()

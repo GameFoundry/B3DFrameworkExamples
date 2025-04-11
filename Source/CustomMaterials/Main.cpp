@@ -295,16 +295,16 @@ namespace bs
 		// Registers a default set of input controls
 		ExampleFramework::SetupInputConfig();
 
-		static VirtualButton SwitchMaterialButton("SwitchMaterial");
+		VirtualButton switchMaterialButton = VirtualInput::GetOrCreateVirtualButton("SwitchMaterial");
 
 		// Register a key for toggling between different materials
 		auto inputConfig = GetVirtualInput().GetConfiguration();
 		inputConfig->RegisterButton("SwitchMaterial", ButtonCode::Q);
 
 		GetVirtualInput().OnButtonUp.Connect(
-			[](const VirtualButton& btn, u32 deviceIdx)
+			[switchMaterialButton](const VirtualButton& btn, u32 deviceIdx)
 			{
-				if(btn == SwitchMaterialButton)
+				if(btn == switchMaterialButton)
 					SwitchMaterial();
 			});
 	}

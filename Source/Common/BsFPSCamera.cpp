@@ -19,8 +19,8 @@ namespace bs
 		SetName("FPSCamera");
 
 		// Get handles for key bindings. Actual keys attached to these bindings will be registered during app start-up.
-		mHorizontalAxis = VirtualAxis("Horizontal");
-		mVerticalAxis = VirtualAxis("Vertical");
+		mHorizontalAxis = VirtualInput::GetOrCreateVirtualAxis("Horizontal");
+		mVerticalAxis = VirtualInput::GetOrCreateVirtualAxis("Vertical");
 
 		// Determine initial yaw and pitch
 		Quaternion rotation = SO()->GetTransform().GetRotation();

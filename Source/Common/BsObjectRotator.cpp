@@ -28,9 +28,9 @@ namespace bs
 		SetName("ObjectRotator");
 
 		// Get handles for key bindings. Actual keys attached to these bindings will be registered during app start-up.
-		mRotateObj = VirtualButton("RotateObj");
-		mHorizontalAxis = VirtualAxis("Horizontal");
-		mVerticalAxis = VirtualAxis("Vertical");
+		mRotateObj = VirtualInput::GetOrCreateVirtualButton("RotateObj");
+		mHorizontalAxis = VirtualInput::GetOrCreateVirtualAxis("Horizontal");
+		mVerticalAxis = VirtualInput::GetOrCreateVirtualAxis("Vertical");
 
 		// Determine initial yaw and pitch
 		Quaternion rotation = SO()->GetTransform().GetRotation();
