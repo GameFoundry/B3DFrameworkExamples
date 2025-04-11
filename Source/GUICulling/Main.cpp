@@ -1,0 +1,103 @@
+// Framework includes
+#include "BsApplication.h"
+#include "Resources/BsResources.h"
+#include "Resources/BsBuiltinResources.h"
+#include "Material/BsMaterial.h"
+#include "Components/BsCCamera.h"
+#include "GUI/BsCGUIWidget.h"
+#include "GUI/BsGUIPanel.h"
+#include "GUI/BsGUILayoutX.h"
+#include "GUI/BsGUILayoutY.h"
+#include "GUI/BsGUILabel.h"
+#include "GUI/BsGUIButton.h"
+#include "GUI/BsGUIInputBox.h"
+#include "GUI/BsGUIListBox.h"
+#include "GUI/BsGUIToggle.h"
+#include "GUI/BsGUIScrollArea.h"
+#include "GUI/BsGUISpace.h"
+#include "RenderAPI/BsRenderWindow.h"
+#include "Scene/BsSceneObject.h"
+#include "BsExampleFramework.h"
+#include "GUI/StyleSheet/BsGUIStyleSheet.h"
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// This is a playground example for testing the GUI culling functionality.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+namespace bs
+{
+	u32 kWindowWidth = 1280;
+	u32 kWindowHeight = 720;
+
+	/** Set up the GUI elements and the camera. */
+	void SetUpGui()
+	{
+		// Set up camera & GUI widget
+		const SPtr<RenderWindow> applicationWindow = GetApplication().GetPrimaryWindow();
+		HSceneObject cameraSceneObject = SceneObject::Create("SceneCamera");
+
+		HCamera camera = cameraSceneObject->AddComponent<CCamera>();
+		camera->GetViewport()->SetTarget(applicationWindow);
+
+		const Color gray = Color(51 / 255.0f, 51 / 255.0f, 51 / 255.0f);
+		camera->GetViewport()->SetClearColorValue(gray);
+
+		const SPtr<RenderSettings>& renderSettings = camera->GetRenderSettings();
+		renderSettings->OverlayOnly = true;
+		camera->SetRenderSettings(renderSettings);
+
+		HSceneObject guiWidgetSceneObject = SceneObject::Create("GUI");
+		HGUIWidget guiWidget = guiWidgetSceneObject->AddComponent<CGUIWidget>(camera);
+
+		// Create a vertical GUI layout with items
+		GUIPanel* mainPanel = guiWidget->GetPanel();
+		GUILayoutY* itemLayout = mainPanel->AddNewElement<GUILayoutY>();
+		itemLayout->SetEnableCulling(true);
+
+		static constexpr u32 kItemCount = 100;
+		for(u32 itemIndex = 0; itemIndex < kItemCount; itemIndex++)
+		{
+			itemLayout->AddNewElement<GUIButton>(HString("Click me!"));
+		}
+
+		// Add a flexible space ensuring all the elements get pushed to the top of the layout
+		itemLayout->AddNewElement<GUIFlexibleSpace>();
+
+		itemLayout->SetWidth(300);
+		itemLayout->SetHeight(200);
+	}
+} // namespace bs
+
+/** Main entry point into the application. */
+#if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
+#	include <windows.h>
+
+int CALLBACK WinMain(
+	_In_ HINSTANCE hInstance,
+	_In_ HINSTANCE hPrevInstance,
+	_In_ LPSTR lpCmdLine,
+	_In_ int nCmdShow)
+#else
+int main()
+#endif
+{
+	using namespace bs;
+
+	// Initializes the application and creates a window with the specified properties
+	VideoMode videoMode(kWindowWidth, kWindowHeight);
+	Application::StartUp(videoMode, "Example", false);
+
+	// Load packages so we can find previously saved resources
+	ExampleFramework::LoadPackages();
+
+	// Set up the GUI elements
+	SetUpGui();
+
+	// Runs the main loop that does most of the work. This method will exit when user closes the main
+	// window or exits in some other way.
+	Application::Instance().RunMainLoop();
+
+	// When done, clean up
+	Application::ShutDown();
+
+	return 0;
+}
