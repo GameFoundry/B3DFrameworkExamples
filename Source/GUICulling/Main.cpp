@@ -75,7 +75,7 @@ namespace bs
 		scrollArea->SetEnableCulling(true);
 
 		for(u32 itemIndex = 0; itemIndex < kItemCount; itemIndex++)
-			scrollArea->GetLayout().AddNewElement<GUIButton>(HString("Click me!"));
+			scrollArea->GetLayout()->AddNewElement<GUIButton>(HString("Click me!"));
 
 		scrollArea->SetPosition(400, 0);
 		scrollArea->SetWidth(300);

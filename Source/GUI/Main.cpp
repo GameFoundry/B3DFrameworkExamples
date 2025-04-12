@@ -222,13 +222,13 @@ namespace bs
 		GUIScrollArea* scrollArea = mainPanel->AddNewElement<GUIScrollArea>();
 
 		// Scroll areas have a vertical layout we can append elements to, same as with a normal layout
-		GUILayout& scrollLayout = scrollArea->GetLayout();
+		GUILayout* scrollLayout = scrollArea->GetLayout();
 
 		for(u32 i = 0; i < 15; i++)
-			scrollLayout.AddNewElement<GUIButton>(HString("Click me!"));
+			scrollLayout->AddNewElement<GUIButton>(HString("Click me!"));
 
 		scrollArea->SetPosition(565, 50);
-		scrollArea->SetSize(130, 200);
+		scrollArea->SetSize(GUILogicalSize(130, 200));
 
 		// Add a header
 		GUILabel* scrollAreaLbl = mainPanel->AddNewElement<GUILabel>(HString("Scroll area"), "HeaderLabelStyle");
