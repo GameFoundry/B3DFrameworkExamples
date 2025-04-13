@@ -101,7 +101,7 @@ namespace bs
 			B3D_LOG(Info, Uncategorized, "Button clicked!"); });
 
 		button->SetPosition(10, 50);
-		button->SetSize(100, 30);
+		button->SetSize(GUILogicalSize(100, 30));
 
 		// Toggleable button
 		GUIToggle* toggle = mainPanel->AddNewElement<GUIToggle>();
@@ -162,7 +162,7 @@ namespace bs
 		GUIButton* iconButton = mainPanel->AddNewElement<GUIButton>(buttonContent);
 
 		iconButton->SetPosition(10, 210);
-		iconButton->SetSize(70, 70);
+		iconButton->SetSize(GUILogicalSize(70, 70));
 
 		/////////////////////////// Header label /////////////////////////////////
 		// Add a header for the controls we added in the previous section.
