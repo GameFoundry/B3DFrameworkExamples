@@ -25,8 +25,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace bs
 {
-	u32 kWindowWidth = 1280;
-	u32 kWindowHeight = 720;
+	u32 kWindowWidth = 1600;
+	u32 kWindowHeight = 600;
 
 	static constexpr u32 kItemCount = 100;
 
@@ -80,6 +80,30 @@ namespace bs
 		scrollArea->SetPosition(400, 0);
 		scrollArea->SetWidth(300);
 		scrollArea->SetHeight(200);
+#endif
+
+		// Create a draggable scroll area with items
+#if 1
+		GUIScrollArea* draggableScrollArea = GUIScrollArea::Create(GUIScrollAreaContent(ScrollBarType::NeverShow, ScrollBarType::NeverShow, ScrollAreaLayoutType::Panel));
+		mainPanel->AddElement(draggableScrollArea);
+		draggableScrollArea->SetEnableCulling(true);
+
+		static constexpr GUILogicalUnit kItemSpacing = 10;
+		static constexpr GUILogicalSize kItemSize(100, 20);
+		for(u32 itemIndexY = 0; itemIndexY < kItemCount; itemIndexY++)
+		{
+			for(u32 itemIndexX = 0; itemIndexX < kItemCount; itemIndexX++)
+			{
+				const GUILogicalPoint itemPosition((kItemSize.Width + kItemSpacing) * itemIndexX, (kItemSize.Height + kItemSpacing) * itemIndexY);
+				GUIButton* const button = draggableScrollArea->GetLayout()->AddNewElement<GUIButton>(HString("Click me!"));
+				button->SetPosition(itemPosition);
+				button->SetSize(kItemSize);
+			}
+		}
+
+		draggableScrollArea->SetPosition(800, 0);
+		draggableScrollArea->SetWidth(300);
+		draggableScrollArea->SetHeight(200);
 #endif
 	}
 } // namespace bs
