@@ -28,14 +28,14 @@ namespace b3d
 	u32 kCheckmarkHeight = 1024;
 
 	// Declare the methods we'll use to do work on the render thread. Normally methods and objects usable on the render thread
-	// will be in the "ct". This is not always true, especially for thread-safe objects, but it is almost always true if
+	// will be in the "render" namespace. This is not always true, especially for thread-safe objects, but it is almost always true if
 	// an object has variants of its type usable from main and render threads.
-	namespace ct
+	namespace render
 	{
 		void Setup(const SPtr<RenderWindow>& renderWindow);
 		void Render();
 		void Shutdown();
-	} // namespace ct
+	} // namespace render
 
 	// Override the default Application so we can get notified when engine starts-up, shuts-down and when it executes
 	// every frame
@@ -59,18 +59,18 @@ namespace b3d
 			SPtr<RenderWindow> renderWindow = GetPrimaryWindow();
 
 			// Get the version of the render window usable on the render thread, and send it along to setup()
-			SPtr<ct::RenderWindow> renderWindowRenderProxy = B3DGetRenderProxy(renderWindow);
+			SPtr<render::RenderWindow> renderWindowRenderProxy = B3DGetRenderProxy(renderWindow);
 
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the render
 			// thread), we don't call the method directly, but rather queue it for execution using the RenderThread class.
-			GetRenderThread().PostCommand(std::bind(&ct::Setup, renderWindowRenderProxy));
+			GetRenderThread().PostCommand(std::bind(&render::Setup, renderWindowRenderProxy));
 		}
 
 		// Called when the engine is about to be shut down
 		void OnShutDown() override
 		{
 			// Queue the method for execution on the render thread
-			GetRenderThread().PostCommand(&ct::Shutdown);
+			GetRenderThread().PostCommand(&render::Shutdown);
 
 			// Shut-down engine components
 			Application::OnShutDown();
@@ -80,7 +80,7 @@ namespace b3d
 		void PreUpdate() override
 		{
 			// Queue the method for execution on the render thread
-			GetRenderThread().PostCommand(&ct::Render);
+			GetRenderThread().PostCommand(&render::Render);
 
 			// Call the default version of this method to handle normal functionality
 			Application::PreUpdate();
@@ -122,7 +122,7 @@ int main()
 
 namespace b3d
 {
-	namespace ct
+	namespace render
 	{
 		// Fields where we'll store the resources required during calls to Render(). These are initialized in Setup()
 		// and cleaned up in ShutDown()
@@ -534,5 +534,5 @@ namespace b3d
 			gRenderTarget = nullptr;
 			gRenderWindow = nullptr;
 		}
-	} // namespace ct
+	} // namespace render
 } // namespace b3d
