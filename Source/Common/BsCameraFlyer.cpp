@@ -6,7 +6,7 @@
 #include "Components/BsCCamera.h"
 #include "Platform/BsCursor.h"
 
-namespace bs
+namespace b3d
 {
 	const float CameraFlyer::kStartSpeed = 40.0f;
 	const float CameraFlyer::kTopSpeed = 130.0f;
@@ -123,4 +123,4 @@ namespace bs
 			SO()->Move(velocity * frameDelta);
 		}
 	}
-} // namespace bs
+} // namespace b3d

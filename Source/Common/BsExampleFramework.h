@@ -12,7 +12,7 @@
 #include "FileSystem/BsFileSystem.h"
 #include "Input/BsVirtualInput.h"
 
-namespace bs
+namespace b3d
 {
 	/** A list of mesh assets provided with the example projects. */
 	enum class ExampleMesh
@@ -356,4 +356,4 @@ namespace bs
 		}
 	};
 
-} // namespace bs
+} // namespace b3d

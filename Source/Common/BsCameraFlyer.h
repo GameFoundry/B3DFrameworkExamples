@@ -5,7 +5,7 @@
 #include "Math/BsMath.h"
 #include "Input/BsVirtualInput.h"
 
-namespace bs
+namespace b3d
 {
 	/** Component that controls movement and rotation of the scene object it's attached to. */
 	class CameraFlyer : public Component
@@ -38,4 +38,4 @@ namespace bs
 		static const float kFastModeMultiplier; /**< Multiplier applied to the speed when the fast move button is held. */
 		static const float kRotationSpeed; /**< Determines speed of camera rotation. */
 	};
-} // namespace bs
+} // namespace b3d

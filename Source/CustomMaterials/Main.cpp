@@ -35,7 +35,7 @@
 // callback that switches between the materials when the user presses the relevant key, and adds a bit of GUI to let the
 // user know which key to press.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace bs
+namespace b3d
 {
 	u32 kWindowWidth = 1280;
 	u32 kWindowHeight = 720;
@@ -308,7 +308,7 @@ namespace bs
 					SwitchMaterial();
 			});
 	}
-} // namespace bs
+} // namespace b3d
 
 /** Main entry point into the application. */
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -323,7 +323,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Initializes the application and creates a window with the specified properties
 	VideoMode videoMode(kWindowWidth, kWindowHeight);

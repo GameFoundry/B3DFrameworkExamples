@@ -5,7 +5,7 @@
 #include "Scene/BsSceneObject.h"
 #include "Platform/BsCursor.h"
 
-namespace bs
+namespace b3d
 {
 	const float ObjectRotator::ROTATION_SPEED = 1.0f;
 
@@ -80,4 +80,4 @@ namespace bs
 			SO()->SetRotation(camRot);
 		}
 	}
-} // namespace bs
+} // namespace b3d

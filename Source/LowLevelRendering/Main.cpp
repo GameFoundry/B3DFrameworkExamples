@@ -32,7 +32,7 @@
 // frame it binds the necessary rendering resources and executes the draw call.
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace bs
+namespace b3d
 {
 	u32 kWindowWidth = 1280;
 	u32 kWindowHeight = 720;
@@ -96,7 +96,7 @@ namespace bs
 			Application::PreUpdate();
 		}
 	};
-} // namespace bs
+} // namespace b3d
 
 // Main entry point into the application
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -111,7 +111,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Define a video mode for the resolution of the primary rendering window.
 	VideoMode videoMode(kWindowWidth, kWindowHeight);
@@ -130,7 +130,7 @@ int main()
 	return 0;
 }
 
-namespace bs
+namespace b3d
 {
 	namespace ct
 	{
@@ -623,4 +623,4 @@ void main()
 			return viewProj;
 		}
 	} // namespace ct
-} // namespace bs
+} // namespace b3d

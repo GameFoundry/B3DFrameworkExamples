@@ -19,7 +19,7 @@
 #include "Renderer/BsRendererManager.h"
 #include "VectorGraphics/BsVectorGraphics.h"
 
-namespace bs
+namespace b3d
 {
 	u32 kWindowWidth = 1280;
 	u32 kWindowHeight = 1280;
@@ -86,7 +86,7 @@ namespace bs
 			Application::PreUpdate();
 		}
 	};
-} // namespace bs
+} // namespace b3d
 
 // Main entry point into the application
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -101,7 +101,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Define a video mode for the resolution of the primary rendering window.
 	VideoMode videoMode(kWindowWidth, kWindowHeight);
@@ -120,14 +120,14 @@ int main()
 	return 0;
 }
 
-namespace bs
+namespace b3d
 {
 	namespace ct
 	{
 		// Fields where we'll store the resources required during calls to Render(). These are initialized in Setup()
 		// and cleaned up in ShutDown()
-		SPtr<bs::VectorPath> gTestPath;
-		SPtr<bs::VectorPath> gCheckmarkPath;
+		SPtr<b3d::VectorPath> gTestPath;
+		SPtr<b3d::VectorPath> gCheckmarkPath;
 		SPtr<VectorPathRenderable> gTestPathRenderable;
 		SPtr<VectorPathRenderable> gCheckmarkPathRenderable;
 
@@ -172,7 +172,7 @@ namespace bs
 			gRenderTarget = fnCreateRenderTexture(kWindowWidth, kWindowHeight);
 
 			// Create the vector path
-			gTestPath = bs::VectorPath::CreateShared();
+			gTestPath = b3d::VectorPath::CreateShared();
 
 			gTestPath->DrawRoundedRectangle(Area2(200, 200, 200, 200), 20.0f)
 				.ClosePath()
@@ -535,4 +535,4 @@ namespace bs
 			gRenderWindow = nullptr;
 		}
 	} // namespace ct
-} // namespace bs
+} // namespace b3d

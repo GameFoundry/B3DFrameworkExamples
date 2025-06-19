@@ -9,7 +9,7 @@
 #include "Scene/BsSceneManager.h"
 #include "Utility/BsTime.h"
 
-namespace bs
+namespace b3d
 {
 	/** Initial movement speed. */
 	constexpr float START_SPEED = 4.0f; // m/s
@@ -97,4 +97,4 @@ namespace bs
 		Vector3 gravity = physicsScene->GetGravity();
 		mController->Move((velocity + gravity) * frameDelta);
 	}
-} // namespace bs
+} // namespace b3d

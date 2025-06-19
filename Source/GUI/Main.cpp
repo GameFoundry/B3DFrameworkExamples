@@ -33,7 +33,7 @@
 // and size elements, as well as scroll areas. Finally, it demonstrates a more complex example of creating a custom style,
 // by creating a button with custom textures and font.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace bs
+namespace b3d
 {
 	u32 kWindowWidth = 1280;
 	u32 kWindowHeight = 720;
@@ -246,7 +246,7 @@ namespace bs
 		GUILabel* customButtonLbl = mainPanel->AddNewElement<GUILabel>(HString("Custom button"), "HeaderLabelStyle");
 		customButtonLbl->SetPosition(800, 10);
 	}
-} // namespace bs
+} // namespace b3d
 
 /** Main entry point into the application. */
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -261,7 +261,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Initializes the application and creates a window with the specified properties
 	VideoMode videoMode(kWindowWidth, kWindowHeight);

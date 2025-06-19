@@ -4,7 +4,7 @@
 #include "Scene/BsSceneObject.h"
 #include "Physics/BsPhysics.h"
 
-namespace bs
+namespace b3d
 {
 	/** Determines speed of camera rotation. */
 	constexpr float ROTATION_SPEED = 3.0f;
@@ -77,4 +77,4 @@ namespace bs
 		}
 	}
 
-} // namespace bs
+} // namespace b3d

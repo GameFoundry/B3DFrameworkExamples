@@ -5,7 +5,7 @@
 #include "Math/BsMath.h"
 #include "Input/BsVirtualInput.h"
 
-namespace bs
+namespace b3d
 {
 	/** Component that controls rotation of its scene object. */
 	class ObjectRotator : public Component
@@ -27,4 +27,4 @@ namespace bs
 
 		static const float ROTATION_SPEED; /**< Determines speed for rotation, in degrees per second. */
 	};
-} // namespace bs
+} // namespace b3d

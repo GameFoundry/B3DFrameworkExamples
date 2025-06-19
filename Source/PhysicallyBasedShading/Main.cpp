@@ -22,7 +22,7 @@
 // with CameraFlyer and ObjectRotator components that allow the user to fly around the scene and rotate the 3D model.
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace bs
+namespace b3d
 {
 	u32 kWindowWidth = 1280;
 	u32 kWindowHeight = 720;
@@ -134,7 +134,7 @@ namespace bs
 		sceneCameraSO->SetPosition(Vector3(0.2f, 0.05f, 1.4f));
 		sceneCameraSO->LookAt(Vector3(0.2f, 0.05f, 0.0f));
 	}
-} // namespace bs
+} // namespace b3d
 
 /** Main entry point into the application. */
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -149,7 +149,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Initializes the application and creates a window with the specified properties
 	VideoMode videoMode(kWindowWidth, kWindowHeight);

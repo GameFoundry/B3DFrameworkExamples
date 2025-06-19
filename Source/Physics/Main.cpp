@@ -37,7 +37,7 @@
 // user to control the character. Finally an input callback is hooked up that shoots spheres when user presses the left
 // mouse button.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace bs
+namespace b3d
 {
 	constexpr float GROUND_PLANE_SCALE = 50.0f;
 
@@ -304,7 +304,7 @@ namespace bs
 		// Register the layout with the main GUI panel, placing the layout in top left corner of the screen by default
 		mainPanel->AddElement(vertLayout);
 	}
-} // namespace bs
+} // namespace b3d
 
 /** Main entry point into the application. */
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -319,7 +319,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Initializes the application and creates a window with the specified properties
 	VideoMode videoMode(kWindowWidth, kWindowHeight);

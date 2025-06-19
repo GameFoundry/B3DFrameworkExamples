@@ -4,7 +4,7 @@
 #include "Scene/BsComponent.h"
 #include "Input/BsVirtualInput.h"
 
-namespace bs
+namespace b3d
 {
 	/**
 	 * Component that controls movement through a character controller, used for first-person movement. The
@@ -31,4 +31,4 @@ namespace bs
 	};
 
 	using HFPSWalker = GameObjectHandle<FPSWalker>;
-} // namespace bs
+} // namespace b3d

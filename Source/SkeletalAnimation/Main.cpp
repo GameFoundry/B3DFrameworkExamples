@@ -25,7 +25,7 @@
 // component. The animation component start playing the animation clip we imported earlier. Finally it sets up a camera,
 // along with CameraFlyer component that allows the user to fly around the scene.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace bs
+namespace b3d
 {
 	u32 kWindowWidth = 1280;
 	u32 kWindowHeight = 720;
@@ -172,7 +172,7 @@ namespace bs
 		sceneCameraSO->SetPosition(Vector3(0.0f, 2.5f, -4.0f) * 0.65f);
 		sceneCameraSO->LookAt(Vector3(0, 1.5f, 0));
 	}
-} // namespace bs
+} // namespace b3d
 
 /** Main entry point into the application. */
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -187,7 +187,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Initializes the application and creates a window with the specified properties
 	VideoMode videoMode(kWindowWidth, kWindowHeight);

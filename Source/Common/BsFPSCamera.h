@@ -5,7 +5,7 @@
 #include "Math/BsDegree.h"
 #include "Input/BsVirtualInput.h"
 
-namespace bs
+namespace b3d
 {
 	/**
 	 * Component that controls rotation of the scene objects it's attached to through mouse input. Used for first person
@@ -39,4 +39,4 @@ namespace bs
 	};
 
 	using HFPSCamera = GameObjectHandle<FPSCamera>;
-} // namespace bs
+} // namespace b3d

@@ -40,7 +40,7 @@
 // particle systems, their creation wrapped in their own creation methods. Finally the cursor is hidden and quit on Esc
 // key press hooked up.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace bs
+namespace b3d
 {
 	constexpr float GROUND_PLANE_SCALE = 50.0f;
 
@@ -619,7 +619,7 @@ namespace bs
 		// And actually apply the GPU simulation settings
 		particleSystem->SetGpuSimulationSettings(gpuSimSettings);
 	}
-} // namespace bs
+} // namespace b3d
 
 /** Main entry point into the application. */
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -634,7 +634,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Initializes the application and creates a window with the specified properties
 	VideoMode videoMode(kWindowWidth, kWindowHeight);

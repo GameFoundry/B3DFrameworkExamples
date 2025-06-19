@@ -34,7 +34,7 @@
 // control the character. It then loads the required decal textures, sets up a decal material and initializes the actual
 // decal component. Finally the cursor is hidden and quit on Esc key press hooked up.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace bs
+namespace b3d
 {
 	constexpr float GROUND_PLANE_SCALE = 50.0f;
 
@@ -219,7 +219,7 @@ namespace bs
 				GetApplication().QuitRequested();
 			} });
 	}
-} // namespace bs
+} // namespace b3d
 
 /** Main entry point into the application. */
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -234,7 +234,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Initializes the application and creates a window with the specified properties
 	VideoMode videoMode(kWindowWidth, kWindowHeight);

@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This is a playground example for testing the GUI culling functionality.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace bs
+namespace b3d
 {
 	u32 kWindowWidth = 1600;
 	u32 kWindowHeight = 600;
@@ -106,7 +106,7 @@ namespace bs
 		draggableScrollArea->SetHeight(200);
 #endif
 	}
-} // namespace bs
+} // namespace b3d
 
 /** Main entry point into the application. */
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -121,7 +121,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Initializes the application and creates a window with the specified properties
 	VideoMode videoMode(kWindowWidth, kWindowHeight);

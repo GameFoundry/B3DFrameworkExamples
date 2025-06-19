@@ -28,7 +28,7 @@
 * CustomMaterials - Demonstrates how to use custom materials that override vertex, surface and lighting aspects of the renderer.
 * Decals - Demonstrates how to project decal textures onto other surfaces.
 * GUI - Demonstrates how to use the built-in GUI system. Demoes a variety of basic controls, the layout system and shows how to use styles to customize the look of GUI elements.
-* LowLevelRendering - Demonstrates how to use the low-level rendering system to manually issue rendering commands. This is similar to using DirectX/OpenGL/Vulkan, except it uses bs::framework's platform-agnostic rendering layer.
+* LowLevelRendering - Demonstrates how to use the low-level rendering system to manually issue rendering commands. This is similar to using DirectX/OpenGL/Vulkan, except it uses B3D Framework's platform-agnostic rendering layer.
 * Particles - Demonstrates how to use the particle system to render traditional billboard particles, 3D mesh particles and GPU simulated particles.
 * PhysicallyBasedRendering - Demonstrates the physically based renderer using the built-in shaders & lighting by rendering an object in a HDR environment.
 * Physics - Demonstrates the use of variety of physics related components, including a character controller, rigidbodies and colliders.

@@ -32,7 +32,7 @@
 // between the playback of the two audio sources. It also demonstrates how to play one-shot audio clips without the
 // AudioSource component. Finally, GUI is set up that lets the user know which input controls are available.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-namespace bs
+namespace b3d
 {
 	u32 kWindowWidth = 1280;
 	u32 kWindowHeight = 720;
@@ -209,7 +209,7 @@ namespace bs
 		// Register the layout with the main GUI panel, placing the layout in top left corner of the screen by default
 		mainPanel->AddElement(vertLayout);
 	}
-} // namespace bs
+} // namespace b3d
 
 /** Main entry point into the application. */
 #if B3D_PLATFORM == B3D_PLATFORM_ID_WIN32
@@ -224,7 +224,7 @@ int CALLBACK WinMain(
 int main()
 #endif
 {
-	using namespace bs;
+	using namespace b3d;
 
 	// Initializes the application and creates a window with the specified properties
 	VideoMode videoMode(kWindowWidth, kWindowHeight);
