@@ -61,7 +61,10 @@ namespace b3d
 		// Eliminate vertical movement
 		direction.Y = 0.0f;
 
-		const float frameDelta = GetTime().GetFixedFrameDelta();
+		const SPtr<SceneInstance> sceneInstance = SceneManager::Instance().GetMainScene();
+		B3D_ASSERT(sceneInstance != nullptr);
+
+		const float frameDelta = sceneInstance->GetTime().GetFixedFrameDelta();
 
 		// If a direction is chosen, normalize it to determine final direction.
 		if(direction.SquaredLength() != 0)
@@ -87,9 +90,6 @@ namespace b3d
 		float tooSmall = std::numeric_limits<float>::epsilon();
 		if(mCurrentSpeed > tooSmall)
 			velocity = direction * mCurrentSpeed;
-
-		const SPtr<SceneInstance> sceneInstance = SceneManager::Instance().GetMainScene();
-		B3D_ASSERT(sceneInstance != nullptr);
 
 		const SPtr<PhysicsScene> physicsScene = sceneInstance->GetPhysicsScene();
 
