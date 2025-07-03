@@ -7,6 +7,7 @@
 #include "BsApplication.h"
 #include "Physics/BsPhysics.h"
 #include "Scene/BsSceneManager.h"
+#include "Scene/BsSceneInstance.h"
 #include "Utility/BsTime.h"
 
 namespace b3d
