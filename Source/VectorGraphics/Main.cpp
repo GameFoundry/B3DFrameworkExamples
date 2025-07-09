@@ -43,7 +43,7 @@ namespace b3d
 	{
 	public:
 		// Pass along the start-up structure to the parent, we don't need to handle it
-		MyApplication(const START_UP_DESC& desc)
+		MyApplication(const ApplicationCreateInformation& desc)
 			: Application(desc)
 		{}
 
