@@ -163,7 +163,7 @@ namespace b3d
 				ResourceSaveOptions resourceSaveOptions;
 				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				GetResources().SaveAsSinglePackage(mesh, assetFolderAndName.Folder, assetFolderAndName.Name, resourceSaveOptions);
+				GetResources().SaveAsSinglePackage(mesh, Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 				return mesh;
 			}
 		}
@@ -249,7 +249,7 @@ namespace b3d
 				ResourceSaveOptions resourceSaveOptions;
 				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				GetResources().SaveAsSinglePackage(texture, assetFolderAndName.Folder, assetFolderAndName.Name, resourceSaveOptions);
+				GetResources().SaveAsSinglePackage(texture, Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 				return texture;
 			}
 		}
@@ -283,7 +283,7 @@ namespace b3d
 				ResourceSaveOptions resourceSaveOptions;
 				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				GetResources().SaveAsSinglePackage(shader, assetFolderAndName.Folder, assetFolderAndName.Name, resourceSaveOptions);
+				GetResources().SaveAsSinglePackage(shader, Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 				return shader;
 			}
 		}
@@ -318,7 +318,7 @@ namespace b3d
 				ResourceSaveOptions resourceSaveOptions;
 				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				GetResources().SaveAsSinglePackage(font, assetFolderAndName.Folder, assetFolderAndName.Name, resourceSaveOptions);
+				GetResources().SaveAsSinglePackage(font, Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 				return font;
 			}
 		}
@@ -349,7 +349,7 @@ namespace b3d
 				ResourceSaveOptions resourceSaveOptions;
 				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				GetResources().SaveAsSinglePackage(resource, assetFolderAndName.Folder, assetFolderAndName.Name, resourceSaveOptions);
+				GetResources().SaveAsSinglePackage(resource, Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 			}
 
 			return resource;
