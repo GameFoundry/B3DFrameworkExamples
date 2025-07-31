@@ -4,7 +4,7 @@
 #include "Resources/BsBuiltinResources.h"
 #include "Material/BsMaterial.h"
 #include "Components/BsCCamera.h"
-#include "Components/BsCRenderable.h"
+#include "Components/BsRenderable.h"
 #include "Components/BsCSkybox.h"
 #include "Components/BsCPlaneCollider.h"
 #include "Components/BsCBoxCollider.h"
@@ -75,7 +75,7 @@ namespace b3d
 
 		// Set up renderable geometry for the floor plane
 		HSceneObject floorSO = SceneObject::Create("Floor");
-		HRenderable floorRenderable = floorSO->AddComponent<CRenderable>();
+		HRenderable floorRenderable = floorSO->AddComponent<Renderable>();
 		floorRenderable->SetMesh(planeMesh);
 		floorRenderable->SetMaterial(planeMaterial);
 
@@ -93,7 +93,7 @@ namespace b3d
 		HMesh boxMesh = GetBuiltinResources().GetMesh(BuiltinMesh::Box);
 		HSceneObject boxSO = SceneObject::Create("Box");
 
-		HRenderable boxRenderable = boxSO->AddComponent<CRenderable>();
+		HRenderable boxRenderable = boxSO->AddComponent<Renderable>();
 		boxRenderable->SetMesh(boxMesh);
 		boxRenderable->SetMaterial(boxMaterial);
 

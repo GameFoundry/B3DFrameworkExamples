@@ -4,7 +4,7 @@
 #include "Resources/BsBuiltinResources.h"
 #include "Material/BsMaterial.h"
 #include "Components/BsCCamera.h"
-#include "Components/BsCRenderable.h"
+#include "Components/BsRenderable.h"
 #include "Components/BsCLight.h"
 #include "Components/BsCSkybox.h"
 #include "Components/BsCPlaneCollider.h"
@@ -182,7 +182,7 @@ namespace b3d
 
 		// Set up renderable geometry for the floor plane
 		HSceneObject floorSO = SceneObject::Create("Floor");
-		HRenderable floorRenderable = floorSO->AddComponent<CRenderable>();
+		HRenderable floorRenderable = floorSO->AddComponent<Renderable>();
 		floorRenderable->SetMesh(planeMesh);
 		floorRenderable->SetMaterial(planeMaterial);
 
@@ -531,7 +531,7 @@ namespace b3d
 		light->SetAttenuationRadius(20.0f);
 
 		//// Add a sphere using an emissive material to represent the light
-		HRenderable lightSphere = lightSO->AddComponent<CRenderable>();
+		HRenderable lightSphere = lightSO->AddComponent<Renderable>();
 		lightSphere->SetMesh(assets.SphereMesh);
 		lightSphere->SetMaterial(assets.LightMat);
 

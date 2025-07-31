@@ -4,7 +4,7 @@
 #include "Resources/BsBuiltinResources.h"
 #include "Material/BsMaterial.h"
 #include "Components/BsCCamera.h"
-#include "Components/BsCRenderable.h"
+#include "Components/BsRenderable.h"
 #include "Components/BsCSkybox.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
@@ -83,7 +83,7 @@ namespace b3d
 		HSceneObject pistolSO = SceneObject::Create("Pistol");
 
 		// Attach the Renderable component and hook up the mesh we loaded, and the material we created.
-		HRenderable renderable = pistolSO->AddComponent<CRenderable>();
+		HRenderable renderable = pistolSO->AddComponent<Renderable>();
 		renderable->SetMesh(assets.ExampleModel);
 		renderable->SetMaterial(assets.ExampleMaterial);
 

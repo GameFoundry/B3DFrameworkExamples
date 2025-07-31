@@ -4,7 +4,7 @@
 #include "Resources/BsBuiltinResources.h"
 #include "Material/BsMaterial.h"
 #include "Components/BsCCamera.h"
-#include "Components/BsCRenderable.h"
+#include "Components/BsRenderable.h"
 #include "Components/BsCAnimation.h"
 #include "Components/BsCSkybox.h"
 #include "RenderAPI/BsRenderWindow.h"
@@ -107,7 +107,7 @@ namespace b3d
 		HSceneObject droneSO = SceneObject::Create("Drone");
 
 		// Attach the Renderable component and hook up the mesh we loaded, and the material we created.
-		HRenderable renderable = droneSO->AddComponent<CRenderable>();
+		HRenderable renderable = droneSO->AddComponent<Renderable>();
 		renderable->SetMesh(assets.ExampleModel);
 		renderable->SetMaterial(assets.ExampleMaterial);
 
