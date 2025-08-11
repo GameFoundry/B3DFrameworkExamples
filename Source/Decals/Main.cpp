@@ -14,7 +14,7 @@
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
 #include "Input/BsInput.h"
-#include "Components/BsCDecal.h"
+#include "Components/BsDecal.h"
 
 // Example includes
 #include "BsExampleFramework.h"
@@ -199,7 +199,7 @@ namespace b3d
 		decalSO->LookAt(Vector3(0.0f, 0.0f, 1.0f));
 
 		// Set the material to project
-		HDecal decal = decalSO->AddComponent<CDecal>();
+		HDecal decal = decalSO->AddComponent<Decal>();
 		decal->SetMaterial(decalMaterial);
 
 		// Optionally set a mask to only project onto elements with layer 1 set (in this case this is the floor since we
