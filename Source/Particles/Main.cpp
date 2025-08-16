@@ -7,7 +7,7 @@
 #include "Components/BsRenderable.h"
 #include "Components/BsCLight.h"
 #include "Components/BsCSkybox.h"
-#include "Components/BsCPlaneCollider.h"
+#include "Components/BsPlaneCollider.h"
 #include "Components/BsCCharacterController.h"
 #include "Components/BsCParticleSystem.h"
 #include "Image/BsSpriteTexture.h"
