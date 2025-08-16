@@ -97,7 +97,7 @@ namespace b3d
 		floorSO->SetScale(Vector3(GROUND_PLANE_SCALE, 1.0f, GROUND_PLANE_SCALE));
 
 		// Add a plane collider that will prevent physical objects going through the floor
-		HPlaneCollider planeCollider = floorSO->AddComponent<CPlaneCollider>();
+		HPlaneCollider planeCollider = floorSO->AddComponent<PlaneCollider>();
 
 		// Apply the non-bouncy material
 		planeCollider->SetMaterial(boxPhysicsMaterial);
@@ -120,7 +120,7 @@ namespace b3d
 				boxRenderable->SetMaterial(boxMaterial);
 
 				// Add a plane collider that represent's the physical geometry of the box
-				HBoxCollider boxCollider = entry->AddComponent<CBoxCollider>();
+				HBoxCollider boxCollider = entry->AddComponent<BoxCollider>();
 
 				// Apply the non-bouncy material
 				boxCollider->SetMaterial(boxPhysicsMaterial);
@@ -250,7 +250,7 @@ namespace b3d
 				sphereRenderable->SetMaterial(sphereMaterial);
 
 				// Create a spherical collider, represting physical geometry
-				HSphereCollider sphereCollider = sphereSO->AddComponent<CSphereCollider>();
+				HSphereCollider sphereCollider = sphereSO->AddComponent<SphereCollider>();
 
 				// Apply the bouncy material
 				sphereCollider->SetMaterial(spherePhysicsMaterial);

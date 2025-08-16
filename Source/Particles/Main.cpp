@@ -189,7 +189,7 @@ namespace b3d
 		floorSO->SetScale(Vector3(GROUND_PLANE_SCALE, 1.0f, GROUND_PLANE_SCALE));
 
 		// Add a plane collider that will prevent physical objects going through the floor
-		HPlaneCollider planeCollider = floorSO->AddComponent<CPlaneCollider>();
+		HPlaneCollider planeCollider = floorSO->AddComponent<PlaneCollider>();
 
 		/************************************************************************/
 		/* 									CHARACTER                    		*/
