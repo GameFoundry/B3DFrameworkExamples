@@ -10,7 +10,7 @@
 #include "Components/BsBoxCollider.h"
 #include "Components/BsSphereCollider.h"
 #include "Components/BsCCharacterController.h"
-#include "Components/BsCRigidbody.h"
+#include "Components/BsRigidbody.h"
 #include "GUI/BsCGUIWidget.h"
 #include "GUI/BsGUIPanel.h"
 #include "GUI/BsGUILayoutY.h"
@@ -129,7 +129,7 @@ namespace b3d
 				boxCollider->SetMass(25.0f);
 
 				// Add a rigidbody, making the box geometry able to react to interactions with other physical objects
-				HRigidbody boxRigidbody = entry->AddComponent<CRigidbody>();
+				HRigidbody boxRigidbody = entry->AddComponent<Rigidbody>();
 			}
 
 			// Stack the boxes in a pyramid
@@ -259,7 +259,7 @@ namespace b3d
 				sphereCollider->SetMass(25.0f);
 
 				// Add a rigidbody, making the object interactable
-				HRigidbody sphereRigidbody = sphereSO->AddComponent<CRigidbody>();
+				HRigidbody sphereRigidbody = sphereSO->AddComponent<Rigidbody>();
 				
 				// Position the sphere in front of the character, and scale it down a bit
 				Vector3 spawnPos = characterSO->GetTransform().GetPosition();
