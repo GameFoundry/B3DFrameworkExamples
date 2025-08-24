@@ -9,7 +9,7 @@
 #include "Components/BsPlaneCollider.h"
 #include "Components/BsBoxCollider.h"
 #include "Components/BsSphereCollider.h"
-#include "Components/BsCCharacterController.h"
+#include "Components/BsCharacterController.h"
 #include "Components/BsRigidbody.h"
 #include "GUI/BsCGUIWidget.h"
 #include "GUI/BsGUIPanel.h"

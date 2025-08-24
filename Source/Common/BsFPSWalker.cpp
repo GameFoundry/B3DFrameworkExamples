@@ -3,7 +3,7 @@
 #include "Math/BsMath.h"
 #include "Scene/BsSceneObject.h"
 #include "Components/BsCCamera.h"
-#include "Components/BsCCharacterController.h"
+#include "Components/BsCharacterController.h"
 #include "BsApplication.h"
 #include "Physics/BsPhysics.h"
 #include "Scene/BsSceneManager.h"
