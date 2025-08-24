@@ -31,7 +31,7 @@ namespace b3d
 		SetName("FPSWalker");
 
 		// Find the CharacterController we'll be using for movement
-		mController = SO()->GetComponent<CCharacterController>();
+		mController = SO()->GetComponent<CharacterController>();
 
 		// Get handles for key bindings. Actual keys attached to these bindings will be registered during app start-up.
 		mMoveForward = VirtualInput::GetOrCreateVirtualButton("Forward");

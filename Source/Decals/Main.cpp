@@ -112,7 +112,7 @@ namespace b3d
 		characterSO->SetPosition(Vector3(0.0f, 1.0f, 5.0f));
 
 		// Add a character controller, representing the physical geometry of the character
-		HCharacterController charController = characterSO->AddComponent<CCharacterController>();
+		HCharacterController charController = characterSO->AddComponent<CharacterController>();
 
 		// Make the character about 1.8m high, with 0.4m radius (controller represents a capsule)
 		charController->SetHeight(1.0f); // + 0.4 * 2 radius = 1.8m height
