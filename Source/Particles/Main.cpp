@@ -524,7 +524,7 @@ namespace b3d
 		lightSO->SetScale(Vector3::kOne * 0.02f);
 
 		//// Add the light component, emitting a red light
-		HLight light = lightSO->AddComponent<CLight>();
+		HLight light = lightSO->AddComponent<Light>();
 		light->SetIntensity(30.0f);
 		light->SetColor(Color::kRed);
 		light->SetUseAutoAttenuation(false);

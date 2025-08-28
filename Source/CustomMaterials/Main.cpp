@@ -155,7 +155,7 @@ namespace b3d
 		// Add a light so we can actually see the object
 		HSceneObject lightSO = SceneObject::Create("Light");
 
-		HLight light = lightSO->AddComponent<CLight>();
+		HLight light = lightSO->AddComponent<Light>();
 		light->SetIntensity(100.0f);
 
 		lightSO->SetPosition(Vector3(1.0f, 0.5f, 0.0f));
