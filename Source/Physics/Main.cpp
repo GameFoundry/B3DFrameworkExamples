@@ -222,7 +222,7 @@ namespace b3d
 		// Add a skybox texture for sky reflections
 		HSceneObject skyboxSO = SceneObject::Create("Skybox");
 
-		HSkybox skybox = skyboxSO->AddComponent<CSkybox>();
+		HSkybox skybox = skyboxSO->AddComponent<Skybox>();
 		skybox->SetTexture(skyCubemap);
 
 		/************************************************************************/
