@@ -6,7 +6,7 @@
 #include "Components/BsCCamera.h"
 #include "Components/BsRenderable.h"
 #include "Components/BsCAnimation.h"
-#include "Components/BsCSkybox.h"
+#include "Components/BsSkybox.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
 
