@@ -5,7 +5,7 @@
 #include "Material/BsMaterial.h"
 #include "Components/BsCCamera.h"
 #include "Components/BsRenderable.h"
-#include "Components/BsCAnimation.h"
+#include "Components/BsAnimation.h"
 #include "Components/BsSkybox.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
