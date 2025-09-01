@@ -116,7 +116,7 @@ namespace b3d
 		/************************************************************************/
 
 		// Add an animation component to the same scene object we added Renderable to.
-		HAnimation animation = droneSO->AddComponent<CAnimation>();
+		HAnimation animation = droneSO->AddComponent<Animation>();
 
 		// Start playing the animation clip we imported
 		animation->Play(assets.ExampleAnimClip);
