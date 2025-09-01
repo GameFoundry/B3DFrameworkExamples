@@ -5,10 +5,10 @@
 #include "Material/BsMaterial.h"
 #include "Components/BsCCamera.h"
 #include "Components/BsRenderable.h"
-#include "Components/BsCLight.h"
-#include "Components/BsCSkybox.h"
+#include "Components/BsLight.h"
+#include "Components/BsSkybox.h"
 #include "Components/BsPlaneCollider.h"
-#include "Components/BsCCharacterController.h"
+#include "Components/BsCharacterController.h"
 #include "Components/BsCParticleSystem.h"
 #include "Image/BsSpriteTexture.h"
 #include "Particles/BsParticleSystem.h"
@@ -277,7 +277,7 @@ namespace b3d
 		// Set up different particle systems
 		Setup3DParticleEffect(Vector3(-5.0f, 1.0f, 0.0f), assets);
 		SetupGpuParticleEffect(Vector3(0.0f, 1.0f, 0.0f), assets);
-		SetupSmokeEffect(Vector3(5.0f, 0.0f, 0.0f), assets);
+		//SetupSmokeEffect(Vector3(5.0f, 0.0f, 0.0f), assets);
 
 		/************************************************************************/
 		/* 									CURSOR                       		*/
