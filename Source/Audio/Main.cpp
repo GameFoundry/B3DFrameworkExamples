@@ -6,7 +6,7 @@
 #include "Audio/BsAudio.h"
 #include "Material/BsMaterial.h"
 #include "Components/BsCCamera.h"
-#include "Components/BsCAudioSource.h"
+#include "Components/BsAudioSource.h"
 #include "Components/BsCAudioListener.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
