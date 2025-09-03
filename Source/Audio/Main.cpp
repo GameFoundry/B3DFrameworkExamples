@@ -131,7 +131,7 @@ namespace b3d
 		// Add an audio source for playing back the music. Position of the audio source is not important as it is not
 		// a 3D sound.
 		HSceneObject musicSourceSO = SceneObject::Create("Music");
-		HAudioSource musicSource = musicSourceSO->AddComponent<CAudioSource>();
+		HAudioSource musicSource = musicSourceSO->AddComponent<AudioSource>();
 
 		// Assign the clip we want to use for the audio source
 		musicSource->SetClip(musicClip);
@@ -142,7 +142,7 @@ namespace b3d
 		// Add an audio source for playing back an environment sound. This sound is played back on a scene object that
 		// orbits the viewer.
 		HSceneObject environmentSourceSO = SceneObject::Create("Environment");
-		HAudioSource environmentSource = environmentSourceSO->AddComponent<CAudioSource>();
+		HAudioSource environmentSource = environmentSourceSO->AddComponent<AudioSource>();
 
 		// Assign the clip we want to use for the audio source
 		environmentSource->SetClip(environmentClip);
