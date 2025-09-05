@@ -126,7 +126,7 @@ namespace b3d
 
 		// Set up an audio listener. Every sound will be played relative to this listener. We'll add it to the same
 		// scene object as our main camera.
-		HAudioListener listener = sceneCameraSO->AddComponent<CAudioListener>();
+		HAudioListener listener = sceneCameraSO->AddComponent<AudioListener>();
 
 		// Add an audio source for playing back the music. Position of the audio source is not important as it is not
 		// a 3D sound.
