@@ -336,7 +336,7 @@ namespace b3d
 
 		// Set up a shape that determines the position and initial travel direction of newly spawned particles. In this
 		// case we're using a cone shape.
-		PARTICLE_CONE_SHAPE_DESC coneShape;
+		ParticleConeShapeSettings coneShape;
 
 		// All particles will spawn at the narrow point in the cone (position doesn't vary)
 		coneShape.Type = ParticleEmitterConeType::Base;
@@ -354,17 +354,17 @@ namespace b3d
 		Vector<SPtr<ParticleEvolver>> evolvers;
 
 		// Animate particle texture - this uses the sprite sheet animation set up during the asset loading step
-		PARTICLE_TEXTURE_ANIMATION_DESC texAnimDesc;
+		ParticleTextureAnimationSettings texAnimDesc;
 
 		// Perform one animation cycle during the particle lifetime
-		texAnimDesc.NumCycles = 1;
+		texAnimDesc.CycleCount = 1;
 
 		// Create and add the texture animation evolver
 		SPtr<ParticleEvolver> texAnimEvolver = B3DMakeShared<ParticleTextureAnimation>(texAnimDesc);
 		evolvers.push_back(texAnimEvolver);
 
 		// Scale particles from size 1 to size 4 over their lifetime
-		PARTICLE_SIZE_DESC sizeDesc;
+		ParticleSizeSettings sizeDesc;
 		sizeDesc.Size = TAnimationCurve<float>(
 			{
 				TKeyframe<float>{ 1.0f, 0.0f, 1.0f, 0.0f },
@@ -376,7 +376,7 @@ namespace b3d
 		evolvers.push_back(sizeEvolver);
 
 		// Modify particle tint from white (no tint) to dark gray over first 40% of their lifetime
-		PARTICLE_COLOR_DESC colorDesc;
+		ParticleColorSettings colorDesc;
 		colorDesc.Color = ColorGradient(
 			{ ColorGradientKey(Color::kWhite, 0.0f),
 			  ColorGradientKey(Color(0.1f, 0.1f, 0.1f, 1.0f), 0.4f) });
@@ -386,7 +386,7 @@ namespace b3d
 		evolvers.push_back(colorEvolver);
 
 		// Apply force moving the particles to the right
-		PARTICLE_FORCE_DESC forceDesc;
+		ParticleForceSettings forceDesc;
 		forceDesc.Force = TAnimationCurve<Vector3>(
 			{
 				TKeyframe<Vector3>{ Vector3::kZero, Vector3::kZero, Vector3::kOne, 0.0f },
@@ -454,7 +454,7 @@ namespace b3d
 
 		// Set up a shape that determines the position and initial travel direction of newly spawned particles. In this
 		// case we're using a cone shape.
-		PARTICLE_CONE_SHAPE_DESC coneShape;
+		ParticleConeShapeSettings coneShape;
 
 		// All particles will spawn at the narrow point in the cone (position doesn't vary)
 		coneShape.Type = ParticleEmitterConeType::Base;
@@ -473,7 +473,7 @@ namespace b3d
 
 		// Set up an evolver at applies gravity to the particles. The gravity as set by the physics system is used, but
 		// can be scaled as needed
-		PARTICLE_GRAVITY_DESC gravityDesc;
+		ParticleGravitySettings gravityDesc;
 		gravityDesc.Scale = 1.0f;
 
 		// Create and add the gravity evolver
@@ -481,7 +481,7 @@ namespace b3d
 		evolvers.push_back(gravityEvolver);
 
 		// Set up an evolver that allows the particles to collide with the ground.
-		PARTICLE_COLLISIONS_DESC collisionsDesc;
+		ParticleCollisionSettings collisionsDesc;
 
 		// We use plane collisions but we could have also used world collisions (which are more expensive, but perform
 		// general purpose collisions with all physical objects)
@@ -569,7 +569,7 @@ namespace b3d
 
 		// Set up a shape that determines the position of newly spawned particles. In this case spawn particles randomly
 		// on a surface of a sphere.
-		PARTICLE_SPHERE_SHAPE_DESC sphereShape;
+		ParticleSphereShapeSettings sphereShape;
 
 		// Spawn on a sphere with radius of 30 cm
 		sphereShape.Radius = 0.3f;
