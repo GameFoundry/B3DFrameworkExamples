@@ -11,7 +11,6 @@
 #include "Components/BsCharacterController.h"
 #include "Components/BsCParticleSystem.h"
 #include "Image/BsSpriteTexture.h"
-#include "Particles/BsParticleSystem.h"
 #include "Particles/BsParticleEmitter.h"
 #include "Particles/BsParticleEvolver.h"
 #include "RenderAPI/BsRenderWindow.h"
@@ -314,7 +313,7 @@ namespace b3d
 		particleSystemSO->SetRotation(Quaternion(Degree(0), Degree(90), Degree(90)));
 
 		// Add a particle system component
-		HParticleSystem particleSystem = particleSystemSO->AddComponent<CParticleSystem>();
+		HParticleSystem particleSystem = particleSystemSO->AddComponent<ParticleSystem>();
 
 		// Set up the emitter
 		SPtr<ParticleEmitter> emitter = B3DMakeShared<ParticleEmitter>();
@@ -435,7 +434,7 @@ namespace b3d
 		particleSystemSO->SetRotation(Quaternion(Degree(0), Degree(90), Degree(0)));
 
 		// Add a particle system component
-		HParticleSystem particleSystem = particleSystemSO->AddComponent<CParticleSystem>();
+		HParticleSystem particleSystem = particleSystemSO->AddComponent<ParticleSystem>();
 
 		// Set up the emitter
 		SPtr<ParticleEmitter> emitter = B3DMakeShared<ParticleEmitter>();
@@ -550,7 +549,7 @@ namespace b3d
 		particleSystemSO->SetPosition(pos);
 
 		// Add a particle system component
-		HParticleSystem particleSystem = particleSystemSO->AddComponent<CParticleSystem>();
+		HParticleSystem particleSystem = particleSystemSO->AddComponent<ParticleSystem>();
 
 		// Set up the emitter
 		SPtr<ParticleEmitter> emitter = B3DMakeShared<ParticleEmitter>();
