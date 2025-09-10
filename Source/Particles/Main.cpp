@@ -9,7 +9,7 @@
 #include "Components/BsSkybox.h"
 #include "Components/BsPlaneCollider.h"
 #include "Components/BsCharacterController.h"
-#include "Components/BsCParticleSystem.h"
+#include "Components/BsParticleSystem.h"
 #include "Image/BsSpriteTexture.h"
 #include "Particles/BsParticleEmitter.h"
 #include "Particles/BsParticleEvolver.h"
