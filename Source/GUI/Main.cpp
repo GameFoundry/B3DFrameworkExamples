@@ -55,7 +55,7 @@ namespace b3d
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).
-		HCamera sceneCamera = sceneCameraSO->AddComponent<CCamera>();
+		HCamera sceneCamera = sceneCameraSO->AddComponent<Camera>();
 		sceneCamera->GetViewport()->SetTarget(window);
 
 		// Pick a prettier background color

@@ -37,7 +37,7 @@ namespace b3d
 		const SPtr<RenderWindow> applicationWindow = GetApplication().GetPrimaryWindow();
 		HSceneObject cameraSceneObject = SceneObject::Create("SceneCamera");
 
-		HCamera camera = cameraSceneObject->AddComponent<CCamera>();
+		HCamera camera = cameraSceneObject->AddComponent<Camera>();
 		camera->GetViewport()->SetTarget(applicationWindow);
 
 		const Color gray = Color(51 / 255.0f, 51 / 255.0f, 51 / 255.0f);
