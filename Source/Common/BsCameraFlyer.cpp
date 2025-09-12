@@ -3,7 +3,7 @@
 #include "Utility/BsTime.h"
 #include "Math/BsMath.h"
 #include "Scene/BsSceneObject.h"
-#include "Components/BsCCamera.h"
+#include "Components/BsCamera.h"
 #include "Platform/BsCursor.h"
 
 namespace b3d
