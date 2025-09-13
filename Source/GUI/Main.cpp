@@ -4,7 +4,7 @@
 #include "Resources/BsBuiltinResources.h"
 #include "Material/BsMaterial.h"
 #include "Components/BsCamera.h"
-#include "GUI/BsCGUIWidget.h"
+#include "GUI/BsGUIWidget.h"
 #include "GUI/BsGUIPanel.h"
 #include "GUI/BsGUILayoutX.h"
 #include "GUI/BsGUILayoutY.h"
@@ -77,7 +77,7 @@ namespace b3d
 
 		// Add a GUIWidget component we will use for rendering the GUI
 		HSceneObject guiSO = SceneObject::Create("GUI");
-		HGUIWidget gui = guiSO->AddComponent<CGUIWidget>(sceneCamera);
+		HGUIWidget gui = guiSO->AddComponent<GUIWidget>(sceneCamera);
 
 		// Load the custom style sheet file and apply it to the widget
 		SPtr<GUIStyleSheetCascade> customStyleSheetCascade = B3DMakeShared<GUIStyleSheetCascade>();

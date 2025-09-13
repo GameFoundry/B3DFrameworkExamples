@@ -286,7 +286,7 @@ namespace b3d
 
 		// Add a GUIWidget component we will use for rendering the GUI
 		HSceneObject guiSO = SceneObject::Create("GUI");
-		HGUIWidget gui = guiSO->AddComponent<CGUIWidget>(sceneCamera);
+		HGUIWidget gui = guiSO->AddComponent<GUIWidget>(sceneCamera);
 
 		// Grab the main panel onto which to attach the GUI elements to
 		GUIPanel* mainPanel = gui->GetPanel();

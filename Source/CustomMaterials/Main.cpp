@@ -211,7 +211,7 @@ namespace b3d
 
 		// Add a GUIWidget component we will use for rendering the GUI
 		HSceneObject guiSO = SceneObject::Create("GUI");
-		gGUI = guiSO->AddComponent<CGUIWidget>(sceneCamera);
+		gGUI = guiSO->AddComponent<GUIWidget>(sceneCamera);
 	}
 
 	/** Sets up or rebuilds any GUI elements used by the example. */

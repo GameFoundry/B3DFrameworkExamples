@@ -48,7 +48,7 @@ namespace b3d
 		camera->SetRenderSettings(renderSettings);
 
 		HSceneObject guiWidgetSceneObject = SceneObject::Create("GUI");
-		HGUIWidget guiWidget = guiWidgetSceneObject->AddComponent<CGUIWidget>(camera);
+		HGUIWidget guiWidget = guiWidgetSceneObject->AddComponent<GUIWidget>(camera);
 		GUIPanel* mainPanel = guiWidget->GetPanel();
 
 		// Create a vertical GUI layout with items
