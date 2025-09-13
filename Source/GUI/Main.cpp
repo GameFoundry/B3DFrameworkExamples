@@ -3,7 +3,7 @@
 #include "Resources/BsResources.h"
 #include "Resources/BsBuiltinResources.h"
 #include "Material/BsMaterial.h"
-#include "Components/BsCCamera.h"
+#include "Components/BsCamera.h"
 #include "GUI/BsCGUIWidget.h"
 #include "GUI/BsGUIPanel.h"
 #include "GUI/BsGUILayoutX.h"
@@ -22,6 +22,7 @@
 #include "Image/BsSpriteTexture.h"
 
 #include "Reflection/BsRTTIIteratorField.h"
+#include "Renderer/BsRenderSettings.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This example demonstrates how to set up a graphical user interface. It demoes a variety of common GUI elements, as well
