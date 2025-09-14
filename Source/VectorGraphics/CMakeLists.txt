@@ -18,6 +18,3 @@ add_dependencies(VectorGraphics bsfFBXImporter bsfFontImporter bsfFreeImgImporte
 
 # IDE specific
 set_property(TARGET VectorGraphics PROPERTY FOLDER Examples)
-
-# Precompiled header & Unity build
-conditional_cotire(VectorGraphics)

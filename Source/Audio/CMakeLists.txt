@@ -18,6 +18,3 @@ add_dependencies(Audio bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific
 set_property(TARGET Audio PROPERTY FOLDER Examples)
-
-# Precompiled header & Unity build
-conditional_cotire(Audio)

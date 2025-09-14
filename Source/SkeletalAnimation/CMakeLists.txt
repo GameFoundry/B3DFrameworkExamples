@@ -18,6 +18,3 @@ add_dependencies(SkeletalAnimation bsfFBXImporter bsfFontImporter bsfFreeImgImpo
 
 # IDE specific
 set_property(TARGET SkeletalAnimation PROPERTY FOLDER Examples)
-
-# Precompiled header & Unity build
-conditional_cotire(SkeletalAnimation)
