@@ -13,7 +13,7 @@ set_target_properties(Physics PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir
 target_link_libraries(Physics Common)
 
 # Plugin dependencies
-add_engine_dependencies(Physics)
+B3DAddRuntimeDependencies(Physics)
 add_dependencies(Physics bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific

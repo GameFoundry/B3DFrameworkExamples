@@ -13,7 +13,7 @@ set_target_properties(GUI PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
 target_link_libraries(GUI Common)
 
 # Plugin dependencies
-add_engine_dependencies(GUI)
+B3DAddRuntimeDependencies(GUI)
 add_dependencies(GUI bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific

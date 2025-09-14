@@ -13,7 +13,7 @@ set_target_properties(Decals PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)
 target_link_libraries(Decals Common)
 
 # Plugin dependencies
-add_engine_dependencies(Decals)
+B3DAddRuntimeDependencies(Decals)
 add_dependencies(Decals bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific

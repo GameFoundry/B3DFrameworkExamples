@@ -13,7 +13,7 @@ set_target_properties(Audio PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)"
 target_link_libraries(Audio Common)
 
 # Plugin dependencies
-add_engine_dependencies(Audio)
+B3DAddRuntimeDependencies(Audio)
 add_dependencies(Audio bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific

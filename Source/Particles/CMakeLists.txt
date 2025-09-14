@@ -13,7 +13,7 @@ set_target_properties(Particles PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutD
 target_link_libraries(Particles Common)
 
 # Plugin dependencies
-add_engine_dependencies(Particles)
+B3DAddRuntimeDependencies(Particles)
 add_dependencies(Particles bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific

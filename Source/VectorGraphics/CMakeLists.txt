@@ -13,7 +13,7 @@ set_target_properties(VectorGraphics PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$
 target_link_libraries(VectorGraphics Common)
 
 # Plugin dependencies
-add_engine_dependencies(VectorGraphics)
+B3DAddRuntimeDependencies(VectorGraphics)
 add_dependencies(VectorGraphics bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific

@@ -13,7 +13,7 @@ set_target_properties(LowLevelRendering PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY
 target_link_libraries(LowLevelRendering Common)
 
 # Plugin dependencies
-add_engine_dependencies(LowLevelRendering)
+B3DAddRuntimeDependencies(LowLevelRendering)
 add_dependencies(LowLevelRendering bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific

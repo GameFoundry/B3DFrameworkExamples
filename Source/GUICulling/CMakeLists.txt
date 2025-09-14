@@ -13,7 +13,7 @@ set_target_properties(GUICulling PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(Out
 target_link_libraries(GUICulling Common)
 
 # Plugin dependencies
-add_engine_dependencies(GUICulling)
+B3DAddRuntimeDependencies(GUICulling)
 add_dependencies(GUICulling bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific

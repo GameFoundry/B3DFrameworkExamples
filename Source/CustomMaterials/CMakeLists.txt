@@ -13,7 +13,7 @@ set_target_properties(CustomMaterials PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "
 target_link_libraries(CustomMaterials Common)
 
 # Plugin dependencies
-add_engine_dependencies(CustomMaterials)
+B3DAddRuntimeDependencies(CustomMaterials)
 add_dependencies(CustomMaterials bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific

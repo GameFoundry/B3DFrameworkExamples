@@ -13,7 +13,7 @@ set_target_properties(SkeletalAnimation PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY
 target_link_libraries(SkeletalAnimation Common)
 
 # Plugin dependencies
-add_engine_dependencies(SkeletalAnimation)
+B3DAddRuntimeDependencies(SkeletalAnimation)
 add_dependencies(SkeletalAnimation bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific

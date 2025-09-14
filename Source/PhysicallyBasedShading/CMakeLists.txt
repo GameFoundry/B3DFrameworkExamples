@@ -13,7 +13,7 @@ set_target_properties(PhysicallyBasedShading PROPERTIES VS_DEBUGGER_WORKING_DIRE
 target_link_libraries(PhysicallyBasedShading Common)
 
 # Plugin dependencies
-add_engine_dependencies(PhysicallyBasedShading)
+B3DAddRuntimeDependencies(PhysicallyBasedShading)
 add_dependencies(PhysicallyBasedShading bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific
