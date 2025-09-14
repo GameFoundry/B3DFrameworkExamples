@@ -15,7 +15,7 @@ target_link_libraries(Common bsf)
 set_property(TARGET Common PROPERTY FOLDER Examples)
 
 # Copy bsf binaries
-#copyBsfBinaries(Common ${B3D_FRAMEWORK_ROOT_DIRECTORY})
+#copyBsfBinaries(Common ${B3D_FRAMEWORK_ROOT_FOLDER})
 
 # Precompiled header & Unity build
 conditional_cotire(Common)
