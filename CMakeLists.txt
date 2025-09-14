@@ -2,13 +2,13 @@ cmake_minimum_required (VERSION 3.12.0)
 project (bsfExamples)
 
 set (SECONDARY_APP_ROOT_DIR "${PROJECT_SOURCE_DIR}")
-set(BS_EXAMPLES_BUILTIN_ASSETS_VERSION 9)
+set(B3D_EXAMPLES_BUILTIN_ASSETS_VERSION 9)
 
 # Generate config file
 configure_file("${PROJECT_SOURCE_DIR}/Source/CMake/BsExampleConfig.h.in" "${PROJECT_SOURCE_DIR}/Source/Common/BsExampleConfig.h")
 
 # Check data dependencies
-check_and_update_builtin_assets(bsfExamples ${PROJECT_SOURCE_DIR}/Data Data ${BS_EXAMPLES_BUILTIN_ASSETS_VERSION} NO)
+B3DUpdateBuiltinAssetsIfNeeded(bsfExamples ${PROJECT_SOURCE_DIR}/Data Data ${B3D_EXAMPLES_BUILTIN_ASSETS_VERSION})
 	
 # Sub-directories
 add_subdirectory(Source/Common)
