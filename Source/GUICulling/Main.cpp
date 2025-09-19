@@ -3,8 +3,8 @@
 #include "Resources/BsResources.h"
 #include "Resources/BsBuiltinResources.h"
 #include "Material/BsMaterial.h"
-#include "Components/BsCCamera.h"
-#include "GUI/BsCGUIWidget.h"
+#include "Components/BsCamera.h"
+#include "GUI/BsGUIWidget.h"
 #include "GUI/BsGUIPanel.h"
 #include "GUI/BsGUILayoutX.h"
 #include "GUI/BsGUILayoutY.h"
@@ -19,6 +19,7 @@
 #include "Scene/BsSceneObject.h"
 #include "BsExampleFramework.h"
 #include "GUI/StyleSheet/BsGUIStyleSheet.h"
+#include "Renderer/BsRenderSettings.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This is a playground example for testing the GUI culling functionality.

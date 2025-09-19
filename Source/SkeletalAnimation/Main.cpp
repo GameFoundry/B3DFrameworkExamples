@@ -3,7 +3,7 @@
 #include "Resources/BsResources.h"
 #include "Resources/BsBuiltinResources.h"
 #include "Material/BsMaterial.h"
-#include "Components/BsCCamera.h"
+#include "Components/BsCamera.h"
 #include "Components/BsRenderable.h"
 #include "Components/BsAnimation.h"
 #include "Components/BsSkybox.h"
@@ -13,6 +13,7 @@
 // Example includes
 #include "BsCameraFlyer.h"
 #include "BsExampleFramework.h"
+#include "Renderer/BsRenderSettings.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This example demonstrates how to animate a 3D model using skeletal animation. Aside from animation this example is

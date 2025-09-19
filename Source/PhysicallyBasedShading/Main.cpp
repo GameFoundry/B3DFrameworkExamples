@@ -3,9 +3,9 @@
 #include "Resources/BsResources.h"
 #include "Resources/BsBuiltinResources.h"
 #include "Material/BsMaterial.h"
-#include "Components/BsCCamera.h"
+#include "Components/BsCamera.h"
 #include "Components/BsRenderable.h"
-#include "Components/BsCSkybox.h"
+#include "Components/BsSkybox.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "Scene/BsSceneObject.h"
 
