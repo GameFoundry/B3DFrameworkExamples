@@ -5,7 +5,7 @@ set (SECONDARY_APP_ROOT_DIR "${PROJECT_SOURCE_DIR}")
 set(B3D_EXAMPLES_BUILTIN_ASSETS_VERSION 9)
 
 # Generate config file
-configure_file("${PROJECT_SOURCE_DIR}/Source/CMake/BsExampleConfig.h.in" "${PROJECT_SOURCE_DIR}/Source/Common/BsExampleConfig.h")
+configure_file("${PROJECT_SOURCE_DIR}/Source/CMake/B3DExampleConfig.h.in" "${PROJECT_SOURCE_DIR}/Source/Common/B3DExampleConfig.h")
 
 # Check data dependencies
 B3DUpdateBuiltinAssetsIfNeeded(bsfExamples ${PROJECT_SOURCE_DIR}/Data Data ${B3D_EXAMPLES_BUILTIN_ASSETS_VERSION})

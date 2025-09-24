@@ -2,7 +2,7 @@
 include(CMakeSources.cmake)
 
 # Target
-add_library(Common STATIC ${BS_COMMON_SRC})
+add_library(Common STATIC ${B3D_COMMON_SOURCE_FILES})
 
 # Includes
 target_include_directories(Common PUBLIC "./")

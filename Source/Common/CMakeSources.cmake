@@ -1,19 +1,19 @@
-set(BS_COMMON_INC_NOFILTER
-	"BsExampleFramework.h"
-	"BsCameraFlyer.h"
-	"BsObjectRotator.h"
-	"BsFPSWalker.h"
-	"BsFPSCamera.h"
+set(B3D_COMMON_INCLUDES
+	"B3DExampleFramework.h"
+	"B3DCameraFlyer.h"
+	"B3DObjectRotator.h"
+	"B3DFPSWalker.h"
+	"B3DFPSCamera.h"
 )
 
-set(BS_COMMON_SRC_NOFILTER
-	"BsCameraFlyer.cpp"
-	"BsObjectRotator.cpp"
-	"BsFPSWalker.cpp"
-	"BsFPSCamera.cpp"
+set(B3D_COMMON_SOURCES
+	"B3DCameraFlyer.cpp"
+	"B3DObjectRotator.cpp"
+	"B3DFPSWalker.cpp"
+	"B3DFPSCamera.cpp"
 )
 
-set(BS_COMMON_SRC
-	${BS_COMMON_INC_NOFILTER}
-	${BS_COMMON_SRC_NOFILTER}
+set(B3D_COMMON_SOURCE_FILES
+	${B3D_COMMON_INCLUDES}
+	${B3D_COMMON_SOURCES}
 )
