@@ -1,9 +1,9 @@
 #pragma once
 
-#include "BsPrerequisites.h"
-#include "Scene/BsComponent.h"
-#include "Math/BsMath.h"
-#include "Input/BsVirtualInput.h"
+#include "B3DPrerequisites.h"
+#include "Scene/B3DComponent.h"
+#include "Math/B3DMath.h"
+#include "Input/B3DVirtualInput.h"
 
 namespace b3d
 {

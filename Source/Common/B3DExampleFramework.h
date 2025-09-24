@@ -1,16 +1,16 @@
 #pragma once
 
-#include "BsPrerequisites.h"
-#include "Reflection/BsRTTIType.h"
-#include "Resources/BsResources.h"
-#include "Mesh/BsMesh.h"
-#include "Importer/BsImporter.h"
-#include "Importer/BsMeshImportOptions.h"
-#include "Importer/BsTextureImportOptions.h"
-#include "BsExampleConfig.h"
-#include "Text/BsFontImportOptions.h"
-#include "FileSystem/BsFileSystem.h"
-#include "Input/BsVirtualInput.h"
+#include "B3DPrerequisites.h"
+#include "Reflection/B3DRTTIType.h"
+#include "Resources/B3DResources.h"
+#include "Mesh/B3DMesh.h"
+#include "Importer/B3DImporter.h"
+#include "Importer/B3DMeshImportOptions.h"
+#include "Importer/B3DTextureImportOptions.h"
+#include "B3DExampleConfig.h"
+#include "Text/B3DFontImportOptions.h"
+#include "FileSystem/B3DFileSystem.h"
+#include "Input/B3DVirtualInput.h"
 
 namespace b3d
 {

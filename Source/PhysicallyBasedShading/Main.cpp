@@ -1,17 +1,17 @@
 // Framework includes
-#include "BsApplication.h"
-#include "Resources/BsResources.h"
-#include "Resources/BsBuiltinResources.h"
-#include "Material/BsMaterial.h"
-#include "Components/BsCamera.h"
-#include "Components/BsRenderable.h"
-#include "Components/BsSkybox.h"
-#include "RenderAPI/BsRenderWindow.h"
-#include "Scene/BsSceneObject.h"
+#include "B3DApplication.h"
+#include "Resources/B3DResources.h"
+#include "Resources/B3DBuiltinResources.h"
+#include "Material/B3DMaterial.h"
+#include "Components/B3DCamera.h"
+#include "Components/B3DRenderable.h"
+#include "Components/B3DSkybox.h"
+#include "RenderAPI/B3DRenderWindow.h"
+#include "Scene/B3DSceneObject.h"
 
 // Example includes
-#include "BsObjectRotator.h"
-#include "BsExampleFramework.h"
+#include "B3DObjectRotator.h"
+#include "B3DExampleFramework.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This example renders an object using the standard built-in physically based material.

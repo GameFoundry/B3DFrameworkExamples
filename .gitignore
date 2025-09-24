@@ -7,6 +7,6 @@ bin
 lib
 Build
 Data
-BsExampleConfig.h
+B3DExampleConfig.h
 Source/Experimental
 ExperimentalData

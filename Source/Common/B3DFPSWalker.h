@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BsPrerequisites.h"
-#include "Scene/BsComponent.h"
-#include "Input/BsVirtualInput.h"
+#include "B3DPrerequisites.h"
+#include "Scene/B3DComponent.h"
+#include "Input/B3DVirtualInput.h"
 
 namespace b3d
 {

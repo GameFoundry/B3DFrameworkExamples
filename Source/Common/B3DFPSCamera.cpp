@@ -1,8 +1,8 @@
-#include "BsFPSCamera.h"
-#include "Math/BsVector3.h"
-#include "Math/BsMath.h"
-#include "Scene/BsSceneObject.h"
-#include "Physics/BsPhysics.h"
+#include "B3DFPSCamera.h"
+#include "Math/B3DVector3.h"
+#include "Math/B3DMath.h"
+#include "Scene/B3DSceneObject.h"
+#include "Physics/B3DPhysics.h"
 
 namespace b3d
 {

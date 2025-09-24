@@ -1,9 +1,9 @@
-#include "BsObjectRotator.h"
-#include "Math/BsVector3.h"
-#include "Utility/BsTime.h"
-#include "Math/BsMath.h"
-#include "Scene/BsSceneObject.h"
-#include "Platform/BsCursor.h"
+#include "B3DObjectRotator.h"
+#include "Math/B3DVector3.h"
+#include "Utility/B3DTime.h"
+#include "Math/B3DMath.h"
+#include "Scene/B3DSceneObject.h"
+#include "Platform/B3DCursor.h"
 
 namespace b3d
 {

@@ -1,19 +1,19 @@
 // Framework includes
-#include "BsApplication.h"
-#include "Resources/BsResources.h"
-#include "Resources/BsBuiltinResources.h"
-#include "Material/BsMaterial.h"
-#include "Components/BsCamera.h"
-#include "Components/BsRenderable.h"
-#include "Components/BsAnimation.h"
-#include "Components/BsSkybox.h"
-#include "RenderAPI/BsRenderWindow.h"
-#include "Scene/BsSceneObject.h"
+#include "B3DApplication.h"
+#include "Resources/B3DResources.h"
+#include "Resources/B3DBuiltinResources.h"
+#include "Material/B3DMaterial.h"
+#include "Components/B3DCamera.h"
+#include "Components/B3DRenderable.h"
+#include "Components/B3DAnimation.h"
+#include "Components/B3DSkybox.h"
+#include "RenderAPI/B3DRenderWindow.h"
+#include "Scene/B3DSceneObject.h"
 
 // Example includes
-#include "BsCameraFlyer.h"
-#include "BsExampleFramework.h"
-#include "Renderer/BsRenderSettings.h"
+#include "B3DCameraFlyer.h"
+#include "B3DExampleFramework.h"
+#include "Renderer/B3DRenderSettings.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This example demonstrates how to animate a 3D model using skeletal animation. Aside from animation this example is
