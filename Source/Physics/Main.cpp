@@ -275,7 +275,7 @@ namespace b3d
 			else if(ev.ButtonCode == ButtonCode::Escape)
 			{
 				// Quit the application when Escape key is pressed
-				GetApplication().QuitRequested();
+				GetApplication().NotifyQuitRequested();
 			} });
 
 		/************************************************************************/

@@ -175,7 +175,7 @@ namespace b3d
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;
 
-			const SPtr<GpuDevice> gpuDevice = GetCoreApplication().GetPrimaryGpuDevice();
+			const SPtr<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 			// Create a vertex GPU program
 			const char* vertProgSrc = GetVertexProgSource();
@@ -309,7 +309,7 @@ namespace b3d
 		// Render the box, called every frame
 		void Render()
 		{
-			const SPtr<GpuDevice>& gpuDevice = GetCoreApplication().GetPrimaryGpuDevice();
+			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 			// Fill out the uniform block variables
 			UniformBlock uniformBlock;
@@ -600,7 +600,7 @@ void main()
 		Matrix4 CreateWorldViewProjectionMatrix()
 		{
 			Matrix4 proj = Matrix4::ProjectionPerspective(Degree(75.0f), 16.0f / 9.0f, 0.05f, 1000.0f);
-			if(const SPtr<GpuDevice> gpuDevice = GetCoreApplication().GetPrimaryGpuDevice())
+			if(const SPtr<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice())
 				gpuDevice->ConvertProjectionMatrix(proj, proj);
 
 			Vector3 cameraPos = Vector3(0.0f, -20.0f, 50.0f);

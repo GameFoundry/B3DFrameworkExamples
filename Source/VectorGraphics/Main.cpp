@@ -142,7 +142,7 @@ namespace b3d
 
 			auto fnCreateRenderTexture = [](u32 width, u32 height)
 			{
-				const SPtr<GpuDevice> gpuDevice = GetCoreApplication().GetPrimaryGpuDevice();
+				const SPtr<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 				TextureCreateInformation colorTextureCreateInformation;
 				colorTextureCreateInformation.Width = width;
@@ -489,7 +489,7 @@ namespace b3d
 		// Render the box, called every frame
 		void Render()
 		{
-			const SPtr<GpuDevice>& gpuDevice = GetCoreApplication().GetPrimaryGpuDevice();
+			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 			// Create a command buffer
 			const SPtr<GpuCommandBufferPool>& commandBufferPool = RendererManager::Instance().GetActive()->GetCommandBufferPool();
