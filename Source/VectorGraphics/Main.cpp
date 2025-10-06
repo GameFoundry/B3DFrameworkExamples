@@ -496,7 +496,7 @@ namespace b3d
 			SPtr<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
 
 			// Bind render surface & clear it
-			commandBuffer->SetRenderTarget(gRenderTarget, 0, RT_NONE);
+			commandBuffer->BeginRenderPass(gRenderTarget, 0, RT_NONE);
 			commandBuffer->ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kWhite, 1, 0, 0xFF);
 
 			// Draw the vector shapes
@@ -510,7 +510,8 @@ namespace b3d
 			}
 
 			// Blit the image from the render texture, to the render window
-			commandBuffer->SetRenderTarget(gRenderWindow);
+			commandBuffer->EndRenderPass();
+			commandBuffer->BeginRenderPass(gRenderWindow);
 
 			SPtr<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
 
@@ -520,6 +521,7 @@ namespace b3d
 			GetRendererUtility().Blit(*commandBuffer, colorTexture);
 
 			// Submit the command buffer
+			commandBuffer->EndRenderPass();
 			gpuDevice->SubmitCommandBuffer(commandBuffer);
 
 			// Present the rendered image to the user

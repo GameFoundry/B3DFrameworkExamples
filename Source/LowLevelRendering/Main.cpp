@@ -116,9 +116,11 @@ int main()
 	// Define a video mode for the resolution of the primary rendering window.
 	VideoMode videoMode(kWindowWidth, kWindowHeight);
 
+	ApplicationCreateInformation createInformation = Application::BuildCreateInformation(videoMode, "Mesh Clustering Visualization", false);
+
 	// Start-up the engine using our custom MyApplication class. This will also create the primary rendering window.
 	// We provide the initial resolution of the window, its title and fullscreen state.
-	Application::StartUp<MyApplication>(videoMode, "bsf Example App", false);
+	Application::StartUp<MyApplication>(createInformation);
 
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
 	// window or exits in some other way.
@@ -337,7 +339,7 @@ namespace b3d
 			SPtr<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("LowLevelRendering"));
 
 			// Bind render surface & clear it
-			commandBuffer->SetRenderTarget(gRenderTarget, 0, RT_NONE);
+			commandBuffer->BeginRenderPass(gRenderTarget, 0, RT_NONE);
 			commandBuffer->ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kBlue, 1, 0, 0xFF);
 
 			// Bind the pipeline state
@@ -356,7 +358,8 @@ namespace b3d
 			commandBuffer->DrawIndexed(0, NUM_INDICES, 0, NUM_VERTICES, 1, 0);
 
 			// Blit the image from the render texture, to the render window
-			commandBuffer->SetRenderTarget(gRenderWindow);
+			commandBuffer->EndRenderPass();
+			commandBuffer->BeginRenderPass(gRenderWindow);
 
 			// Get the color attachment
 			SPtr<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
@@ -366,6 +369,7 @@ namespace b3d
 			GetRendererUtility().Blit(*commandBuffer, colorTexture);
 
 			// Submit the command buffer
+			commandBuffer->EndRenderPass();
 			gpuDevice->SubmitCommandBuffer(commandBuffer);
 
 			// Present the rendered image to the user
