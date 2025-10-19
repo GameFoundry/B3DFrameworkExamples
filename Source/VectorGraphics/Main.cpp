@@ -496,7 +496,7 @@ namespace b3d
 			SPtr<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
 
 			// Bind render surface & clear it
-			commandBuffer->BeginRenderPass(gRenderTarget, 0, RT_NONE);
+			commandBuffer->BeginRenderPass(gRenderTarget, RT_NONE, RT_NONE);
 			commandBuffer->ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kWhite, 1, 0, 0xFF);
 
 			// Draw the vector shapes
