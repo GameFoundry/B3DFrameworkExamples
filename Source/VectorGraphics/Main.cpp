@@ -495,8 +495,10 @@ namespace b3d
 			const SPtr<GpuCommandBufferPool>& commandBufferPool = RendererManager::Instance().GetActive()->GetCommandBufferPool();
 			SPtr<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
 
+			const SPtr<GpuParameters> gpuParameters = gTestPathRenderable->Prepare();
+
 			// Bind render surface & clear it
-			commandBuffer->BeginRenderPass(gRenderTarget, RT_NONE, RT_NONE);
+			commandBuffer->BeginRenderPass(RenderPassCreateInformation(gRenderTarget, gpuParameters, RT_NONE, RT_NONE));
 			commandBuffer->ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kWhite, 1, 0, 0xFF);
 
 			// Draw the vector shapes
@@ -511,7 +513,7 @@ namespace b3d
 
 			// Blit the image from the render texture, to the render window
 			commandBuffer->EndRenderPass();
-			commandBuffer->BeginRenderPass(gRenderWindow);
+			commandBuffer->BeginRenderPass(RenderPassCreateInformation(gRenderWindow));
 
 			SPtr<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
 
