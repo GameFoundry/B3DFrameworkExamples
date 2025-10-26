@@ -186,7 +186,7 @@ namespace b3d
 		HLight redLight = redLightSO->AddComponent<Light>();
 		redLight->SetType(LightType::Radial);
 		redLight->SetColor(Color::kRed);
-		redLight->SetIntensity(100.0f);
+		redLight->SetIntensity(500.0f);
 		redLight->SetUseAutoAttenuation(false);
 		redLight->SetAttenuationRadius(15.0f);
 		redLight->SetCastsShadow(false);
@@ -204,16 +204,16 @@ namespace b3d
 		HLight blueLight = blueLightSO->AddComponent<Light>();
 		blueLight->SetType(LightType::Radial);
 		blueLight->SetColor(Color::kBlue);
-		blueLight->SetIntensity(100.0f);
+		blueLight->SetIntensity(500.0f);
 		blueLight->SetUseAutoAttenuation(false);
 		blueLight->SetAttenuationRadius(15.0f);
 		blueLight->SetCastsShadow(true);
 
 		// Add a small sphere to visualize the light position
-		HRenderable blueLightSphere = blueLightSO->AddComponent<Renderable>();
-		blueLightSphere->SetMesh(sphereMesh);
-		blueLightSphere->SetMaterial(blueEmissiveMat);
-		blueLightSO->SetScale(Vector3::kOne * 0.15f);
+		//HRenderable blueLightSphere = blueLightSO->AddComponent<Renderable>();
+		//blueLightSphere->SetMesh(sphereMesh);
+		//blueLightSphere->SetMaterial(blueEmissiveMat);
+		//blueLightSO->SetScale(Vector3::kOne * 0.15f);
 
 		// Green spot light (unshadowed) - positioned to the east
 		HSceneObject greenLightSO = SceneObject::Create("GreenSpotLight");
@@ -223,7 +223,7 @@ namespace b3d
 		HLight greenLight = greenLightSO->AddComponent<Light>();
 		greenLight->SetType(LightType::Spot);
 		greenLight->SetColor(Color::kGreen);
-		greenLight->SetIntensity(100.0f);
+		greenLight->SetIntensity(500.0f);
 		greenLight->SetUseAutoAttenuation(false);
 		greenLight->SetAttenuationRadius(20.0f);
 		greenLight->SetSpotAngle(Degree(45.0f));
@@ -244,7 +244,7 @@ namespace b3d
 		HLight yellowLight = yellowLightSO->AddComponent<Light>();
 		yellowLight->SetType(LightType::Spot);
 		yellowLight->SetColor(Color::kBansheeOrange);
-		yellowLight->SetIntensity(100.0f);
+		yellowLight->SetIntensity(500.0f);
 		yellowLight->SetUseAutoAttenuation(false);
 		yellowLight->SetAttenuationRadius(20.0f);
 		yellowLight->SetSpotAngle(Degree(45.0f));
@@ -252,10 +252,10 @@ namespace b3d
 		yellowLight->SetCastsShadow(true);
 
 		// Add a small sphere to visualize the light position
-		HRenderable yellowLightSphere = yellowLightSO->AddComponent<Renderable>();
-		yellowLightSphere->SetMesh(sphereMesh);
-		yellowLightSphere->SetMaterial(yellowEmissiveMat);
-		yellowLightSO->SetScale(Vector3::kOne * 0.15f);
+		//HRenderable yellowLightSphere = yellowLightSO->AddComponent<Renderable>();
+		//yellowLightSphere->SetMesh(sphereMesh);
+		//yellowLightSphere->SetMaterial(yellowEmissiveMat);
+		//yellowLightSO->SetScale(Vector3::kOne * 0.15f);
 
 		/************************************************************************/
 		/* 									CHARACTER                    		*/
