@@ -513,17 +513,17 @@ namespace b3d
 
 			// Blit the image from the render texture, to the render window
 			commandBuffer->EndRenderPass();
-			commandBuffer->BeginRenderPass(RenderPassCreateInformation(gRenderWindow));
 
 			SPtr<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
-			commandBuffer->SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
-			GetRendererUtility().Blit(*commandBuffer, colorTexture);
+			BlitInformation blitInformation = BlitInformation::BlitColor(colorTexture, gRenderWindow);
+			blitInformation.OutputArea =Area2(0.0f, 0.0f, 1.0f, 1.0f); 
+
+			GetRendererUtility().Blit(*commandBuffer, blitInformation);
 
 			// Submit the command buffer
-			commandBuffer->EndRenderPass();
 			gpuDevice->SubmitCommandBuffer(commandBuffer);
 
 			// Present the rendered image to the user
