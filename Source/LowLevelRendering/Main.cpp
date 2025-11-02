@@ -339,7 +339,7 @@ namespace b3d
 			SPtr<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("LowLevelRendering"));
 
 			// Bind render surface & clear it
-			commandBuffer->BeginRenderPass(gRenderTarget, RT_NONE, RT_NONE);
+			commandBuffer->BeginRenderPass(RenderPassCreateInformation(gRenderTarget, gGpuParams, RT_NONE, RT_NONE));
 			commandBuffer->ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kBlue, 1, 0, 0xFF);
 
 			// Bind the pipeline state
