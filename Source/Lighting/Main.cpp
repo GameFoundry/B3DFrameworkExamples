@@ -191,12 +191,6 @@ namespace b3d
 		redLight->SetAttenuationRadius(15.0f);
 		redLight->SetCastsShadow(false);
 
-		// Add a small sphere to visualize the light position
-		HRenderable redLightSphere = redLightSO->AddComponent<Renderable>();
-		redLightSphere->SetMesh(sphereMesh);
-		redLightSphere->SetMaterial(redEmissiveMat);
-		redLightSO->SetScale(Vector3::kOne * 0.15f);
-
 		// Blue radial light (shadowed) - positioned to the south
 		HSceneObject blueLightSO = SceneObject::Create("BlueRadialLight");
 		blueLightSO->SetPosition(Vector3(0.0f, 3.0f, 8.0f));
@@ -209,16 +203,10 @@ namespace b3d
 		blueLight->SetAttenuationRadius(15.0f);
 		blueLight->SetCastsShadow(true);
 
-		// Add a small sphere to visualize the light position
-		//HRenderable blueLightSphere = blueLightSO->AddComponent<Renderable>();
-		//blueLightSphere->SetMesh(sphereMesh);
-		//blueLightSphere->SetMaterial(blueEmissiveMat);
-		//blueLightSO->SetScale(Vector3::kOne * 0.15f);
-
 		// Green spot light (unshadowed) - positioned to the east
 		HSceneObject greenLightSO = SceneObject::Create("GreenSpotLight");
 		greenLightSO->SetPosition(Vector3(8.0f, 4.0f, 0.0f));
-		greenLightSO->SetRotation(Quaternion(Degree(0.0f), Degree(-90.0f), Degree(-45.0f)));
+		greenLightSO->SetRotation(Quaternion(Degree(0.0f), Degree(90.0f), Degree(45.0f)));
 
 		HLight greenLight = greenLightSO->AddComponent<Light>();
 		greenLight->SetType(LightType::Spot);
@@ -230,16 +218,10 @@ namespace b3d
 		greenLight->SetSpotFalloffAngle(Degree(35.0f));
 		greenLight->SetCastsShadow(false);
 
-		// Add a small sphere to visualize the light position
-		HRenderable greenLightSphere = greenLightSO->AddComponent<Renderable>();
-		greenLightSphere->SetMesh(sphereMesh);
-		greenLightSphere->SetMaterial(greenEmissiveMat);
-		greenLightSO->SetScale(Vector3::kOne * 0.15f);
-
 		// Yellow spot light (shadowed) - positioned to the west
 		HSceneObject yellowLightSO = SceneObject::Create("YellowSpotLight");
 		yellowLightSO->SetPosition(Vector3(-8.0f, 4.0f, 0.0f));
-		yellowLightSO->SetRotation(Quaternion(Degree(0.0f), Degree(90.0f), Degree(-45.0f)));
+		yellowLightSO->SetRotation(Quaternion(Degree(0.0f), Degree(-90.0f), Degree(-45.0f)));
 
 		HLight yellowLight = yellowLightSO->AddComponent<Light>();
 		yellowLight->SetType(LightType::Spot);
@@ -250,12 +232,6 @@ namespace b3d
 		yellowLight->SetSpotAngle(Degree(45.0f));
 		yellowLight->SetSpotFalloffAngle(Degree(35.0f));
 		yellowLight->SetCastsShadow(true);
-
-		// Add a small sphere to visualize the light position
-		//HRenderable yellowLightSphere = yellowLightSO->AddComponent<Renderable>();
-		//yellowLightSphere->SetMesh(sphereMesh);
-		//yellowLightSphere->SetMaterial(yellowEmissiveMat);
-		//yellowLightSO->SetScale(Vector3::kOne * 0.15f);
 
 		/************************************************************************/
 		/* 									CHARACTER                    		*/
@@ -318,13 +294,14 @@ namespace b3d
 		/************************************************************************/
 
 		// Load a skybox texture
-		HTexture skyCubemap = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentPaperMill, false, true, true);
+		HTexture skyCubemap = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentRathaus, false, true, true);
 
 		// Add a skybox texture for sky reflections
 		HSceneObject skyboxSO = SceneObject::Create("Skybox");
 
 		HSkybox skybox = skyboxSO->AddComponent<Skybox>();
 		skybox->SetTexture(skyCubemap);
+		skybox->SetBrightness(0.2f);
 
 		/************************************************************************/
 		/* 									CURSOR                       		*/
