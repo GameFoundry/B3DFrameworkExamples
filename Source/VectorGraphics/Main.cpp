@@ -498,8 +498,11 @@ namespace b3d
 			const SPtr<GpuParameters> gpuParameters = gTestPathRenderable->Prepare();
 
 			// Bind render surface & clear it
+			RenderPassCreateInformation renderPassCreateInformation(gRenderTarget, gpuParameters, RT_NONE, RT_NONE);
+			renderPassCreateInformation.ClearMask = RT_COLOR_ALL | RT_DEPTH;
+			renderPassCreateInformation.ClearColor = Color::kWhite;
+
 			commandBuffer->BeginRenderPass(RenderPassCreateInformation(gRenderTarget, gpuParameters, RT_NONE, RT_NONE));
-			commandBuffer->ClearRenderTarget(FBT_COLOR | FBT_DEPTH, Color::kWhite, 1, 0, 0xFF);
 
 			// Draw the vector shapes
 			gTestPathRenderable->Render(*commandBuffer);
@@ -507,7 +510,7 @@ namespace b3d
 			if(gCheckmarkPathRenderable != nullptr)
 			{
 				commandBuffer->SetViewport(Area2(0.0f, 0.0f, (float)kCheckmarkWidth / (float)kWindowWidth, (float)kCheckmarkHeight / (float)kWindowHeight));
-				commandBuffer->ClearViewport(FBT_COLOR);
+				commandBuffer->ClearViewport(RT_COLOR_ALL);
 				gCheckmarkPathRenderable->Render(*commandBuffer);
 			}
 
