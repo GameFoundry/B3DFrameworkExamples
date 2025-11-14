@@ -43,8 +43,8 @@ namespace b3d
 	{
 	public:
 		// Pass along the start-up structure to the parent, we don't need to handle it
-		MyApplication(const ApplicationCreateInformation& desc)
-			: Application(desc)
+		MyApplication(const ApplicationCreateInformation& createInformation)
+			: Application(createInformation)
 		{}
 
 	private:
@@ -108,7 +108,7 @@ int main()
 
 	// Start-up the engine using our custom MyApplication class. This will also create the primary rendering window.
 	// We provide the initial resolution of the window, its title and fullscreen state.
-	Application::StartUp<MyApplication>(videoMode, "bsf Example App", false);
+	Application::StartUp<MyApplication>(Application::BuildCreateInformation(videoMode, "bsf Example App", false));
 
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
 	// window or exits in some other way.
@@ -258,7 +258,6 @@ namespace b3d
 
 			// Manually drawn rounded rectangle
 			{
-
 				const float width = 150.0f;
 				const float height = 90.0f;
 
