@@ -20,6 +20,7 @@
 #include "B3DExampleFramework.h"
 #include "GUI/StyleSheet/B3DGUIStyleSheet.h"
 #include "Image/B3DSpriteTexture.h"
+#include "B3DEntry.h"
 
 #include "Reflection/B3DRTTIIteratorField.h"
 #include "Renderer/B3DRenderSettings.h"
@@ -250,17 +251,7 @@ namespace b3d
 } // namespace b3d
 
 /** Main entry point into the application. */
-#if B3D_PLATFORM_WIN32
-#	include <windows.h>
-
-int CALLBACK WinMain(
-	_In_ HINSTANCE hInstance,
-	_In_ HINSTANCE hPrevInstance,
-	_In_ LPSTR lpCmdLine,
-	_In_ int nCmdShow)
-#else
-int main()
-#endif
+int B3DMain()
 {
 	using namespace b3d;
 

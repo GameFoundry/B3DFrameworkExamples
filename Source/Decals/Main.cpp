@@ -1,5 +1,6 @@
 // Framework includes
 #include "B3DApplication.h"
+#include "B3DEntry.h"
 #include "Resources/B3DResources.h"
 #include "Resources/B3DBuiltinResources.h"
 #include "Material/B3DMaterial.h"
@@ -222,17 +223,7 @@ namespace b3d
 } // namespace b3d
 
 /** Main entry point into the application. */
-#if B3D_PLATFORM_WIN32
-#	include <windows.h>
-
-int CALLBACK WinMain(
-	_In_ HINSTANCE hInstance,
-	_In_ HINSTANCE hPrevInstance,
-	_In_ LPSTR lpCmdLine,
-	_In_ int nCmdShow)
-#else
-int main()
-#endif
+int B3DMain()
 {
 	using namespace b3d;
 
