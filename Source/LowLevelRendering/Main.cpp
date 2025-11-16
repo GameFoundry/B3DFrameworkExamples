@@ -148,8 +148,8 @@ namespace b3d
 		bool gUseHLSL = true;
 		bool gUseVKSL = false;
 
-		const u32 NUM_VERTICES = 24;
-		const u32 NUM_INDICES = 36;
+		const u32 kVertexCount = 24;
+		const u32 kIndexCount = 36;
 
 		// Structure that will hold uniform block variables for the GPU programs
 		struct UniformBlock
@@ -229,32 +229,32 @@ namespace b3d
 
 			GpuBufferCreateInformation vertexBufferCreateInformation;
 			vertexBufferCreateInformation.Type = GpuBufferType::Vertex;
-			vertexBufferCreateInformation.Vertex.Count = NUM_VERTICES;
+			vertexBufferCreateInformation.Vertex.Count = kVertexCount;
 			vertexBufferCreateInformation.Vertex.ElementSize = vertexStride;
 
 			gVertexBuffer = gpuDevice->CreateGpuBuffer(vertexBufferCreateInformation);
 
-			u8* vbData = (u8*)B3DStackAllocate(vertexStride * NUM_VERTICES);
+			u8* vbData = (u8*)B3DStackAllocate(vertexStride * kVertexCount);
 			u8* positions = vbData + gVertexDescription->GetElementOffsetFromStream(VES_POSITION);
 			u8* uvs = vbData + gVertexDescription->GetElementOffsetFromStream(VES_TEXCOORD);
 
 			AABox box(Vector3::kOne * -10.0f, Vector3::kOne * 10.0f);
 			WriteBoxVertices(box, positions, uvs, vertexStride);
 
-			gVertexBuffer->WriteData(0, vertexStride * NUM_VERTICES, vbData, BWT_DISCARD);
+			GpuBufferUtility::Write(gVertexBuffer, 0, vertexStride * kVertexCount, vbData, GpuBufferWriteFlag::Discard);
 			B3DStackFree(vbData);
 
 			// Create & fill the index buffer for a box mesh
 			GpuBufferCreateInformation ibDesc;
 			ibDesc.Type = GpuBufferType::Index;
-			ibDesc.Index.Count = NUM_INDICES;
+			ibDesc.Index.Count = kIndexCount;
 			ibDesc.Index.Type = IT_32BIT;
 
 			gIndexBuffer = gpuDevice->CreateGpuBuffer(ibDesc);
-			u32* ibData = (u32*)B3DStackAllocate(NUM_INDICES * sizeof(u32));
+			u32* ibData = (u32*)B3DStackAllocate(kIndexCount * sizeof(u32));
 			WriteBoxIndices(ibData);
 
-			gIndexBuffer->WriteData(0, NUM_INDICES * sizeof(u32), ibData, BWT_DISCARD);
+			GpuBufferUtility::Write(gIndexBuffer, 0, kIndexCount * sizeof(u32), ibData, GpuBufferWriteFlag::Discard);
 			B3DStackFree(ibData);
 
 			// Create a simple 2x2 checkerboard texture to map to the object we're about to render
@@ -349,7 +349,7 @@ namespace b3d
 			commandBuffer->SetGpuParameters(gGpuParams);
 
 			// Draw
-			commandBuffer->DrawIndexed(0, NUM_INDICES, 0, NUM_VERTICES, 1, 0);
+			commandBuffer->DrawIndexed(0, kIndexCount, 0, kVertexCount, 1, 0);
 
 			// Blit the image from the render texture, to the render window
 			commandBuffer->EndRenderPass();
