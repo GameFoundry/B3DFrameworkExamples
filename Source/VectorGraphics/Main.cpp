@@ -485,7 +485,7 @@ namespace b3d
 			const SPtr<GpuCommandBufferPool>& commandBufferPool = RendererManager::Instance().GetActive()->GetCommandBufferPool();
 			SPtr<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
 
-			const SPtr<GpuParameters> gpuParameters = gTestPathRenderable->Prepare();
+			const SPtr<GpuParameterSet> gpuParameters = gTestPathRenderable->Prepare();
 
 			// Bind render surface & clear it
 			RenderPassCreateInformation renderPassCreateInformation(gRenderTarget, gpuParameters, RT_NONE, RT_NONE);

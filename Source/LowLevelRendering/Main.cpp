@@ -139,7 +139,7 @@ namespace b3d
 		SPtr<GpuGraphicsPipelineState> gPipelineState;
 		SPtr<Texture> gSurfaceTex;
 		SPtr<SamplerState> gSurfaceSampler;
-		SPtr<GpuParameters> gGpuParams;
+		SPtr<GpuParameterSet> gGpuParams;
 		SPtr<VertexDescription> gVertexDescription;
 		SPtr<GpuBuffer> gVertexBuffer;
 		SPtr<GpuBuffer> gIndexBuffer;
