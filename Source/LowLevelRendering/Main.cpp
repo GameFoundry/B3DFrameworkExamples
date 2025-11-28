@@ -215,7 +215,7 @@ namespace b3d
 			gPipelineState = gpuDevice->CreateGpuGraphicsPipelineState(pipelineDesc);
 
 			// Create an object containing GPU program parameters
-			gGpuParams = gpuDevice->CreateGpuParameters(gPipelineState->GetParameterLayout());
+			gGpuParams = gpuDevice->CreateGpuParameterSet(gPipelineState->GetParameterLayout());
 
 			// Create a vertex declaration for shader inputs
 			TInlineArray<VertexElement, 8> vertexElements;
@@ -346,7 +346,7 @@ namespace b3d
 			commandBuffer->SetDrawOperation(DOT_TRIANGLE_LIST);
 
 			// Bind the GPU program parameters (i.e. resource descriptors)
-			commandBuffer->SetGpuParameters(gGpuParams);
+			commandBuffer->SetGpuParameterSet(gGpuParams);
 
 			// Draw
 			commandBuffer->DrawIndexed(0, kIndexCount, 0, kVertexCount, 1, 0);
