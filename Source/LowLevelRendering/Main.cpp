@@ -215,7 +215,7 @@ namespace b3d
 			gPipelineState = gpuDevice->CreateGpuGraphicsPipelineState(pipelineDesc);
 
 			// Create an object containing GPU program parameters
-			gGpuParams = gpuDevice->CreateGpuParameterSet(gPipelineState->GetParameterLayout());
+			gGpuParams = gpuDevice->CreateGpuParameterSet(gPipelineState->GetParameterLayout()->GetSet(0));
 
 			// Create a vertex declaration for shader inputs
 			TInlineArray<VertexElement, 8> vertexElements;
