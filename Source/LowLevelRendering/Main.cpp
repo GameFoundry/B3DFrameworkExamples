@@ -278,7 +278,7 @@ namespace b3d
 			colorAttDesc.Width = kWindowWidth;
 			colorAttDesc.Height = kWindowHeight;
 			colorAttDesc.Format = PF_RGBA8;
-			colorAttDesc.Usage = TU_RENDERTARGET;
+			colorAttDesc.Usage = TextureUsageFlag::RenderTarget;
 
 			SPtr<Texture> colorAtt = gpuDevice->CreateTexture(colorAttDesc);
 
@@ -287,7 +287,7 @@ namespace b3d
 			depthAttDesc.Width = kWindowWidth;
 			depthAttDesc.Height = kWindowHeight;
 			depthAttDesc.Format = PF_D32;
-			depthAttDesc.Usage = TU_DEPTHSTENCIL;
+			depthAttDesc.Usage = TextureUsageFlag::DepthStencil;
 
 			SPtr<Texture> depthAtt = gpuDevice->CreateTexture(depthAttDesc);
 

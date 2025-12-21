@@ -139,7 +139,7 @@ namespace b3d
 				colorTextureCreateInformation.Width = width;
 				colorTextureCreateInformation.Height = height;
 				colorTextureCreateInformation.Format = PF_RGBA8;
-				colorTextureCreateInformation.Usage = TU_RENDERTARGET;
+				colorTextureCreateInformation.Usage = TextureUsageFlag::RenderTarget;
 
 				const SPtr<Texture> colorTexture = gpuDevice->CreateTexture(colorTextureCreateInformation);
 
@@ -147,7 +147,7 @@ namespace b3d
 				stencilTextureCreateInformation.Width = width;
 				stencilTextureCreateInformation.Height = height;
 				stencilTextureCreateInformation.Format = PF_D32_S8X24;
-				stencilTextureCreateInformation.Usage = TU_DEPTHSTENCIL;
+				stencilTextureCreateInformation.Usage = TextureUsageFlag::DepthStencil;
 
 				const SPtr<Texture> stencilTexture = gpuDevice->CreateTexture(stencilTextureCreateInformation);
 
