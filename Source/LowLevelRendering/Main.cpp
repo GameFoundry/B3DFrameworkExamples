@@ -17,6 +17,7 @@
 #include "RenderAPI/B3DRenderTexture.h"
 #include "Renderer/B3DRenderer.h"
 #include "Renderer/B3DRendererManager.h"
+#include "RenderAPI/B3DGpuParameterSetPool.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This example uses the low-level rendering API to render a textured cube mesh. This is opposed to using scene objects
@@ -215,7 +216,8 @@ namespace b3d
 			gPipelineState = gpuDevice->CreateGpuGraphicsPipelineState(pipelineDesc);
 
 			// Create an object containing GPU program parameters
-			gGpuParams = gpuDevice->CreateGpuParameterSet(gPipelineState->GetParameterLayout()->GetSet(0));
+			GpuParameterSetPool& pool = render::GetRenderer()->GetParameterSetPool();
+			gGpuParams = pool.Create(gPipelineState->GetParameterLayout()->GetSet(0), 0);
 
 			// Create a vertex declaration for shader inputs
 			TInlineArray<VertexElement, 8> vertexElements;
