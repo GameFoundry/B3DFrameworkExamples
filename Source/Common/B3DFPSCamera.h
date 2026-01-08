@@ -38,5 +38,5 @@ namespace b3d
 		VirtualAxis mHorizontalAxis; /**< Input device axis used for controlling camera's yaw rotation (left/right). */
 	};
 
-	using HFPSCamera = GameObjectHandle<FPSCamera>;
+	using HFPSCamera = TGameObjectHandle<FPSCamera>;
 } // namespace b3d

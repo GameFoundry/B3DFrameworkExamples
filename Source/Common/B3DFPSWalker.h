@@ -30,5 +30,5 @@ namespace b3d
 		VirtualButton mFastMove; /**< Key that speeds up movement while held. */
 	};
 
-	using HFPSWalker = GameObjectHandle<FPSWalker>;
+	using HFPSWalker = TGameObjectHandle<FPSWalker>;
 } // namespace b3d
