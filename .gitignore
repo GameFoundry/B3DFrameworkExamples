@@ -6,7 +6,8 @@
 bin
 lib
 Build
-Data
+Data/*
+!Data/**/.reqversion
 B3DExampleConfig.h
 Source/Experimental
 ExperimentalData
