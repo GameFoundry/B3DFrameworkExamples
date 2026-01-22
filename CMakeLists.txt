@@ -13,7 +13,7 @@ B3DCheckAndUpdateAssetPackage(ExampleData)
 add_subdirectory(Source/Common)
 add_subdirectory(Source/LowLevelRendering)
 add_subdirectory(Source/PhysicallyBasedShading)
-add_subdirectory(Source/CustomMaterials)
+# add_subdirectory(Source/CustomMaterials) # Outdated, until the shading language update is done
 add_subdirectory(Source/GUI)
 add_subdirectory(Source/Tests/GUICulling)
 add_subdirectory(Source/Audio)
