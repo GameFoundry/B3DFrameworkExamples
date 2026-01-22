@@ -100,7 +100,7 @@ namespace b3d
 		button->OnClick.Connect([]()
 								{
 			// Log a message when the user clicks the button
-			B3D_LOG(Info, Uncategorized, "Button clicked!"); });
+			B3D_LOG(Info, LogUncategorized, "Button clicked!"); });
 
 		button->SetPosition(10, 50);
 		button->SetSize(GUILogicalSize(100, 30));
@@ -112,11 +112,11 @@ namespace b3d
 			// Log a message when the user toggles the button
 			if(enabled)
 			{
-				B3D_LOG(Info, Uncategorized, "Toggle turned on");
+				B3D_LOG(Info, LogUncategorized, "Toggle turned on");
 			}
 			else
 			{
-				B3D_LOG(Info, Uncategorized, "Toggle turned off");
+				B3D_LOG(Info, LogUncategorized, "Toggle turned off");
 			} });
 
 		toggle->SetPosition(10, 90);
@@ -130,7 +130,7 @@ namespace b3d
 		inputBox->OnValueChanged.Connect([](const String& value)
 										 {
 			// Log a message when the user enters new text in the input box
-			B3D_LOG(Info, Uncategorized, "User entered: \"" + value + "\""); });
+			B3D_LOG(Info, LogUncategorized, "User entered: \"" + value + "\""); });
 
 		inputBox->SetText("Type in me...\nand some more\nand more\nand even more\nand the last line");
 		inputBox->SetPosition(10, 115);
@@ -149,7 +149,7 @@ namespace b3d
 		listBox->OnSelectionToggled.Connect([listBoxElements](u32 idx, bool enabled)
 											{
 												// Log a message when the user selects a new element
-												B3D_LOG(Info, Uncategorized, "User selected element: \"" + listBoxElements[idx].GetValue() + "\"");
+												B3D_LOG(Info, LogUncategorized, "User selected element: \"" + listBoxElements[idx].GetValue() + "\"");
 											});
 
 		listBox->SetPosition(10, 180);
