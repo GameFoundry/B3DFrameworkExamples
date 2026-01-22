@@ -17,4 +17,4 @@ B3DAddRuntimeDependencies(GUICulling)
 add_dependencies(GUICulling bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific
-set_property(TARGET GUICulling PROPERTY FOLDER Examples)
+set_property(TARGET GUICulling PROPERTY FOLDER Examples/Tests)

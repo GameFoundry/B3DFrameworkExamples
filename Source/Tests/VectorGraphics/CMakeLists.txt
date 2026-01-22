@@ -17,4 +17,4 @@ B3DAddRuntimeDependencies(VectorGraphics)
 add_dependencies(VectorGraphics bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
 # IDE specific
-set_property(TARGET VectorGraphics PROPERTY FOLDER Examples)
+set_property(TARGET VectorGraphics PROPERTY FOLDER Examples/Tests)

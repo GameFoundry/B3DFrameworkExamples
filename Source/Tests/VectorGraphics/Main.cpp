@@ -64,7 +64,7 @@ namespace b3d
 
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the render
 			// thread), we don't call the method directly, but rather queue it for execution using the RenderThread class.
-			GetRenderThread().PostCommand(std::bind(&render::Setup, renderWindowRenderProxy));
+			GetRenderThread().PostCommand([renderWindowRenderProxy] { render::Setup(renderWindowRenderProxy); });
 		}
 
 		// Called when the engine is about to be shut down
@@ -121,6 +121,7 @@ namespace b3d
 		SPtr<b3d::VectorPath> gCheckmarkPath;
 		SPtr<VectorPathRenderable> gTestPathRenderable;
 		SPtr<VectorPathRenderable> gCheckmarkPathRenderable;
+		SPtr<GpuCommandBufferPool> gCommandBufferPool;
 
 		SPtr<RenderTexture> gRenderTarget;
 		SPtr<RenderWindow> gRenderWindow;
@@ -482,8 +483,12 @@ namespace b3d
 			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 			// Create a command buffer
-			const SPtr<GpuCommandBufferPool>& commandBufferPool = RendererManager::Instance().GetActive()->GetCommandBufferPool();
-			SPtr<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
+			GpuCommandBufferPoolCreateInformation poolCreateInformation;
+			poolCreateInformation.Thread = B3D_CURRENT_THREAD_ID;
+			poolCreateInformation.Type = GQT_GRAPHICS;
+
+			gCommandBufferPool = gpuDevice->CreateGpuCommandBufferPool(poolCreateInformation);
+			SPtr<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
 
 			const SPtr<GpuParameterSet> gpuParameters = gTestPathRenderable->Prepare();
 
@@ -526,6 +531,7 @@ namespace b3d
 		// Clean up any resources
 		void Shutdown()
 		{
+			gCommandBufferPool = nullptr;
 			gTestPath = nullptr;
 			gTestPathRenderable = nullptr;
 			gRenderTarget = nullptr;
