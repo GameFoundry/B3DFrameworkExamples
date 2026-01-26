@@ -75,7 +75,7 @@ namespace b3d
 
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the render
 			// thread), we don't call the method directly, but rather queue it for execution using the RenderThread class.
-			GetRenderThread().PostCommand(std::bind(&render::Setup, renderWindowRenderProxy));
+			GetRenderThread().PostCommand([renderWindowRenderProxy] { render::Setup(renderWindowRenderProxy); });
 		}
 
 		// Called when the engine is about to be shut down
@@ -108,7 +108,7 @@ int B3DMain()
 	// Define a video mode for the resolution of the primary rendering window.
 	VideoMode videoMode(kWindowWidth, kWindowHeight);
 
-	ApplicationCreateInformation createInformation = Application::BuildCreateInformation(videoMode, "Mesh Clustering Visualization", false);
+	ApplicationCreateInformation createInformation = Application::BuildCreateInformation(videoMode, "Low Level Rendering", false);
 
 	// Start-up the engine using our custom MyApplication class. This will also create the primary rendering window.
 	// We provide the initial resolution of the window, its title and fullscreen state.
@@ -146,8 +146,8 @@ namespace b3d
 		SPtr<GpuBuffer> gIndexBuffer;
 		SPtr<RenderTexture> gRenderTarget;
 		SPtr<RenderWindow> gRenderWindow;
+		SPtr<GpuCommandBufferPool> gCommandBufferPool;
 		bool gUseHLSL = true;
-		bool gUseVKSL = false;
 
 		const u32 kVertexCount = 24;
 		const u32 kIndexCount = 36;
@@ -163,13 +163,19 @@ namespace b3d
 		void Setup(const SPtr<RenderWindow>& renderWindow)
 		{
 			// Determine which shading language to use (depending on the RenderAPI chosen during build)
-			gUseHLSL = strcmp(B3D_RENDER_BACKEND, "bsfD3D11RenderAPI") == 0;
-			gUseVKSL = strcmp(B3D_RENDER_BACKEND, "bsfVulkanRenderAPI") == 0;
+			gUseHLSL = strcmp(B3D_RENDER_BACKEND, "bsfD3D12RenderAPI") == 0;
+
+			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+
+			// Create a pool to allocate GPU command buffer from
+			GpuCommandBufferPoolCreateInformation poolCreateInformation;
+			poolCreateInformation.Thread = B3D_CURRENT_THREAD_ID;
+			poolCreateInformation.Type = GQT_GRAPHICS;
+
+			gCommandBufferPool = gpuDevice->CreateGpuCommandBufferPool(poolCreateInformation);
 
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;
-
-			const SPtr<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 			// Create a vertex GPU program
 			const char* vertProgSrc = GetVertexProgSource();
@@ -177,8 +183,7 @@ namespace b3d
 			GpuProgramCreateInformation vertexProgramCreateInformation;
 			vertexProgramCreateInformation.Type = GPT_VERTEX_PROGRAM;
 			vertexProgramCreateInformation.EntryPoint = "main";
-			vertexProgramCreateInformation.Language = gUseHLSL ? "hlsl" : gUseVKSL ? "vksl"
-																 : "glsl4_1";
+			vertexProgramCreateInformation.Language = gUseHLSL ? "hlsl" : "vksl";
 			vertexProgramCreateInformation.Source = vertProgSrc;
 
 			SPtr<GpuProgram> vertProg = gpuDevice->CreateGpuProgram(vertexProgramCreateInformation);
@@ -189,8 +194,7 @@ namespace b3d
 			GpuProgramCreateInformation fragmentProgramCreateInformation;
 			fragmentProgramCreateInformation.Type = GPT_FRAGMENT_PROGRAM;
 			fragmentProgramCreateInformation.EntryPoint = "main";
-			fragmentProgramCreateInformation.Language = gUseHLSL ? "hlsl" : gUseVKSL ? "vksl"
-																 : "glsl4_1";
+			fragmentProgramCreateInformation.Language = gUseHLSL ? "hlsl" : "vksl";
 			fragmentProgramCreateInformation.Source = fragProgSrc;
 
 			SPtr<GpuProgram> fragProg = gpuDevice->CreateGpuProgram(fragmentProgramCreateInformation);
@@ -313,23 +317,21 @@ namespace b3d
 
 			// Create a uniform block buffer for holding the uniform variables
 			SPtr<GpuBuffer> uniformBuffer = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateUniform(sizeof(UniformBlock)));
-			uniformBuffer->WriteCached(0, sizeof(uniformBlock), &uniformBlock);
+
+			{
+				GpuBufferMappedScope mappedBufferScope = uniformBuffer->Map(GpuMapOption::Write);
+				memcpy(mappedBufferScope.GetMappedMemory(), &uniformBlock, sizeof(uniformBlock));
+			}
 
 			// Assign the uniform buffer & texture
 			gGpuParams->SetUniformBuffer("Params", uniformBuffer);
 			gGpuParams->SetUniformBuffer("Params", uniformBuffer);
 
 			gGpuParams->SetSampledTexture("gMainTexture", gSurfaceTex);
-
-			// HLSL uses separate sampler states, so we need to use a different name for the sampler
-			if(gUseHLSL)
-				gGpuParams->SetSamplerState("gMainTexSamp", gSurfaceSampler);
-			else
-				gGpuParams->SetSamplerState("gMainTexture", gSurfaceSampler);
+			gGpuParams->SetSamplerState("gMainTexSamp", gSurfaceSampler);
 
 			// Create a command buffer
-			const SPtr<GpuCommandBufferPool>& commandBufferPool = RendererManager::Instance().GetActive()->GetCommandBufferPool();
-			SPtr<GpuCommandBuffer> commandBuffer = commandBufferPool->Create(GpuCommandBufferCreateInformation::Create("LowLevelRendering"));
+			SPtr<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("LowLevelRendering"));
 
 			// Bind render surface & clear it
 			RenderPassCreateInformation renderPassCreateInformation(gRenderTarget, gGpuParams, RT_NONE, RT_NONE);
@@ -373,6 +375,7 @@ namespace b3d
 		// Clean up any resources
 		void Shutdown()
 		{
+			gCommandBufferPool = nullptr;
 			gPipelineState = nullptr;
 			gSurfaceTex = nullptr;
 			gGpuParams = nullptr;
@@ -387,15 +390,15 @@ namespace b3d
 		/////////////////////////////////////////////////////////////////////////////////////
 		//////////////////////////////////HELPER METHODS/////////////////////////////////////
 		/////////////////////////////////////////////////////////////////////////////////////
-		void WriteBoxVertices(const AABox& box, UINT8* positions, UINT8* uvs, u32 stride)
+		void WriteBoxVertices(const AABox& box, u8* positions, u8* uvs, u32 stride)
 		{
 			AABox::Corner vertOrder[] = {
-				AABox::NEAR_LEFT_BOTTOM, AABox::NEAR_RIGHT_BOTTOM, AABox::NEAR_RIGHT_TOP, AABox::NEAR_LEFT_TOP,
-				AABox::FAR_RIGHT_BOTTOM, AABox::FAR_LEFT_BOTTOM, AABox::FAR_LEFT_TOP, AABox::FAR_RIGHT_TOP,
-				AABox::FAR_LEFT_BOTTOM, AABox::NEAR_LEFT_BOTTOM, AABox::NEAR_LEFT_TOP, AABox::FAR_LEFT_TOP,
-				AABox::NEAR_RIGHT_BOTTOM, AABox::FAR_RIGHT_BOTTOM, AABox::FAR_RIGHT_TOP, AABox::NEAR_RIGHT_TOP,
-				AABox::FAR_LEFT_TOP, AABox::NEAR_LEFT_TOP, AABox::NEAR_RIGHT_TOP, AABox::FAR_RIGHT_TOP,
-				AABox::FAR_LEFT_BOTTOM, AABox::FAR_RIGHT_BOTTOM, AABox::NEAR_RIGHT_BOTTOM, AABox::NEAR_LEFT_BOTTOM
+				AABox::NearLeftBottom, AABox::NearRightBottom, AABox::NearRightTop, AABox::NearLeftTop,
+				AABox::FarRightBottom, AABox::FarLeftBottom, AABox::FarLeftTop, AABox::FarRightTop,
+				AABox::FarLeftBottom, AABox::NearLeftBottom, AABox::NearLeftTop, AABox::FarLeftTop,
+				AABox::NearRightBottom, AABox::FarRightBottom, AABox::FarRightTop, AABox::NearRightTop,
+				AABox::FarLeftTop, AABox::NearLeftTop, AABox::NearRightTop, AABox::FarRightTop,
+				AABox::FarLeftBottom, AABox::FarRightBottom, AABox::NearRightBottom, AABox::NearLeftBottom
 			};
 
 			for(auto& entry : vertOrder)
@@ -467,7 +470,7 @@ void main(
 
 				return src;
 			}
-			else if(gUseVKSL)
+			else
 			{
 				static const char* src = R"(
 layout (binding = 0, std140) uniform Params
@@ -495,33 +498,6 @@ void main()
 
 				return src;
 			}
-			else
-			{
-				static const char* src = R"(
-layout (std140) uniform Params
-{
-	mat4 gMatWVP;
-	vec4 gTint;
-};
-
-in vec3 bs_position;
-in vec2 bs_texcoord0;
-
-out vec2 texcoord0;
-
-out gl_PerVertex
-{
-	vec4 gl_Position;
-};
-
-void main()
-{
-	gl_Position = gMatWVP * vec4(bs_position.xyz, 1);
-	texcoord0 = bs_texcoord0;
-}
-)";
-				return src;
-			}
 		}
 
 		const char* GetFragmentProgSource()
@@ -547,7 +523,7 @@ float4 main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target
 
 				return src;
 			}
-			else if(gUseVKSL)
+			else
 			{
 				static const char* src = R"(
 layout (binding = 0, std140) uniform Params
@@ -556,41 +532,19 @@ layout (binding = 0, std140) uniform Params
 	vec4 gTint;
 };
 
-layout (binding = 1) uniform sampler2D gMainTexture;
+layout (binding = 1) uniform sampler gMainTexSamp;
+layout (binding = 2) uniform texture2D gMainTexture;
 
 layout (location = 0) in vec2 texcoord0;
 layout (location = 0) out vec4 fragColor;
 
 void main()
 {
-	vec4 color = texture(gMainTexture, texcoord0.st);
+	vec4 color = texture(sampler2D(gMainTexture, gMainTexSamp), texcoord0.st);
 	fragColor = color * gTint;
 }
 )";
 
-				return src;
-			}
-			else
-			{
-
-				static const char* src = R"(
-layout (std140) uniform Params
-{
-	mat4 gMatWVP;
-	vec4 gTint;
-};
-
-uniform sampler2D gMainTexture;
-
-in vec2 texcoord0;
-out vec4 fragColor;
-
-void main()
-{
-	vec4 color = texture(gMainTexture, texcoord0.st);
-	fragColor = color * gTint;
-}
-)";
 				return src;
 			}
 		}

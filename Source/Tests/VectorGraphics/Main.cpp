@@ -129,6 +129,15 @@ namespace b3d
 		// Initializes any resources required for rendering
 		void Setup(const SPtr<RenderWindow>& renderWindow)
 		{
+			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+
+			// Create a pool to allocate GPU command buffer from
+			GpuCommandBufferPoolCreateInformation poolCreateInformation;
+			poolCreateInformation.Thread = B3D_CURRENT_THREAD_ID;
+			poolCreateInformation.Type = GQT_GRAPHICS;
+
+			gCommandBufferPool = gpuDevice->CreateGpuCommandBufferPool(poolCreateInformation);
+
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;
 
@@ -483,11 +492,6 @@ namespace b3d
 			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 			// Create a command buffer
-			GpuCommandBufferPoolCreateInformation poolCreateInformation;
-			poolCreateInformation.Thread = B3D_CURRENT_THREAD_ID;
-			poolCreateInformation.Type = GQT_GRAPHICS;
-
-			gCommandBufferPool = gpuDevice->CreateGpuCommandBufferPool(poolCreateInformation);
 			SPtr<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
 
 			const SPtr<GpuParameterSet> gpuParameters = gTestPathRenderable->Prepare();
