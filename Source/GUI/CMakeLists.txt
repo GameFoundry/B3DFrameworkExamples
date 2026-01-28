@@ -16,5 +16,8 @@ target_link_libraries(GUI Common)
 B3DAddRuntimeDependencies(GUI)
 add_dependencies(GUI bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(GUI)
+
 # IDE specific
 set_property(TARGET GUI PROPERTY FOLDER Examples)

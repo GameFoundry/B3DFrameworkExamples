@@ -16,5 +16,8 @@ target_link_libraries(Lighting Common)
 B3DAddRuntimeDependencies(Lighting)
 add_dependencies(Lighting bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(Lighting)
+
 # IDE specific
 set_property(TARGET Lighting PROPERTY FOLDER Examples)

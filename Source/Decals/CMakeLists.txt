@@ -16,5 +16,8 @@ target_link_libraries(Decals Common)
 B3DAddRuntimeDependencies(Decals)
 add_dependencies(Decals bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(Decals)
+
 # IDE specific
 set_property(TARGET Decals PROPERTY FOLDER Examples)

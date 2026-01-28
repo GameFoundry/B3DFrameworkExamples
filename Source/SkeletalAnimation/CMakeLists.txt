@@ -16,5 +16,8 @@ target_link_libraries(SkeletalAnimation Common)
 B3DAddRuntimeDependencies(SkeletalAnimation)
 add_dependencies(SkeletalAnimation bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(SkeletalAnimation)
+
 # IDE specific
 set_property(TARGET SkeletalAnimation PROPERTY FOLDER Examples)

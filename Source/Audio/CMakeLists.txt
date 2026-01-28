@@ -16,5 +16,8 @@ target_link_libraries(Audio Common)
 B3DAddRuntimeDependencies(Audio)
 add_dependencies(Audio bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(Audio)
+
 # IDE specific
 set_property(TARGET Audio PROPERTY FOLDER Examples)

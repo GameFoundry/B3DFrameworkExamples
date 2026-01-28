@@ -16,5 +16,8 @@ target_link_libraries(PhysicallyBasedShading Common)
 B3DAddRuntimeDependencies(PhysicallyBasedShading)
 add_dependencies(PhysicallyBasedShading bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(PhysicallyBasedShading)
+
 # IDE specific
 set_property(TARGET PhysicallyBasedShading PROPERTY FOLDER Examples)

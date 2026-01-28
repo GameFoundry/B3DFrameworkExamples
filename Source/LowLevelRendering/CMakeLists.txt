@@ -16,5 +16,8 @@ target_link_libraries(LowLevelRendering Common)
 B3DAddRuntimeDependencies(LowLevelRendering)
 add_dependencies(LowLevelRendering bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(LowLevelRendering)
+
 # IDE specific
 set_property(TARGET LowLevelRendering PROPERTY FOLDER Examples)

@@ -16,5 +16,8 @@ target_link_libraries(Physics Common)
 B3DAddRuntimeDependencies(Physics)
 add_dependencies(Physics bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(Physics)
+
 # IDE specific
 set_property(TARGET Physics PROPERTY FOLDER Examples)

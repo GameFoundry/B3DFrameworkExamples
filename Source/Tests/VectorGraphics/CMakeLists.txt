@@ -16,5 +16,8 @@ target_link_libraries(VectorGraphics Common)
 B3DAddRuntimeDependencies(VectorGraphics)
 add_dependencies(VectorGraphics bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(VectorGraphics)
+
 # IDE specific
 set_property(TARGET VectorGraphics PROPERTY FOLDER Examples/Tests)

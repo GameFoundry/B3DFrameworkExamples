@@ -16,5 +16,8 @@ target_link_libraries(GUICulling Common)
 B3DAddRuntimeDependencies(GUICulling)
 add_dependencies(GUICulling bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(GUICulling)
+
 # IDE specific
 set_property(TARGET GUICulling PROPERTY FOLDER Examples/Tests)

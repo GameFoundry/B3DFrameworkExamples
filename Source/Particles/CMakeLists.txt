@@ -16,5 +16,8 @@ target_link_libraries(Particles Common)
 B3DAddRuntimeDependencies(Particles)
 add_dependencies(Particles bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(Particles)
+
 # IDE specific
 set_property(TARGET Particles PROPERTY FOLDER Examples)

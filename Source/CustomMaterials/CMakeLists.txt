@@ -16,5 +16,8 @@ target_link_libraries(CustomMaterials Common)
 B3DAddRuntimeDependencies(CustomMaterials)
 add_dependencies(CustomMaterials bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
 
+# Install
+B3DSetUpPostBuildAndInstallSteps(CustomMaterials)
+
 # IDE specific
 set_property(TARGET CustomMaterials PROPERTY FOLDER Examples)
