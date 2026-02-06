@@ -4,10 +4,12 @@ if(WIN32)
 else()
 	add_executable(Audio "Main.cpp")
 endif()
-	
+
+B3DSetDefaultLinkAndCompileFlags(Audio)
+
 # Working directory
-set_target_properties(Audio PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")		
-	
+set_target_properties(Audio PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
 # Libraries
 ## Local libs
 target_link_libraries(Audio Common)

@@ -4,10 +4,12 @@ if(WIN32)
 else()
 	add_executable(Particles "Main.cpp")
 endif()
-	
+
+B3DSetDefaultLinkAndCompileFlags(Particles)
+
 # Working directory
-set_target_properties(Particles PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")		
-	
+set_target_properties(Particles PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
 # Libraries
 ## Local libs
 target_link_libraries(Particles Common)

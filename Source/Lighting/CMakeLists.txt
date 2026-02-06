@@ -5,6 +5,8 @@ else()
 	add_executable(Lighting "Main.cpp")
 endif()
 
+B3DSetDefaultLinkAndCompileFlags(Lighting)
+
 # Working directory
 set_target_properties(Lighting PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
 

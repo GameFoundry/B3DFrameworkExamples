@@ -4,10 +4,12 @@ if(WIN32)
 else()
 	add_executable(VectorGraphics "Main.cpp")
 endif()
-	
+
+B3DSetDefaultLinkAndCompileFlags(VectorGraphics)
+
 # Working directory
-set_target_properties(VectorGraphics PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")	
-	
+set_target_properties(VectorGraphics PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
 # Libraries
 ## Local libs
 target_link_libraries(VectorGraphics Common)

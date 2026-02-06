@@ -4,10 +4,12 @@ if(WIN32)
 else()
 	add_executable(PhysicallyBasedShading "Main.cpp")
 endif()
-	
+
+B3DSetDefaultLinkAndCompileFlags(PhysicallyBasedShading)
+
 # Working directory
-set_target_properties(PhysicallyBasedShading PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")		
-	
+set_target_properties(PhysicallyBasedShading PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
 # Libraries
 ## Local libs
 target_link_libraries(PhysicallyBasedShading Common)

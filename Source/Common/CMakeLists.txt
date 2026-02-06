@@ -4,9 +4,11 @@ include(CMakeSources.cmake)
 # Target
 add_library(Common STATIC ${B3D_COMMON_SOURCE_FILES})
 
+B3DSetDefaultLinkAndCompileFlags(Common)
+
 # Includes
 target_include_directories(Common PUBLIC "./")
-	
+
 # Libraries
 ## Local libs
 target_link_libraries(Common bsf)

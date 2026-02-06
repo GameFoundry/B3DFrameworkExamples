@@ -4,10 +4,12 @@ if(WIN32)
 else()
 	add_executable(GUICulling "Main.cpp")
 endif()
-	
+
+B3DSetDefaultLinkAndCompileFlags(GUICulling)
+
 # Working directory
 set_target_properties(GUICulling PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
-	
+
 # Libraries
 ## Local libs
 target_link_libraries(GUICulling Common)

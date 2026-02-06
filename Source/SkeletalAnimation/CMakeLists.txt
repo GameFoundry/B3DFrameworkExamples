@@ -4,10 +4,12 @@ if(WIN32)
 else()
 	add_executable(SkeletalAnimation "Main.cpp")
 endif()
-	
+
+B3DSetDefaultLinkAndCompileFlags(SkeletalAnimation)
+
 # Working directory
-set_target_properties(SkeletalAnimation PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")		
-	
+set_target_properties(SkeletalAnimation PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
 # Libraries
 ## Local libs
 target_link_libraries(SkeletalAnimation Common)

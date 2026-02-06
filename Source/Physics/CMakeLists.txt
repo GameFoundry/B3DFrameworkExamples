@@ -4,10 +4,12 @@ if(WIN32)
 else()
 	add_executable(Physics "Main.cpp")
 endif()
-	
+
+B3DSetDefaultLinkAndCompileFlags(Physics)
+
 # Working directory
-set_target_properties(Physics PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")		
-	
+set_target_properties(Physics PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
 # Libraries
 ## Local libs
 target_link_libraries(Physics Common)

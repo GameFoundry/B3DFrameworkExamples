@@ -4,10 +4,12 @@ if(WIN32)
 else()
 	add_executable(LowLevelRendering "Main.cpp")
 endif()
-	
+
+B3DSetDefaultLinkAndCompileFlags(LowLevelRendering)
+
 # Working directory
-set_target_properties(LowLevelRendering PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")	
-	
+set_target_properties(LowLevelRendering PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
 # Libraries
 ## Local libs
 target_link_libraries(LowLevelRendering Common)

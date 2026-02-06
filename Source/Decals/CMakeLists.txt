@@ -4,10 +4,12 @@ if(WIN32)
 else()
 	add_executable(Decals "Main.cpp")
 endif()
-	
+
+B3DSetDefaultLinkAndCompileFlags(Decals)
+
 # Working directory
-set_target_properties(Decals PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")		
-	
+set_target_properties(Decals PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(OutDir)")
+
 # Libraries
 ## Local libs
 target_link_libraries(Decals Common)
