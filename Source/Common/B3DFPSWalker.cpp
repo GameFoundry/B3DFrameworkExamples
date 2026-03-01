@@ -87,7 +87,7 @@ namespace b3d
 		}
 
 		// If the current speed isn't too small, move the camera in the wanted direction
-		Vector3 velocity(BsZero);
+		Vector3 velocity(kZeroTag);
 		float tooSmall = std::numeric_limits<float>::epsilon();
 		if(mCurrentSpeed > tooSmall)
 			velocity = direction * mCurrentSpeed;

@@ -558,7 +558,7 @@ void main()
 			Vector3 cameraPos = Vector3(0.0f, -20.0f, 50.0f);
 			Vector3 lookDir = -Vector3::Normalize(cameraPos);
 
-			Quaternion cameraRot(BsIdentity);
+			Quaternion cameraRot(kIdentityTag);
 			cameraRot.LookRotation(lookDir);
 
 			Matrix4 view = Matrix4::View(cameraPos, cameraRot);
