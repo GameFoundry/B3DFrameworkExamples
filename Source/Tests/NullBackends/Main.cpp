@@ -45,13 +45,8 @@ int B3DMain()
 	HCamera camera = cameraSceneObject->AddComponent<Camera>();
 	camera->GetViewport()->SetTarget(window);
 
-	// Run for a small number of frames then exit
-	GetApplication().BeginMainLoop();
-
-	for (u32 frameIndex = 0; frameIndex < 10; frameIndex++)
-		GetApplication().RunMainLoopFrame();
-
-	GetApplication().EndMainLoop();
+	// Run the main loop (should run with --exit-after-n-frames as otherwise you can't exit the app)
+	GetApplication().RunMainLoop();
 
 	Application::ShutDown();
 
