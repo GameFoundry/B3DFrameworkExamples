@@ -25,7 +25,19 @@ int B3DMain()
 	using namespace b3d;
 
 	VideoMode videoMode(320, 240);
-	Application::StartUp(videoMode, "NullBackendsTest", false);
+
+	ApplicationCreateInformation createInformation =
+		Application::BuildCreateInformation(videoMode, "NullBackendsTest", false);
+
+	// Override default plugins with null backends so this test works regardless of which
+	// backends the build was configured with (e.g. when using B3D_BUILD_ALL_PLUGINS)
+	createInformation.RenderApi = "bsfNullRenderAPI";
+	createInformation.Renderer = "bsfNullRenderer";
+	createInformation.Audio = "bsfNullAudio";
+	createInformation.Physics = "bsfNullPhysics";
+	createInformation.PhysicsCooking = false;
+
+	Application::StartUp(createInformation);
 
 	// Create a minimal scene with a camera so the engine exercises its full frame pipeline
 	const SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
@@ -34,8 +46,12 @@ int B3DMain()
 	camera->GetViewport()->SetTarget(window);
 
 	// Run for a small number of frames then exit
+	GetApplication().BeginMainLoop();
+
 	for (u32 frameIndex = 0; frameIndex < 10; frameIndex++)
 		GetApplication().RunMainLoopFrame();
+
+	GetApplication().EndMainLoop();
 
 	Application::ShutDown();
 
