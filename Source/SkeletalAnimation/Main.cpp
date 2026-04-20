@@ -8,7 +8,7 @@
 #include "Components/B3DRenderable.h"
 #include "Components/B3DAnimation.h"
 #include "Components/B3DSkybox.h"
-#include "RenderAPI/B3DRenderWindow.h"
+#include "GpuBackend/B3DRenderWindow.h"
 #include "Scene/B3DSceneObject.h"
 
 // Example includes

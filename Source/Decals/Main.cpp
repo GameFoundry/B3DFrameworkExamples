@@ -12,7 +12,7 @@
 #include "Components/B3DCharacterController.h"
 #include "Components/B3DRigidbody.h"
 #include "Physics/B3DPhysicsMaterial.h"
-#include "RenderAPI/B3DRenderWindow.h"
+#include "GpuBackend/B3DRenderWindow.h"
 #include "Scene/B3DSceneObject.h"
 #include "Input/B3DInput.h"
 #include "Components/B3DDecal.h"

@@ -12,7 +12,7 @@
 #include "GUI/B3DGUIPanel.h"
 #include "GUI/B3DGUILayoutY.h"
 #include "GUI/B3DGUILabel.h"
-#include "RenderAPI/B3DRenderWindow.h"
+#include "GpuBackend/B3DRenderWindow.h"
 #include "Scene/B3DSceneObject.h"
 #include "Renderer/B3DRenderer.h"
 #include "Material/B3DShader.h"

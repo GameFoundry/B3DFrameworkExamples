@@ -9,7 +9,7 @@
 #include "Components/B3DCamera.h"
 #include "Components/B3DAudioSource.h"
 #include "Components/B3DAudioListener.h"
-#include "RenderAPI/B3DRenderWindow.h"
+#include "GpuBackend/B3DRenderWindow.h"
 #include "Scene/B3DSceneObject.h"
 #include "Importer/B3DImporter.h"
 #include "Utility/B3DTime.h"

@@ -6,7 +6,7 @@
 #include "B3DEntry.h"
 #include "Scene/B3DSceneObject.h"
 #include "Components/B3DCamera.h"
-#include "RenderAPI/B3DRenderWindow.h"
+#include "GpuBackend/B3DRenderWindow.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Null backends snapshot test.
@@ -31,7 +31,7 @@ int B3DMain()
 
 	// Override default plugins with null backends so this test works regardless of which
 	// backends the build was configured with (e.g. when using B3D_BUILD_ALL_PLUGINS)
-	createInformation.RenderApi = "bsfNullRenderAPI";
+	createInformation.GpuBackend = "bsfNullGpuBackend";
 	createInformation.Renderer = "bsfNullRenderer";
 	createInformation.Audio = "bsfNullAudio";
 	createInformation.Physics = "bsfNullPhysics";

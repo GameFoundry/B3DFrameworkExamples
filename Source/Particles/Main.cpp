@@ -14,7 +14,7 @@
 #include "Image/B3DSpriteTexture.h"
 #include "Particles/B3DParticleEmitter.h"
 #include "Particles/B3DParticleEvolver.h"
-#include "RenderAPI/B3DRenderWindow.h"
+#include "GpuBackend/B3DRenderWindow.h"
 #include "Scene/B3DSceneObject.h"
 #include "Platform/B3DCursor.h"
 #include "Input/B3DInput.h"

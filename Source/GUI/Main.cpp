@@ -15,7 +15,7 @@
 #include "GUI/B3DGUIToggle.h"
 #include "GUI/B3DGUIScrollArea.h"
 #include "GUI/B3DGUISpace.h"
-#include "RenderAPI/B3DRenderWindow.h"
+#include "GpuBackend/B3DRenderWindow.h"
 #include "Scene/B3DSceneObject.h"
 #include "B3DExampleFramework.h"
 #include "GUI/StyleSheet/B3DGUIStyleSheet.h"

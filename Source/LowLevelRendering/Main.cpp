@@ -2,22 +2,22 @@
 #include "B3DEntry.h"
 #include "Material/B3DMaterial.h"
 #include "CoreObject/B3DRenderThread.h"
-#include "RenderAPI/B3DRenderWindow.h"
-#include "RenderAPI/B3DGpuCommandBuffer.h"
-#include "RenderAPI/B3DGpuProgram.h"
-#include "RenderAPI/B3DGpuPipelineState.h"
-#include "RenderAPI/B3DGpuBuffer.h"
-#include "RenderAPI/B3DVertexDescription.h"
+#include "GpuBackend/B3DRenderWindow.h"
+#include "GpuBackend/B3DGpuCommandBuffer.h"
+#include "GpuBackend/B3DGpuProgram.h"
+#include "GpuBackend/B3DGpuPipelineState.h"
+#include "GpuBackend/B3DGpuBuffer.h"
+#include "GpuBackend/B3DVertexDescription.h"
 #include "Mesh/B3DMeshData.h"
 #include "Math/B3DQuaternion.h"
 #include "Utility/B3DTime.h"
 #include "Renderer/B3DRendererUtility.h"
 #include "B3DEngineConfig.h"
 #include "Image/B3DTexture.h"
-#include "RenderAPI/B3DRenderTexture.h"
+#include "GpuBackend/B3DRenderTexture.h"
 #include "Renderer/B3DRenderer.h"
 #include "Renderer/B3DRendererManager.h"
-#include "RenderAPI/B3DGpuParameterSetPool.h"
+#include "GpuBackend/B3DGpuParameterSetPool.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This example uses the low-level rendering API to render a textured cube mesh. This is opposed to using scene objects
@@ -162,8 +162,8 @@ namespace b3d
 		// Initializes any resources required for rendering
 		void Setup(const SPtr<RenderWindow>& renderWindow)
 		{
-			// Determine which shading language to use (depending on the RenderAPI chosen during build)
-			gUseHLSL = strcmp(B3D_RENDER_BACKEND, "bsfD3D12RenderAPI") == 0;
+			// Determine which shading language to use (depending on the GPU backend chosen during build)
+			gUseHLSL = strcmp(B3D_GPU_BACKEND, "bsfD3D12GpuBackend") == 0;
 
 			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
