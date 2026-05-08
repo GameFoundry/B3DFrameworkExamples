@@ -36,7 +36,7 @@ namespace b3d
 	void SetUpGui()
 	{
 		// Set up camera & GUI widget
-		const SPtr<RenderWindow> applicationWindow = GetApplication().GetPrimaryWindow();
+		const TShared<RenderWindow> applicationWindow = GetApplication().GetPrimaryWindow();
 		HSceneObject cameraSceneObject = SceneObject::Create("SceneCamera");
 
 		HCamera camera = cameraSceneObject->AddComponent<Camera>();
@@ -45,7 +45,7 @@ namespace b3d
 		const Color gray = Color(51 / 255.0f, 51 / 255.0f, 51 / 255.0f);
 		camera->GetViewport()->SetClearColorValue(gray);
 
-		const SPtr<RenderSettings>& renderSettings = camera->GetRenderSettings();
+		const TShared<RenderSettings>& renderSettings = camera->GetRenderSettings();
 		renderSettings->OverlayOnly = true;
 		camera->SetRenderSettings(renderSettings);
 

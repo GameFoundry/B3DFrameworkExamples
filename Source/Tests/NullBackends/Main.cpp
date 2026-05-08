@@ -40,7 +40,7 @@ int B3DMain()
 	Application::StartUp(createInformation);
 
 	// Create a minimal scene with a camera so the engine exercises its full frame pipeline
-	const SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
+	const TShared<RenderWindow> window = GetApplication().GetPrimaryWindow();
 	HSceneObject cameraSceneObject = SceneObject::Create("TestCamera");
 	HCamera camera = cameraSceneObject->AddComponent<Camera>();
 	camera->GetViewport()->SetTarget(window);

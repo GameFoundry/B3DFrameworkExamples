@@ -62,7 +62,7 @@ namespace b3d
 		// Eliminate vertical movement
 		direction.Y = 0.0f;
 
-		const SPtr<SceneInstance> sceneInstance = SceneManager::Instance().GetMainScene();
+		const TShared<SceneInstance> sceneInstance = SceneManager::Instance().GetMainScene();
 		B3D_ASSERT(sceneInstance != nullptr);
 
 		const float frameDelta = sceneInstance->GetTime().GetFixedFrameDelta();
@@ -92,7 +92,7 @@ namespace b3d
 		if(mCurrentSpeed > tooSmall)
 			velocity = direction * mCurrentSpeed;
 
-		const SPtr<PhysicsScene> physicsScene = sceneInstance->GetPhysicsScene();
+		const TShared<PhysicsScene> physicsScene = sceneInstance->GetPhysicsScene();
 
 		// Note: Gravity is acceleration, but since the walker doesn't support falling, just apply it as a velocity
 		Vector3 gravity = physicsScene->GetGravity();

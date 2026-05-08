@@ -33,7 +33,7 @@ namespace b3d
 	// an object has variants of its type usable from main and render threads.
 	namespace render
 	{
-		void Setup(const SPtr<RenderWindow>& renderWindow);
+		void Setup(const TShared<RenderWindow>& renderWindow);
 		void Render();
 		void Shutdown();
 	} // namespace render
@@ -57,10 +57,10 @@ namespace b3d
 
 			// Get the primary window that was created during start-up. This will be the final destination for all our
 			// rendering.
-			SPtr<RenderWindow> renderWindow = GetPrimaryWindow();
+			TShared<RenderWindow> renderWindow = GetPrimaryWindow();
 
 			// Get the version of the render window usable on the render thread, and send it along to setup()
-			SPtr<render::RenderWindow> renderWindowRenderProxy = B3DGetRenderProxy(renderWindow);
+			TShared<render::RenderWindow> renderWindowRenderProxy = B3DGetRenderProxy(renderWindow);
 
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the render
 			// thread), we don't call the method directly, but rather queue it for execution using the RenderThread class.
@@ -117,19 +117,19 @@ namespace b3d
 	{
 		// Fields where we'll store the resources required during calls to Render(). These are initialized in Setup()
 		// and cleaned up in ShutDown()
-		SPtr<b3d::VectorPath> gTestPath;
-		SPtr<b3d::VectorPath> gCheckmarkPath;
-		SPtr<VectorPathRenderable> gTestPathRenderable;
-		SPtr<VectorPathRenderable> gCheckmarkPathRenderable;
-		SPtr<GpuCommandBufferPool> gCommandBufferPool;
+		TShared<b3d::VectorPath> gTestPath;
+		TShared<b3d::VectorPath> gCheckmarkPath;
+		TShared<VectorPathRenderable> gTestPathRenderable;
+		TShared<VectorPathRenderable> gCheckmarkPathRenderable;
+		TShared<GpuCommandBufferPool> gCommandBufferPool;
 
-		SPtr<RenderTexture> gRenderTarget;
-		SPtr<RenderWindow> gRenderWindow;
+		TShared<RenderTexture> gRenderTarget;
+		TShared<RenderWindow> gRenderWindow;
 
 		// Initializes any resources required for rendering
-		void Setup(const SPtr<RenderWindow>& renderWindow)
+		void Setup(const TShared<RenderWindow>& renderWindow)
 		{
-			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 			// Create a pool to allocate GPU command buffer from
 			GpuCommandBufferPoolCreateInformation poolCreateInformation;
@@ -143,7 +143,7 @@ namespace b3d
 
 			auto fnCreateRenderTexture = [](u32 width, u32 height)
 			{
-				const SPtr<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice();
+				const TShared<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 				TextureCreateInformation colorTextureCreateInformation;
 				colorTextureCreateInformation.Width = width;
@@ -151,7 +151,7 @@ namespace b3d
 				colorTextureCreateInformation.Format = PF_RGBA8;
 				colorTextureCreateInformation.Usage = TextureUsageFlag::RenderTarget;
 
-				const SPtr<Texture> colorTexture = gpuDevice->CreateTexture(colorTextureCreateInformation);
+				const TShared<Texture> colorTexture = gpuDevice->CreateTexture(colorTextureCreateInformation);
 
 				TextureCreateInformation stencilTextureCreateInformation;
 				stencilTextureCreateInformation.Width = width;
@@ -159,7 +159,7 @@ namespace b3d
 				stencilTextureCreateInformation.Format = PF_D32_S8X24;
 				stencilTextureCreateInformation.Usage = TextureUsageFlag::DepthStencil;
 
-				const SPtr<Texture> stencilTexture = gpuDevice->CreateTexture(stencilTextureCreateInformation);
+				const TShared<Texture> stencilTexture = gpuDevice->CreateTexture(stencilTextureCreateInformation);
 
 				// Create the render surface
 				RenderTextureCreateInformation renderTextureCreateInformation;
@@ -489,12 +489,12 @@ namespace b3d
 		// Render the box, called every frame
 		void Render()
 		{
-			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 			// Create a command buffer
-			SPtr<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
+			TShared<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
 
-			const SPtr<GpuParameterSet> gpuParameters = gTestPathRenderable->Prepare();
+			const TShared<GpuParameterSet> gpuParameters = gTestPathRenderable->Prepare();
 
 			// Bind render surface & clear it
 			RenderPassCreateInformation renderPassCreateInformation(gRenderTarget, gpuParameters, RT_NONE, RT_NONE);
@@ -516,7 +516,7 @@ namespace b3d
 			// Blit the image from the render texture, to the render window
 			commandBuffer->EndRenderPass();
 
-			SPtr<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
+			TShared<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.

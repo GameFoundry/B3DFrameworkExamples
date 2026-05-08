@@ -146,7 +146,7 @@ namespace b3d
 			{
 				// When importing you may specify optional import options that control how is the asset imported.
 				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
-				SPtr<ImportOptions> meshImportOptions = Importer::Instance().CreateImportOptions(sourceAssetPath);
+				TShared<ImportOptions> meshImportOptions = Importer::Instance().CreateImportOptions(sourceAssetPath);
 
 				// B3DRTTIIsOfType checks if the import options are of valid type, in case the provided path is pointing to a
 				// non-mesh resource. This is similar to dynamic_cast but uses Banshee internal RTTI system for type checking.
@@ -214,7 +214,7 @@ namespace b3d
 			{
 				// When importing you may specify optional import options that control how is the asset imported.
 				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
-				SPtr<ImportOptions> textureImportOptions = Importer::Instance().CreateImportOptions(sourceAssetPath);
+				TShared<ImportOptions> textureImportOptions = Importer::Instance().CreateImportOptions(sourceAssetPath);
 
 				// B3DRTTIIsOfType checks if the import options are of valid type, in case the provided path is pointing to a
 				// non-texture resource. This is similar to dynamic_cast but uses Banshee internal RTTI system for type checking.
@@ -311,7 +311,7 @@ namespace b3d
 				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
 
 				// When importing you may specify optional import options that control how is the asset imported.
-				SPtr<FontImportOptions> fontImportOptions = FontImportOptions::Create();
+				TShared<FontImportOptions> fontImportOptions = FontImportOptions::Create();
 				HFont font = GetImporter().Import<Font>(sourceAssetPath, fontImportOptions);
 
 				// Save for later use, so we don't have to import on the next run.

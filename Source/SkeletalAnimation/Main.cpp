@@ -58,13 +58,13 @@ namespace b3d
 
 		// Set up mesh import options so that we import information about the skeleton and the skin, as well as any
 		// animation clips the model might have.
-		SPtr<MeshImportOptions> meshImportOptions = MeshImportOptions::Create();
+		TShared<MeshImportOptions> meshImportOptions = MeshImportOptions::Create();
 		meshImportOptions->ImportSkin = true;
 		meshImportOptions->ImportAnimation = true;
 
 		// The FBX file contains multiple resources (a mesh and an animation clip), therefore we use importAll() method,
 		// which imports all resources in a file.
-		SPtr<MultiResource> modelResources = GetImporter().ImportAll(modelPath, meshImportOptions);
+		TShared<MultiResource> modelResources = GetImporter().ImportAll(modelPath, meshImportOptions);
 		for(auto& entry : modelResources->Entries)
 		{
 			if(B3DRTTIIsOfType<Mesh>(entry.Value.Get()))
@@ -143,7 +143,7 @@ namespace b3d
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
+		TShared<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).
@@ -162,7 +162,7 @@ namespace b3d
 		sceneCamera->SetAspectRatio(kWindowWidth / (float)kWindowHeight);
 
 		// Enable indirect lighting so we get accurate diffuse lighting from the skybox environment map
-		const SPtr<RenderSettings>& renderSettings = sceneCamera->GetRenderSettings();
+		const TShared<RenderSettings>& renderSettings = sceneCamera->GetRenderSettings();
 		renderSettings->EnableIndirectLighting = true;
 
 		sceneCamera->SetRenderSettings(renderSettings);

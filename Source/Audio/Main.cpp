@@ -76,7 +76,7 @@ namespace b3d
 		// Import the music audio clip. Compress the imported data to Vorbis format to save space, at the cost of decoding
 		// performance. Also since it's a longer audio clip, use streaming to avoid loading the entire clip into memory,
 		// at the additional cost of performance and IO overhead.
-		SPtr<AudioClipImportOptions> musicImportOptions = AudioClipImportOptions::Create();
+		TShared<AudioClipImportOptions> musicImportOptions = AudioClipImportOptions::Create();
 		musicImportOptions->Format = AudioFormat::VORBIS;
 		musicImportOptions->ReadMode = AudioReadMode::Stream;
 		musicImportOptions->Is3D = false;
@@ -87,7 +87,7 @@ namespace b3d
 		// cost of decoding performance. Same as the music clip, this is also a longer clip, but instead of streaming we
 		// load the compressed data and just uncompress on the fly. This saves on IO overhead at the cost of little
 		// extra memory.
-		SPtr<AudioClipImportOptions> environmentImportOptions = AudioClipImportOptions::Create();
+		TShared<AudioClipImportOptions> environmentImportOptions = AudioClipImportOptions::Create();
 		environmentImportOptions->Format = AudioFormat::VORBIS;
 		environmentImportOptions->ReadMode = AudioReadMode::LoadCompressed;
 		environmentImportOptions->Is3D = true;
@@ -95,7 +95,7 @@ namespace b3d
 		HAudioClip environmentClip = GetImporter().Import<AudioClip>(environmentClipPath, environmentImportOptions);
 
 		// Import a short audio cue. Use the uncompressed PCM audio format for fast playback, at the cost of memory.
-		SPtr<AudioClipImportOptions> cueImportOptions = AudioClipImportOptions::Create();
+		TShared<AudioClipImportOptions> cueImportOptions = AudioClipImportOptions::Create();
 		cueImportOptions->Format = AudioFormat::PCM;
 		cueImportOptions->Is3D = true;
 
@@ -111,7 +111,7 @@ namespace b3d
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
+		TShared<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).

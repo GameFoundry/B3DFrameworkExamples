@@ -42,7 +42,7 @@ namespace b3d
 	u32 kWindowWidth = 1280;
 	u32 kWindowHeight = 720;
 
-	SPtr<Decal> decal;
+	TShared<Decal> decal;
 
 	/** Set up the scene used by the example, and the camera to view the world through. */
 	void SetUpScene()
@@ -132,7 +132,7 @@ namespace b3d
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
+		TShared<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).

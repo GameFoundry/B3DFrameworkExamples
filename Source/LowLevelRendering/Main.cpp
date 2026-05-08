@@ -44,7 +44,7 @@ namespace b3d
 	// an object has variants of its type usable from main and render threads.
 	namespace render
 	{
-		void Setup(const SPtr<RenderWindow>& renderWindow);
+		void Setup(const TShared<RenderWindow>& renderWindow);
 		void Render();
 		void Shutdown();
 	} // namespace render
@@ -68,10 +68,10 @@ namespace b3d
 
 			// Get the primary window that was created during start-up. This will be the final destination for all our
 			// rendering.
-			SPtr<RenderWindow> renderWindow = GetPrimaryWindow();
+			TShared<RenderWindow> renderWindow = GetPrimaryWindow();
 
 			// Get the version of the render window usable on the render thread, and send it along to setup()
-			SPtr<render::RenderWindow> renderWindowRenderProxy = B3DGetRenderProxy(renderWindow);
+			TShared<render::RenderWindow> renderWindowRenderProxy = B3DGetRenderProxy(renderWindow);
 
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the render
 			// thread), we don't call the method directly, but rather queue it for execution using the RenderThread class.
@@ -137,16 +137,16 @@ namespace b3d
 
 		// Fields where we'll store the resources required during calls to render(). These are initialized in setup()
 		// and cleaned up in shutDown()
-		SPtr<GpuGraphicsPipelineState> gPipelineState;
-		SPtr<Texture> gSurfaceTex;
-		SPtr<SamplerState> gSurfaceSampler;
-		SPtr<GpuParameterSet> gGpuParams;
-		SPtr<VertexDescription> gVertexDescription;
-		SPtr<GpuBuffer> gVertexBuffer;
-		SPtr<GpuBuffer> gIndexBuffer;
-		SPtr<RenderTexture> gRenderTarget;
-		SPtr<RenderWindow> gRenderWindow;
-		SPtr<GpuCommandBufferPool> gCommandBufferPool;
+		TShared<GpuGraphicsPipelineState> gPipelineState;
+		TShared<Texture> gSurfaceTex;
+		TShared<SamplerState> gSurfaceSampler;
+		TShared<GpuParameterSet> gGpuParams;
+		TShared<VertexDescription> gVertexDescription;
+		TShared<GpuBuffer> gVertexBuffer;
+		TShared<GpuBuffer> gIndexBuffer;
+		TShared<RenderTexture> gRenderTarget;
+		TShared<RenderWindow> gRenderWindow;
+		TShared<GpuCommandBufferPool> gCommandBufferPool;
 		bool gUseHLSL = true;
 
 		const u32 kVertexCount = 24;
@@ -160,12 +160,12 @@ namespace b3d
 		};
 
 		// Initializes any resources required for rendering
-		void Setup(const SPtr<RenderWindow>& renderWindow)
+		void Setup(const TShared<RenderWindow>& renderWindow)
 		{
 			// Determine which shading language to use (depending on the GPU backend chosen during build)
 			gUseHLSL = strcmp(B3D_GPU_BACKEND, "bsfD3D12GpuBackend") == 0;
 
-			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 			// Create a pool to allocate GPU command buffer from
 			GpuCommandBufferPoolCreateInformation poolCreateInformation;
@@ -186,7 +186,7 @@ namespace b3d
 			vertexProgramCreateInformation.Language = gUseHLSL ? "hlsl" : "vksl";
 			vertexProgramCreateInformation.Source = vertProgSrc;
 
-			SPtr<GpuProgram> vertProg = gpuDevice->CreateGpuProgram(vertexProgramCreateInformation);
+			TShared<GpuProgram> vertProg = gpuDevice->CreateGpuProgram(vertexProgramCreateInformation);
 
 			// Create a fragment GPU program
 			const char* fragProgSrc = GetFragmentProgSource();
@@ -197,7 +197,7 @@ namespace b3d
 			fragmentProgramCreateInformation.Language = gUseHLSL ? "hlsl" : "vksl";
 			fragmentProgramCreateInformation.Source = fragProgSrc;
 
-			SPtr<GpuProgram> fragProg = gpuDevice->CreateGpuProgram(fragmentProgramCreateInformation);
+			TShared<GpuProgram> fragProg = gpuDevice->CreateGpuProgram(fragmentProgramCreateInformation);
 
 			// Create a graphics pipeline state
 			BlendStateInformation blendDesc;
@@ -264,7 +264,7 @@ namespace b3d
 			B3DStackFree(ibData);
 
 			// Create a simple 2x2 checkerboard texture to map to the object we're about to render
-			SPtr<PixelData> pixelData = PixelData::Create(2, 2, 1, PF_RGBA8);
+			TShared<PixelData> pixelData = PixelData::Create(2, 2, 1, PF_RGBA8);
 			pixelData->SetColorAt(Color::kWhite, 0, 0);
 			pixelData->SetColorAt(Color::kBlack, 1, 0);
 			pixelData->SetColorAt(Color::kWhite, 1, 1);
@@ -286,7 +286,7 @@ namespace b3d
 			colorAttDesc.Format = PF_RGBA8;
 			colorAttDesc.Usage = TextureUsageFlag::RenderTarget;
 
-			SPtr<Texture> colorAtt = gpuDevice->CreateTexture(colorAttDesc);
+			TShared<Texture> colorAtt = gpuDevice->CreateTexture(colorAttDesc);
 
 			// Create a depth attachment texture for the render surface
 			TextureCreateInformation depthAttDesc;
@@ -295,7 +295,7 @@ namespace b3d
 			depthAttDesc.Format = PF_D32;
 			depthAttDesc.Usage = TextureUsageFlag::DepthStencil;
 
-			SPtr<Texture> depthAtt = gpuDevice->CreateTexture(depthAttDesc);
+			TShared<Texture> depthAtt = gpuDevice->CreateTexture(depthAttDesc);
 
 			// Create the render surface
 			RenderTextureCreateInformation desc;
@@ -308,7 +308,7 @@ namespace b3d
 		// Render the box, called every frame
 		void Render()
 		{
-			const SPtr<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 
 			// Fill out the uniform block variables
 			UniformBlock uniformBlock;
@@ -316,7 +316,7 @@ namespace b3d
 			uniformBlock.GTint = Color(1.0f, 1.0f, 1.0f, 0.5f);
 
 			// Create a uniform block buffer for holding the uniform variables
-			SPtr<GpuBuffer> uniformBuffer = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateUniform(sizeof(UniformBlock)));
+			TShared<GpuBuffer> uniformBuffer = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateUniform(sizeof(UniformBlock)));
 
 			{
 				GpuBufferMappedScope mappedBufferScope = uniformBuffer->Map(GpuMapOption::Write);
@@ -331,7 +331,7 @@ namespace b3d
 			gGpuParams->SetSamplerState("gMainTexSamp", gSurfaceSampler);
 
 			// Create a command buffer
-			SPtr<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("LowLevelRendering"));
+			TShared<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("LowLevelRendering"));
 
 			// Bind render surface & clear it
 			RenderPassCreateInformation renderPassCreateInformation(gRenderTarget, gGpuParams, RT_NONE, RT_NONE);
@@ -359,7 +359,7 @@ namespace b3d
 			commandBuffer->EndRenderPass();
 
 			// Get the color attachment
-			SPtr<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
+			TShared<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
@@ -552,7 +552,7 @@ void main()
 		Matrix4 CreateWorldViewProjectionMatrix()
 		{
 			Matrix4 proj = Matrix4::ProjectionPerspective(Degree(75.0f), 16.0f / 9.0f, 0.05f, 1000.0f);
-			if(const SPtr<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice())
+			if(const TShared<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice())
 				gpuDevice->ConvertProjectionMatrix(proj, proj);
 
 			Vector3 cameraPos = Vector3(0.0f, -20.0f, 50.0f);

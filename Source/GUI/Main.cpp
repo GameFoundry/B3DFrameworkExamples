@@ -53,7 +53,7 @@ namespace b3d
 		HSceneObject sceneCameraSO = SceneObject::Create("SceneCamera");
 
 		// Get the primary render window we need for creating the camera.
-		SPtr<RenderWindow> window = GetApplication().GetPrimaryWindow();
+		TShared<RenderWindow> window = GetApplication().GetPrimaryWindow();
 
 		// Add a Camera component that will output whatever it sees into that window
 		// (You could also use a render texture or another window you created).
@@ -68,7 +68,7 @@ namespace b3d
 		// expensive effects that ultimately don't effect anything. It also allows us to use a linear-space color for the
 		// camera background (normal rendering expects colors in gamma space, which is unintuitive for aspects such as
 		// GUI).
-		const SPtr<RenderSettings>& renderSettings = sceneCamera->GetRenderSettings();
+		const TShared<RenderSettings>& renderSettings = sceneCamera->GetRenderSettings();
 		renderSettings->OverlayOnly = true;
 		sceneCamera->SetRenderSettings(renderSettings);
 
@@ -81,7 +81,7 @@ namespace b3d
 		HGUIWidget gui = guiSO->AddComponent<GUIWidget>(sceneCamera);
 
 		// Load the custom style sheet file and apply it to the widget
-		SPtr<GUIStyleSheetCascade> customStyleSheetCascade = B3DMakeShared<GUIStyleSheetCascade>();
+		TShared<GUIStyleSheetCascade> customStyleSheetCascade = B3DMakeShared<GUIStyleSheetCascade>();
 		customStyleSheetCascade->RegisterStyleSheet(GetBuiltinResources().GetDefaultGUIStyleSheet(), GUIStyleSheet::kBuiltinImportance); // Anything not defined in the custom style sheet file will use the default style sheet
 
 		HGUIStyleSheet customStyleSheet = GUIStyleSheet::Parse(Path(EXAMPLE_DATA_PATH) + "GUI.css");
