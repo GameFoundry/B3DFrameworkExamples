@@ -166,6 +166,7 @@ namespace b3d
 			gUseHLSL = strcmp(B3D_GPU_BACKEND, "bsfD3D12GpuBackend") == 0;
 
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 
 			// Create a pool to allocate GPU command buffer from
 			GpuCommandBufferPoolCreateInformation poolCreateInformation;
@@ -247,7 +248,7 @@ namespace b3d
 			AABox box(Vector3::kOne * -10.0f, Vector3::kOne * 10.0f);
 			WriteBoxVertices(box, positions, uvs, vertexStride);
 
-			GpuBufferUtility::Write(gVertexBuffer, 0, vertexStride * kVertexCount, vbData, GpuBufferWriteFlag::Discard);
+			GpuBufferUtility::Write(gpuContext, gVertexBuffer, 0, vertexStride * kVertexCount, vbData, GpuBufferWriteFlag::Discard);
 			B3DStackFree(vbData);
 
 			// Create & fill the index buffer for a box mesh
@@ -260,7 +261,7 @@ namespace b3d
 			u32* ibData = (u32*)B3DStackAllocate(kIndexCount * sizeof(u32));
 			WriteBoxIndices(ibData);
 
-			GpuBufferUtility::Write(gIndexBuffer, 0, kIndexCount * sizeof(u32), ibData, GpuBufferWriteFlag::Discard);
+			GpuBufferUtility::Write(gpuContext, gIndexBuffer, 0, kIndexCount * sizeof(u32), ibData, GpuBufferWriteFlag::Discard);
 			B3DStackFree(ibData);
 
 			// Create a simple 2x2 checkerboard texture to map to the object we're about to render
@@ -309,6 +310,7 @@ namespace b3d
 		void Render()
 		{
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 
 			// Fill out the uniform block variables
 			UniformBlock uniformBlock;
@@ -365,8 +367,8 @@ namespace b3d
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
 			GetRendererUtility().Blit(*commandBuffer, BlitInformation::BlitColor(colorTexture, gRenderWindow));
 
-			// Submit the command buffer
-			gpuDevice->SubmitCommandBuffer(commandBuffer);
+			// Submit the command buffer through the render thread's GPU work context
+			gpuContext.SubmitCommandBuffer(commandBuffer);
 
 			// Present the rendered image to the user
 			gpuDevice->PresentRenderWindow(gRenderWindow);

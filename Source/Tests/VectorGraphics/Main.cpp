@@ -490,6 +490,7 @@ namespace b3d
 		void Render()
 		{
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 
 			// Create a command buffer
 			TShared<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
@@ -525,8 +526,8 @@ namespace b3d
 
 			GetRendererUtility().Blit(*commandBuffer, blitInformation);
 
-			// Submit the command buffer
-			gpuDevice->SubmitCommandBuffer(commandBuffer);
+			// Submit the command buffer through the render thread's GPU work context
+			gpuContext.SubmitCommandBuffer(commandBuffer);
 
 			// Present the rendered image to the user
 			gpuDevice->PresentRenderWindow(gRenderWindow);
