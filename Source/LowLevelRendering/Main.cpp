@@ -221,7 +221,7 @@ namespace b3d
 			gPipelineState = gpuDevice->CreateGpuGraphicsPipelineState(pipelineDesc);
 
 			// Create an object containing GPU program parameters
-			GpuParameterSetPool& pool = render::GetRenderer()->GetParameterSetPool();
+			GpuParameterSetPool& pool = render::GetRenderer()->GetGpuContext().GetParameterSetPool();
 			gGpuParams = pool.Create(gPipelineState->GetParameterLayout()->GetSet(0), 0);
 
 			// Create a vertex declaration for shader inputs
