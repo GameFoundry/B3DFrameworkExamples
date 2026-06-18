@@ -55,8 +55,8 @@ namespace b3d
 		// Prepare all the resources we'll be using throughout this example
 
 		// Grab a couple of test textures that we'll apply to the rendered objects
-		HTexture gridPattern = ExampleFramework::LoadTexture(ExampleTexture::GridPattern);
-		HTexture gridPattern2 = ExampleFramework::LoadTexture(ExampleTexture::GridPattern2);
+		HTexture gridPattern = ExampleFramework::LoadTexture(ExampleTexture::GridPattern, ExampleTextureType::Default);
+		HTexture gridPattern2 = ExampleFramework::LoadTexture(ExampleTexture::GridPattern2, ExampleTextureType::Default);
 
 		// Grab the default PBR shader
 		HShader shader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
@@ -218,7 +218,7 @@ namespace b3d
 		/************************************************************************/
 
 		// Load a skybox texture
-		HTexture skyCubemap = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentDaytime, false, true, true);
+		HTexture skyCubemap = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentDaytime, ExampleTextureType::HDRI);
 
 		// Add a skybox texture for sky reflections
 		HSceneObject skyboxSO = SceneObject::Create("Skybox");

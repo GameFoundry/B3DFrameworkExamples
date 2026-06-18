@@ -83,10 +83,10 @@ namespace b3d
 		assets.Sphere = ExampleFramework::LoadMesh(ExampleMesh::Pistol, 10.0f);
 
 		// Load PBR textures for the 3D model
-		assets.ExampleAlbedoTex = ExampleFramework::LoadTexture(ExampleTexture::PistolAlbedo);
-		assets.ExampleNormalsTex = ExampleFramework::LoadTexture(ExampleTexture::PistolNormal, false);
-		assets.ExampleRoughnessTex = ExampleFramework::LoadTexture(ExampleTexture::PistolRoughness, false);
-		assets.ExampleMetalnessTex = ExampleFramework::LoadTexture(ExampleTexture::PistolMetalness, false);
+		assets.ExampleAlbedoTex = ExampleFramework::LoadTexture(ExampleTexture::PistolAlbedo, ExampleTextureType::Default);
+		assets.ExampleNormalsTex = ExampleFramework::LoadTexture(ExampleTexture::PistolNormal, ExampleTextureType::NormalMap);
+		assets.ExampleRoughnessTex = ExampleFramework::LoadTexture(ExampleTexture::PistolRoughness, ExampleTextureType::Linear);
+		assets.ExampleMetalnessTex = ExampleFramework::LoadTexture(ExampleTexture::PistolMetalness, ExampleTextureType::Linear);
 
 		// Create a set of materials we'll be using for rendering the object
 		//// Create a standard PBR material
@@ -118,7 +118,7 @@ namespace b3d
 		assets.ForwardMaterial = CreatePbrMaterial(forwardSurfaceAndLighting, assets);
 
 		// Load an environment map
-		assets.SkyTex = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentPaperMill, false, true, true);
+		assets.SkyTex = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentPaperMill, ExampleTextureType::HDRI);
 
 		return assets;
 	}

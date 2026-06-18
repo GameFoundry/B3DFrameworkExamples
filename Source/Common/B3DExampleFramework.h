@@ -47,6 +47,19 @@ namespace b3d
 		DecalNormal
 	};
 
+	/** Describes how a texture asset should be interpreted when it is imported. */
+	enum class ExampleTextureType
+	{
+		/** Standard color texture stored in sRGB (gamma) space. Imported using the BC3 format. */
+		Default,
+		/** Standard data texture stored in linear space (e.g. roughness or metalness). Imported using the BC3 format. */
+		Linear,
+		/** Tangent-space normal map. Imported using the two-channel BC5 format. */
+		NormalMap,
+		/** High dynamic range image. Imported as a HDR cubemap using the BC6H format. */
+		HDRI
+	};
+
 	/** A list of shader assets provided with the example projects. */
 	enum class ExampleShader
 	{
@@ -172,12 +185,13 @@ namespace b3d
 		 * Loads one of the builtin texture assets. If the asset doesn't exist, the texture will be re-imported from the
 		 * source file, and then saved so it can be loaded on the next call to this method.
 		 *
-		 * Textures not in sRGB space (e.g. normal maps) need to be specially marked by setting 'isSRGB' to false. Also
-		 * allows for conversion of texture to cubemap by setting the 'isCubemap' parameter. If the data should be imported
-		 * in a floating point format, specify 'isHDR' to true. Note these options are only relevant when a texture is
-		 * being imported (i.e. when asset file is missing). If 'mips' is true, mip-map levels will be generated.
+		 * Use 'textureType' to control how the texture is interpreted when imported - this determines the color space, the
+		 * compressed format and whether the texture is treated as a HDR cubemap (see ExampleTextureType). If
+		 * 'generateMipmaps' is true, mip-map levels will be generated. Note these options are only relevant when a texture
+		 * is being imported (i.e. when the asset file is missing).
 		 */
-		static HTexture LoadTexture(ExampleTexture type, bool isSRGB = true, bool isCubemap = false, bool isHDR = false, bool mips = true)
+		static HTexture LoadTexture(ExampleTexture type, ExampleTextureType textureType = ExampleTextureType::Default,
+			bool generateMipmaps = true)
 		{
 			// Map from the enum to the actual file path
 			static AssetFolderAndName assetPaths[] = {
@@ -222,24 +236,33 @@ namespace b3d
 				{
 					TextureImportOptions* importOptions = static_cast<TextureImportOptions*>(textureImportOptions.get());
 
-					// We want maximum number of mipmaps to be generated
-					importOptions->GenerateMips = mips;
+					// Generate a full mip-map chain if requested
+					importOptions->GenerateMips = generateMipmaps;
 
-					// If the texture is in sRGB space the system needs to know about it
-					importOptions->SRgb = isSRGB;
+					// Only the standard color texture lives in sRGB (gamma) space; the system needs to know about it
+					importOptions->SRgb = textureType == ExampleTextureType::Default;
 
 					// Ensures we can save the texture contents
 					importOptions->CpuCached = true;
 
-					// Import as cubemap if needed
-					importOptions->Cubemap = isCubemap;
-
-					// If importing as cubemap, assume source is a panorama
+					// HDR images are imported as cubemaps, assuming the source is a panorama
+					importOptions->Cubemap = textureType == ExampleTextureType::HDRI;
 					importOptions->CubemapSourceType = CubemapSourceType::Cylindrical;
 
-					// Importing using a HDR format if requested
-					if(isHDR)
-						importOptions->Format = PF_RG11B10F;
+					// Pick a compressed format suited to the texture's contents
+					switch(textureType)
+					{
+					case ExampleTextureType::NormalMap:
+						importOptions->Format = PF_BC5;
+						break;
+					case ExampleTextureType::HDRI:
+						// Floating point format usable for HDR data
+						importOptions->Format = PF_BC6H;
+						break;
+					default:
+						importOptions->Format = PF_BC3;
+						break;
+					}
 				}
 
 				// Import texture with specified import options

@@ -101,7 +101,7 @@ namespace b3d
 
 		// Smoke particle system assets
 		//// Import the texture and set up a sprite texture so we can animate it
-		HTexture smokeTex = ExampleFramework::LoadTexture(ExampleTexture::ParticleSmoke);
+		HTexture smokeTex = ExampleFramework::LoadTexture(ExampleTexture::ParticleSmoke, ExampleTextureType::Default);
 		assets.SmokeTex = SpriteTexture::Create(smokeTex);
 
 		//// Set up sprite sheet animation on the sprite texture
@@ -159,7 +159,7 @@ namespace b3d
 		// Prepare the assets required for the scene and background
 
 		// Grab a texture used for rendering the ground
-		HTexture gridPattern = ExampleFramework::LoadTexture(ExampleTexture::GridPattern2);
+		HTexture gridPattern = ExampleFramework::LoadTexture(ExampleTexture::GridPattern2, ExampleTextureType::Default);
 
 		// Grab the default PBR shader
 		HShader shader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
@@ -263,7 +263,7 @@ namespace b3d
 		/************************************************************************/
 
 		// Load a skybox texture
-		HTexture skyCubemap = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentDaytime, false, true, true);
+		HTexture skyCubemap = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentDaytime, ExampleTextureType::HDRI);
 
 		// Add a skybox texture for sky reflections
 		HSceneObject skyboxSO = SceneObject::Create("Skybox");

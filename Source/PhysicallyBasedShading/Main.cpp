@@ -49,10 +49,10 @@ namespace b3d
 		assets.ExampleModel = ExampleFramework::LoadMesh(ExampleMesh::Cerberus);
 
 		// Load PBR textures for the 3D model
-		assets.ExampleAlbedoTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusAlbedo);
-		assets.ExampleNormalsTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusNormal, false);
-		assets.ExampleRoughnessTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusRoughness, false);
-		assets.ExampleMetalnessTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusMetalness, false);
+		assets.ExampleAlbedoTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusAlbedo, ExampleTextureType::Default);
+		assets.ExampleNormalsTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusNormal, ExampleTextureType::NormalMap);
+		assets.ExampleRoughnessTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusRoughness, ExampleTextureType::Linear);
+		assets.ExampleMetalnessTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusMetalness, ExampleTextureType::Linear);
 
 		// Create a material using the default physically based shader, and apply the PBR textures we just loaded
 		HShader shader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
@@ -64,7 +64,7 @@ namespace b3d
 		assets.ExampleMaterial->SetTexture("gMetalnessTex", assets.ExampleMetalnessTex);
 
 		// Load an environment map
-		assets.ExampleSkyCubemap = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentPaperMill, false, true, true);
+		assets.ExampleSkyCubemap = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentPaperMill, ExampleTextureType::HDRI);
 
 		return assets;
 	}

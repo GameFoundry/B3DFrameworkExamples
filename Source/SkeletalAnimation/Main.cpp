@@ -74,10 +74,10 @@ namespace b3d
 		}
 
 		// Load PBR textures for the 3D model
-		assets.ExampleAlbedoTex = ExampleFramework::LoadTexture(ExampleTexture::DroneAlbedo);
-		assets.ExampleNormalsTex = ExampleFramework::LoadTexture(ExampleTexture::DroneNormal, false);
-		assets.ExampleRoughnessTex = ExampleFramework::LoadTexture(ExampleTexture::DroneRoughness, false);
-		assets.ExampleMetalnessTex = ExampleFramework::LoadTexture(ExampleTexture::DroneMetalness, false);
+		assets.ExampleAlbedoTex = ExampleFramework::LoadTexture(ExampleTexture::DroneAlbedo, ExampleTextureType::Default);
+		assets.ExampleNormalsTex = ExampleFramework::LoadTexture(ExampleTexture::DroneNormal, ExampleTextureType::NormalMap);
+		assets.ExampleRoughnessTex = ExampleFramework::LoadTexture(ExampleTexture::DroneRoughness, ExampleTextureType::Linear);
+		assets.ExampleMetalnessTex = ExampleFramework::LoadTexture(ExampleTexture::DroneMetalness, ExampleTextureType::Linear);
 
 		// Create a material using the default physically based shader, and apply the PBR textures we just loaded
 		HShader shader = GetBuiltinResources().GetBuiltinShader(BuiltinShader::Standard);
@@ -89,7 +89,7 @@ namespace b3d
 		assets.ExampleMaterial->SetTexture("gMetalnessTex", assets.ExampleMetalnessTex);
 
 		// Load an environment map
-		assets.ExampleSkyCubemap = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentRathaus, false, true, true);
+		assets.ExampleSkyCubemap = ExampleFramework::LoadTexture(ExampleTexture::EnvironmentRathaus, ExampleTextureType::HDRI);
 
 		return assets;
 	}
