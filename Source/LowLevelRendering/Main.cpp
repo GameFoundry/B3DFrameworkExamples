@@ -38,6 +38,7 @@ namespace b3d
 {
 	u32 kWindowWidth = 1280;
 	u32 kWindowHeight = 720;
+	float FrameTimeSeconds = 0.0f;
 
 	// Declare the methods we'll use to do work on the render thread. Normally methods and objects usable on the render thread
 	// will be in the "render" namespace. This is not always true, especially for thread-safe objects, but it is almost always true if
@@ -566,7 +567,9 @@ void main()
 
 			Matrix4 view = Matrix4::View(cameraPos, cameraRot);
 
-			Quaternion rotation(Vector3::kUnitY, Degree(GetTime().GetRealTimeInSeconds() * 90.0f));
+			FrameTimeSeconds += GetTime().GetFrameDelta();
+
+			Quaternion rotation(Vector3::kUnitY, Degree(FrameTimeSeconds * 90.0f));
 			Matrix4 world = Matrix4::TRS(Vector3::kZero, rotation, Vector3::kOne);
 
 			Matrix4 viewProj = proj * view * world;
