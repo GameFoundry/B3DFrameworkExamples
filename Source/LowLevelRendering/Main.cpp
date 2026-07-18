@@ -162,10 +162,11 @@ namespace b3d
 		// Initializes any resources required for rendering
 		void Setup(const TShared<RenderWindow>& renderWindow)
 		{
-			// Determine which shading language to use (depending on the GPU backend chosen during build)
-			gUseHLSL = strcmp(B3D_GPU_BACKEND, "bsfD3D12GpuBackend") == 0;
-
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+
+			// Determine which shading language to use (depending on the active GPU backend, which can also be
+			// overridden at runtime via --gpu.backend)
+			gUseHLSL = gpuDevice->IsGpuProgramLanguageSupported("hlsl");
 			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 
 			// Create a pool to allocate GPU command buffer from
