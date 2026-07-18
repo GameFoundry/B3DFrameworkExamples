@@ -362,7 +362,7 @@ namespace b3d
 			commandBuffer->EndRenderPass();
 
 			// Get the color attachment
-			TShared<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
+			TShared<Texture> colorTexture = gRenderTarget->GetColorSurfaceInformation(0).Texture;
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
@@ -571,8 +571,7 @@ void main()
 
 			Matrix4 viewProj = proj * view * world;
 
-			// GLSL uses column major matrices, so transpose
-			if(!gUseHLSL)
+			// Both GLSL (std140) and HLSL (compiled with column-major packing) expect column-major matrix storage, so transpose our row-major matrix
 				viewProj = viewProj.Transpose();
 
 			return viewProj;
