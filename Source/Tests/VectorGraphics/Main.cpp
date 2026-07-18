@@ -502,7 +502,7 @@ namespace b3d
 			renderPassCreateInformation.ClearMask = RT_COLOR_ALL | RT_DEPTH;
 			renderPassCreateInformation.ClearColor = Color::kWhite;
 
-			commandBuffer->BeginRenderPass(RenderPassCreateInformation(gRenderTarget, gpuParameters, RT_NONE, RT_NONE));
+			commandBuffer->BeginRenderPass(renderPassCreateInformation);
 
 			// Draw the vector shapes
 			gTestPathRenderable->Render(*commandBuffer);
@@ -517,7 +517,7 @@ namespace b3d
 			// Blit the image from the render texture, to the render window
 			commandBuffer->EndRenderPass();
 
-			TShared<Texture> colorTexture = gRenderTarget->GetColorTexture(0);
+			TShared<Texture> colorTexture = gRenderTarget->GetColorSurfaceInformation(0).Texture;
 
 			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
 			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.

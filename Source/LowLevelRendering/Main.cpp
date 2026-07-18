@@ -575,7 +575,7 @@ void main()
 			Matrix4 viewProj = proj * view * world;
 
 			// Both GLSL (std140) and HLSL (compiled with column-major packing) expect column-major matrix storage, so transpose our row-major matrix
-				viewProj = viewProj.Transpose();
+			viewProj = viewProj.Transpose();
 
 			return viewProj;
 		}
