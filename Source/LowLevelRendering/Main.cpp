@@ -149,6 +149,7 @@ namespace b3d
 		TShared<RenderWindow> gRenderWindow;
 		TShared<GpuCommandBufferPool> gCommandBufferPool;
 		bool gUseHLSL = true;
+		bool gUseMSL = false;
 
 		const u32 kVertexCount = 24;
 		const u32 kIndexCount = 36;
@@ -168,6 +169,7 @@ namespace b3d
 			// Determine which shading language to use (depending on the active GPU backend, which can also be
 			// overridden at runtime via --gpu.backend)
 			gUseHLSL = gpuDevice->IsGpuProgramLanguageSupported("hlsl");
+			gUseMSL = !gUseHLSL && gpuDevice->IsGpuProgramLanguageSupported("msl");
 			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 
 			// Create a pool to allocate GPU command buffer from
@@ -183,10 +185,11 @@ namespace b3d
 			// Create a vertex GPU program
 			const char* vertProgSrc = GetVertexProgSource();
 
+			// MSL reserves "main", so the Metal sources use per-stage entry point names instead
 			GpuProgramCreateInformation vertexProgramCreateInformation;
 			vertexProgramCreateInformation.Type = GPT_VERTEX_PROGRAM;
-			vertexProgramCreateInformation.EntryPoint = "main";
-			vertexProgramCreateInformation.Language = gUseHLSL ? "hlsl" : "vksl";
+			vertexProgramCreateInformation.EntryPoint = gUseMSL ? "vsmain" : "main";
+			vertexProgramCreateInformation.Language = gUseHLSL ? "hlsl" : (gUseMSL ? "msl" : "vksl");
 			vertexProgramCreateInformation.Source = vertProgSrc;
 
 			TShared<GpuProgram> vertProg = gpuDevice->CreateGpuProgram(vertexProgramCreateInformation);
@@ -196,8 +199,8 @@ namespace b3d
 
 			GpuProgramCreateInformation fragmentProgramCreateInformation;
 			fragmentProgramCreateInformation.Type = GPT_FRAGMENT_PROGRAM;
-			fragmentProgramCreateInformation.EntryPoint = "main";
-			fragmentProgramCreateInformation.Language = gUseHLSL ? "hlsl" : "vksl";
+			fragmentProgramCreateInformation.EntryPoint = gUseMSL ? "fsmain" : "main";
+			fragmentProgramCreateInformation.Language = gUseHLSL ? "hlsl" : (gUseMSL ? "msl" : "vksl");
 			fragmentProgramCreateInformation.Source = fragProgSrc;
 
 			TShared<GpuProgram> fragProg = gpuDevice->CreateGpuProgram(fragmentProgramCreateInformation);
@@ -474,6 +477,53 @@ void main(
 
 				return src;
 			}
+			else if(gUseMSL)
+			{
+				// Argument-buffer member names encode the engine binding as
+				// b3d_msl_r_<type>_<set>_<slot>_<name> (type: 0 = uniform buffer, 1 = sampled texture,
+				// 4 = sampler), which is how the backend maps them to engine parameters. Every stage
+				// declares the full resource set, matching the convention of BSL-generated code.
+				static const char* src = R"(
+#include <metal_stdlib>
+using namespace metal;
+
+struct Params
+{
+	float4x4 gMatWVP;
+	float4 gTint;
+};
+
+struct ParamsSet0
+{
+	constant Params* b3d_msl_r_0_0_0_Params [[id(0)]];
+	texture2d<float> b3d_msl_r_1_0_2_gMainTexture [[id(1)]];
+	sampler b3d_msl_r_4_0_1_gMainTexSamp [[id(2)]];
+};
+
+struct VertexInput
+{
+	float3 POSITION [[attribute(0)]];
+	float2 TEXCOORD0 [[attribute(1)]];
+};
+
+struct VertexOutput
+{
+	float4 position [[position]];
+	float2 uv;
+};
+
+vertex VertexOutput vsmain(VertexInput input [[stage_in]], constant ParamsSet0& params [[buffer(0)]])
+{
+	VertexOutput output;
+	output.position = params.b3d_msl_r_0_0_0_Params->gMatWVP * float4(input.POSITION, 1.0f);
+	output.uv = input.TEXCOORD0;
+
+	return output;
+}
+)";
+
+				return src;
+			}
 			else
 			{
 				static const char* src = R"(
@@ -522,6 +572,41 @@ float4 main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target
 {
 	float4 color = gMainTexture.Sample(gMainTexSamp, uv);
 	return color * gTint;
+}
+)";
+
+				return src;
+			}
+			else if(gUseMSL)
+			{
+				static const char* src = R"(
+#include <metal_stdlib>
+using namespace metal;
+
+struct Params
+{
+	float4x4 gMatWVP;
+	float4 gTint;
+};
+
+struct ParamsSet0
+{
+	constant Params* b3d_msl_r_0_0_0_Params [[id(0)]];
+	texture2d<float> b3d_msl_r_1_0_2_gMainTexture [[id(1)]];
+	sampler b3d_msl_r_4_0_1_gMainTexSamp [[id(2)]];
+};
+
+struct VertexOutput
+{
+	float4 position [[position]];
+	float2 uv;
+};
+
+fragment float4 fsmain(VertexOutput input [[stage_in]], constant ParamsSet0& params [[buffer(0)]])
+{
+	float4 color = params.b3d_msl_r_1_0_2_gMainTexture.sample(params.b3d_msl_r_4_0_1_gMainTexSamp, input.uv);
+
+	return color * params.b3d_msl_r_0_0_0_Params->gTint;
 }
 )";
 
