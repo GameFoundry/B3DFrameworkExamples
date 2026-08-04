@@ -119,7 +119,7 @@ namespace b3d
 		sceneCamera->GetViewport()->SetTarget(window);
 
 		// Set background color
-		sceneCamera->GetViewport()->SetClearColorValue(Color::kBlack);
+		sceneCamera->GetViewport()->SetBackgroundColor(Color::kBlack);
 
 		/************************************************************************/
 		/* 									AUDIO	                     		*/

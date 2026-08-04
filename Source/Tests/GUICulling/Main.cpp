@@ -43,7 +43,7 @@ namespace b3d
 		camera->GetViewport()->SetTarget(applicationWindow);
 
 		const Color gray = Color(51 / 255.0f, 51 / 255.0f, 51 / 255.0f);
-		camera->GetViewport()->SetClearColorValue(gray);
+		camera->GetViewport()->SetBackgroundColor(gray);
 
 		const TShared<RenderSettings>& renderSettings = camera->GetRenderSettings();
 		renderSettings->OverlayOnly = true;

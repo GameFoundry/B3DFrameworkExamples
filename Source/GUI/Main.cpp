@@ -62,7 +62,7 @@ namespace b3d
 
 		// Pick a prettier background color
 		Color gray = Color(51 / 255.0f, 51 / 255.0f, 51 / 255.0f);
-		sceneCamera->GetViewport()->SetClearColorValue(gray);
+		sceneCamera->GetViewport()->SetBackgroundColor(gray);
 
 		// Let the camera know it will be used for overlay rendering only. This stops the renderer from running potentially
 		// expensive effects that ultimately don't effect anything. It also allows us to use a linear-space color for the
