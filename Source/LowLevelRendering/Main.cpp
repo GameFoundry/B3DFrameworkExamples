@@ -291,6 +291,7 @@ namespace b3d
 			colorAttDesc.Height = kWindowHeight;
 			colorAttDesc.Format = PF_RGBA8;
 			colorAttDesc.Usage = TextureUsageFlag::RenderTarget;
+			colorAttDesc.ClearColor = Color::kBlue;
 
 			TShared<Texture> colorAtt = gpuDevice->CreateTexture(colorAttDesc);
 
@@ -343,7 +344,6 @@ namespace b3d
 			// Bind render surface & clear it
 			RenderPassCreateInformation renderPassCreateInformation(gRenderTarget, gGpuParams, RT_NONE, RT_NONE);
 			renderPassCreateInformation.ClearMask = RT_COLOR_ALL | RT_DEPTH;
-			renderPassCreateInformation.ClearColor = Color::kBlue;
 
 			commandBuffer->BeginRenderPass(renderPassCreateInformation);
 
