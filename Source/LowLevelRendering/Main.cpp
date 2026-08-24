@@ -1,10 +1,13 @@
 #include "B3DApplication.h"
 #include "B3DEntry.h"
+#include "B3DExampleFramework.h"
 #include "Material/B3DMaterial.h"
+#include "Material/B3DShader.h"
+#include "Material/B3DVariation.h"
+#include "Material/B3DPass.h"
 #include "CoreObject/B3DRenderThread.h"
 #include "GpuBackend/B3DRenderWindow.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
-#include "GpuBackend/B3DGpuProgram.h"
 #include "GpuBackend/B3DGpuPipelineState.h"
 #include "GpuBackend/B3DGpuBuffer.h"
 #include "GpuBackend/B3DVertexDescription.h"
@@ -30,8 +33,11 @@
 //
 // The rendering is performed on the render thread, as opposed to the main thread, where majority of bsf's code executes.
 //
-// The example first sets up necessary resources, like GPU programs, pipeline state, vertex & index buffers. Then every
-// frame it binds the necessary rendering resources and executes the draw call.
+// The GPU programs (and the blend/depth state they render with) come from a BSL shader that ships with the example data
+// ("ExampleLowLevelRendering.bsl"). Everything below the shader - pipeline state, vertex & index buffers, parameter binding
+// and draw calls - is set up manually through the low-level API.
+//
+// The example first sets up those resources, then every frame binds them and executes the draw call.
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace b3d
@@ -45,7 +51,7 @@ namespace b3d
 	// an object has variants of its type usable from main and render threads.
 	namespace render
 	{
-		void Setup(const TShared<RenderWindow>& renderWindow);
+		void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Material>& boxMaterial);
 		void Render();
 		void Shutdown();
 	} // namespace render
@@ -74,9 +80,15 @@ namespace b3d
 			// Get the version of the render window usable on the render thread, and send it along to setup()
 			TShared<render::RenderWindow> renderWindowRenderProxy = B3DGetRenderProxy(renderWindow);
 
+			// Load the box shader from the example data and wrap it in a material.
+			HShader boxShader = ExampleFramework::LoadShader("ExampleLowLevelRendering.bsl");
+			mBoxMaterial = Material::Create(boxShader);
+
+			TShared<render::Material> boxMaterialRenderProxy = B3DGetRenderProxy(mBoxMaterial);
+
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the render
 			// thread), we don't call the method directly, but rather queue it for execution using the RenderThread class.
-			GetRenderThread().PostCommand([renderWindowRenderProxy] { render::Setup(renderWindowRenderProxy); });
+			GetRenderThread().PostCommand([renderWindowRenderProxy, boxMaterialRenderProxy] { render::Setup(renderWindowRenderProxy, boxMaterialRenderProxy); });
 		}
 
 		// Called when the engine is about to be shut down
@@ -84,6 +96,9 @@ namespace b3d
 		{
 			// Queue the method for execution on the render thread
 			GetRenderThread().PostCommand(&render::Shutdown);
+
+			// Release the material before engine shut-down proceeds, so the resources it keeps alive are destroyed while the resource system is still running
+			mBoxMaterial = HMaterial();
 
 			// Shut-down engine components
 			Application::OnShutDown();
@@ -98,6 +113,9 @@ namespace b3d
 			// Call the default version of this method to handle normal functionality
 			Application::PreUpdate();
 		}
+
+		// Material wrapping the box shader; setup() renders with its pipeline
+		HMaterial mBoxMaterial;
 	};
 } // namespace b3d
 
@@ -132,8 +150,6 @@ namespace b3d
 		// Declarations for some helper methods we'll use during setup
 		void WriteBoxVertices(const AABox& box, u8* positions, u8* uvs, u32 stride);
 		void WriteBoxIndices(u32* indices);
-		const char* GetVertexProgSource();
-		const char* GetFragmentProgSource();
 		Matrix4 CreateWorldViewProjectionMatrix();
 
 		// Fields where we'll store the resources required during calls to render(). These are initialized in setup()
@@ -148,8 +164,6 @@ namespace b3d
 		TShared<RenderTexture> gRenderTarget;
 		TShared<RenderWindow> gRenderWindow;
 		TShared<GpuCommandBufferPool> gCommandBufferPool;
-		bool gUseHLSL = true;
-		bool gUseMSL = false;
 
 		const u32 kVertexCount = 24;
 		const u32 kIndexCount = 36;
@@ -162,14 +176,9 @@ namespace b3d
 		};
 
 		// Initializes any resources required for rendering
-		void Setup(const TShared<RenderWindow>& renderWindow)
+		void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Material>& boxMaterial)
 		{
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
-
-			// Determine which shading language to use (depending on the active GPU backend, which can also be
-			// overridden at runtime via --gpu.backend)
-			gUseHLSL = gpuDevice->IsGpuProgramLanguageSupported("hlsl");
-			gUseMSL = !gUseHLSL && gpuDevice->IsGpuProgramLanguageSupported("msl");
 			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 
 			// Create a pool to allocate GPU command buffer from
@@ -182,48 +191,16 @@ namespace b3d
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;
 
-			// Create a vertex GPU program
-			const char* vertProgSrc = GetVertexProgSource();
+			// Compile the box material's only variation (a no-op when it was resolved from the prebuilt shader store)
+			// and take its graphics pipeline. The blend/depth state to render with is part of the shader's BSL source.
+			const TShared<Variation>& shaderVariation = boxMaterial->GetVariation(0);
+			if(!shaderVariation->IsCompiled())
+				shaderVariation->Compile().BlockUntilComplete();
 
-			// MSL reserves "main", so the Metal sources use per-stage entry point names instead
-			GpuProgramCreateInformation vertexProgramCreateInformation;
-			vertexProgramCreateInformation.Type = GPT_VERTEX_PROGRAM;
-			vertexProgramCreateInformation.EntryPoint = gUseMSL ? "vsmain" : "main";
-			vertexProgramCreateInformation.Language = gUseHLSL ? "hlsl" : (gUseMSL ? "msl" : "vksl");
-			vertexProgramCreateInformation.Source = vertProgSrc;
+			const TShared<Pass>& pass = boxMaterial->GetPass(0, 0);
+			pass->Compile();
 
-			TShared<GpuProgram> vertProg = gpuDevice->CreateGpuProgram(vertexProgramCreateInformation);
-
-			// Create a fragment GPU program
-			const char* fragProgSrc = GetFragmentProgSource();
-
-			GpuProgramCreateInformation fragmentProgramCreateInformation;
-			fragmentProgramCreateInformation.Type = GPT_FRAGMENT_PROGRAM;
-			fragmentProgramCreateInformation.EntryPoint = gUseMSL ? "fsmain" : "main";
-			fragmentProgramCreateInformation.Language = gUseHLSL ? "hlsl" : (gUseMSL ? "msl" : "vksl");
-			fragmentProgramCreateInformation.Source = fragProgSrc;
-
-			TShared<GpuProgram> fragProg = gpuDevice->CreateGpuProgram(fragmentProgramCreateInformation);
-
-			// Create a graphics pipeline state
-			BlendStateInformation blendDesc;
-			blendDesc.RenderTargets[0].BlendEnable = true;
-			blendDesc.RenderTargets[0].RenderTargetWriteMask = 0b0111; // RGB, don't write to alpha
-			blendDesc.RenderTargets[0].ColorBlendOperation = BO_ADD;
-			blendDesc.RenderTargets[0].ColorSourceFactor = BF_SOURCE_ALPHA;
-			blendDesc.RenderTargets[0].ColorDestinationFactor = BF_INV_SOURCE_ALPHA;
-
-			DepthStencilStateInformation depthStencilDesc;
-			depthStencilDesc.DepthWriteEnable = false;
-			depthStencilDesc.DepthReadEnable = false;
-
-			GpuGraphicsPipelineStateInformation pipelineDesc;
-			pipelineDesc.BlendState = blendDesc;
-			pipelineDesc.DepthStencilState = depthStencilDesc;
-			pipelineDesc.VertexProgram = vertProg;
-			pipelineDesc.FragmentProgram = fragProg;
-
-			gPipelineState = gpuDevice->CreateGpuGraphicsPipelineState(pipelineDesc);
+			gPipelineState = pass->GetGraphicsPipelineState();
 
 			// Create an object containing GPU program parameters
 			GpuParameterSetPool& pool = render::GetRenderer()->GetGpuContext().GetParameterSetPool();
@@ -332,7 +309,6 @@ namespace b3d
 			}
 
 			// Assign the uniform buffer & texture
-			gGpuParams->SetUniformBuffer("Params", uniformBuffer);
 			gGpuParams->SetUniformBuffer("Params", uniformBuffer);
 
 			gGpuParams->SetSampledTexture("gMainTexture", gSurfaceTex);
@@ -453,191 +429,6 @@ namespace b3d
 			}
 		}
 
-		const char* GetVertexProgSource()
-		{
-			if(gUseHLSL)
-			{
-				static const char* src = R"(
-cbuffer Params
-{
-	float4x4 gMatWVP;
-	float4 gTint;
-}	
-
-void main(
-	in float3 inPos : POSITION,
-	in float2 uv : TEXCOORD0,
-	out float4 oPosition : SV_Position,
-	out float2 oUv : TEXCOORD0)
-{
-	oPosition = mul(gMatWVP, float4(inPos.xyz, 1));
-	oUv = uv;
-}
-)";
-
-				return src;
-			}
-			else if(gUseMSL)
-			{
-				// Argument-buffer member names encode the engine binding as
-				// b3d_msl_r_<type>_<set>_<slot>_<name> (type: 0 = uniform buffer, 1 = sampled texture,
-				// 4 = sampler), which is how the backend maps them to engine parameters. Every stage
-				// declares the full resource set, matching the convention of BSL-generated code.
-				static const char* src = R"(
-#include <metal_stdlib>
-using namespace metal;
-
-struct Params
-{
-	float4x4 gMatWVP;
-	float4 gTint;
-};
-
-struct ParamsSet0
-{
-	constant Params* b3d_msl_r_0_0_0_Params [[id(0)]];
-	texture2d<float> b3d_msl_r_1_0_2_gMainTexture [[id(1)]];
-	sampler b3d_msl_r_4_0_1_gMainTexSamp [[id(2)]];
-};
-
-struct VertexInput
-{
-	float3 POSITION [[attribute(0)]];
-	float2 TEXCOORD0 [[attribute(1)]];
-};
-
-struct VertexOutput
-{
-	float4 position [[position]];
-	float2 uv;
-};
-
-vertex VertexOutput vsmain(VertexInput input [[stage_in]], constant ParamsSet0& params [[buffer(0)]])
-{
-	VertexOutput output;
-	output.position = params.b3d_msl_r_0_0_0_Params->gMatWVP * float4(input.POSITION, 1.0f);
-	output.uv = input.TEXCOORD0;
-
-	return output;
-}
-)";
-
-				return src;
-			}
-			else
-			{
-				static const char* src = R"(
-layout (binding = 0, std140) uniform Params
-{
-	mat4 gMatWVP;
-	vec4 gTint;
-};
-
-layout (location = 0) in vec3 bs_position;
-layout (location = 1) in vec2 bs_texcoord0;
-
-layout (location = 0) out vec2 texcoord0;
-
-out gl_PerVertex
-{
-	vec4 gl_Position;
-};
-
-void main()
-{
-	gl_Position = gMatWVP * vec4(bs_position.xyz, 1);
-	texcoord0 = bs_texcoord0;
-}
-)";
-
-				return src;
-			}
-		}
-
-		const char* GetFragmentProgSource()
-		{
-			if(gUseHLSL)
-			{
-				static const char* src = R"(
-cbuffer Params
-{
-	float4x4 gMatWVP;
-	float4 gTint;
-}
-
-SamplerState gMainTexSamp : register(s0);
-Texture2D gMainTexture : register(t0);
-
-float4 main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target
-{
-	float4 color = gMainTexture.Sample(gMainTexSamp, uv);
-	return color * gTint;
-}
-)";
-
-				return src;
-			}
-			else if(gUseMSL)
-			{
-				static const char* src = R"(
-#include <metal_stdlib>
-using namespace metal;
-
-struct Params
-{
-	float4x4 gMatWVP;
-	float4 gTint;
-};
-
-struct ParamsSet0
-{
-	constant Params* b3d_msl_r_0_0_0_Params [[id(0)]];
-	texture2d<float> b3d_msl_r_1_0_2_gMainTexture [[id(1)]];
-	sampler b3d_msl_r_4_0_1_gMainTexSamp [[id(2)]];
-};
-
-struct VertexOutput
-{
-	float4 position [[position]];
-	float2 uv;
-};
-
-fragment float4 fsmain(VertexOutput input [[stage_in]], constant ParamsSet0& params [[buffer(0)]])
-{
-	float4 color = params.b3d_msl_r_1_0_2_gMainTexture.sample(params.b3d_msl_r_4_0_1_gMainTexSamp, input.uv);
-
-	return color * params.b3d_msl_r_0_0_0_Params->gTint;
-}
-)";
-
-				return src;
-			}
-			else
-			{
-				static const char* src = R"(
-layout (binding = 0, std140) uniform Params
-{
-	mat4 gMatWVP;
-	vec4 gTint;
-};
-
-layout (binding = 1) uniform sampler gMainTexSamp;
-layout (binding = 2) uniform texture2D gMainTexture;
-
-layout (location = 0) in vec2 texcoord0;
-layout (location = 0) out vec4 fragColor;
-
-void main()
-{
-	vec4 color = texture(sampler2D(gMainTexture, gMainTexSamp), texcoord0.st);
-	fragColor = color * gTint;
-}
-)";
-
-				return src;
-			}
-		}
-
 		Matrix4 CreateWorldViewProjectionMatrix()
 		{
 			Matrix4 proj = Matrix4::ProjectionPerspective(Degree(75.0f), 16.0f / 9.0f, 0.05f, 1000.0f);
@@ -659,7 +450,7 @@ void main()
 
 			Matrix4 viewProj = proj * view * world;
 
-			// Both GLSL (std140) and HLSL (compiled with column-major packing) expect column-major matrix storage, so transpose our row-major matrix
+			// The shader is compiled with column-major matrix packing, so transpose our row-major matrix
 			viewProj = viewProj.Transpose();
 
 			return viewProj;

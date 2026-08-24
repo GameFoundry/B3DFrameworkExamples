@@ -16,7 +16,9 @@ target_link_libraries(GUI Common)
 
 # Plugin dependencies
 B3DAddRuntimeDependencies(GUI)
-add_dependencies(GUI bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+if(B3D_BUILD_IMPORTERS)
+	add_dependencies(GUI bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+endif()
 
 # Install
 B3DSetUpPostBuildAndInstallSteps(GUI)

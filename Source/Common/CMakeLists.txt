@@ -7,7 +7,7 @@ add_library(Common STATIC ${B3D_COMMON_SOURCE_FILES})
 B3DSetDefaultLinkAndCompileFlags(Common)
 
 # Includes
-target_include_directories(Common PUBLIC "./")
+target_include_directories(Common PUBLIC "./" "${PROJECT_BINARY_DIR}/Generated")
 
 # Libraries
 ## Local libs

@@ -11,6 +11,9 @@
 #include "Text/B3DFontImportOptions.h"
 #include "FileSystem/B3DFileSystem.h"
 #include "Input/B3DVirtualInput.h"
+#include "Material/B3DShaderRegistry.h"
+#include "Resources/B3DBuiltinResources.h"
+#include "Material/B3DShader.h"
 
 namespace b3d
 {
@@ -104,6 +107,19 @@ namespace b3d
 		static void LoadPackages()
 		{
 			GetPackageManager().LoadPackages(EXAMPLE_DATA_PATH, true, kVirtualPathPrefix, true);
+		}
+
+		/** Loads a BSL shader from the example data Shaders folder, by file name (e.g. "MyShader.bsl"). */
+		static HShader LoadShader(const String& fileName)
+		{
+			const Path shaderPath = Path::Combine(EXAMPLE_DATA_PATH, "Shaders/", fileName);
+			const TShared<Shader> shader = ShaderRegistry::Instance().GetOrCompileShader<false>(
+				shaderPath, BuiltinResources::kBuiltinShaderCachePrefix, ShaderDefines());
+
+			if(shader == nullptr)
+				return HShader();
+
+			return B3DStaticResourceCast<Shader>(GetResources().CreateResourceHandle(shader));
 		}
 
 		/** Registers a common set of keys/buttons that are used for controlling the examples. */
@@ -283,12 +299,12 @@ namespace b3d
 		 */
 		static HShader LoadShader(ExampleShader type)
 		{
-			// Map from the enum to the actual file path
+			// Map from the enum to the actual file path. Note these are on purpose in a sub-folder, so they are not picked up by the shader cook tool (they do not currently compile as the CustomMaterials example is deprecated).
 			static AssetFolderAndName assetPaths[] = {
-				AssetFolderAndName("Shaders/", "CustomVertex.bsl"),
-				AssetFolderAndName("Shaders/", "CustomDeferredSurface.bsl"),
-				AssetFolderAndName("Shaders/", "CustomDeferredLighting.bsl"),
-				AssetFolderAndName("Shaders/", "CustomForward.bsl"),
+				AssetFolderAndName("Shaders/CustomMaterials/", "CustomVertex.bsl"),
+				AssetFolderAndName("Shaders/CustomMaterials/", "CustomDeferredSurface.bsl"),
+				AssetFolderAndName("Shaders/CustomMaterials/", "CustomDeferredLighting.bsl"),
+				AssetFolderAndName("Shaders/CustomMaterials/", "CustomForward.bsl"),
 			};
 
 			const AssetFolderAndName& assetFolderAndName = assetPaths[(u32)type];
