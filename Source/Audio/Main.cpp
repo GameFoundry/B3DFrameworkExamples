@@ -1,6 +1,7 @@
 // Framework includes
 #include "B3DApplication.h"
 #include "B3DEntry.h"
+#include "B3DExampleFramework.h"
 #include "Resources/B3DResources.h"
 #include "Audio/B3DAudioClip.h"
 #include "Audio/B3DAudioClipImportOptions.h"
