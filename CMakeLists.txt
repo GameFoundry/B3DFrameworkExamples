@@ -33,6 +33,9 @@ configure_file("${PROJECT_SOURCE_DIR}/Source/CMake/B3DExampleConfig.h.in" "${PRO
 # Check data dependencies
 B3DCheckAndUpdateAssetPackage(ExampleData)
 
+# Ensures example shaders are cooked into the prebuilt shader store
+set_property(GLOBAL APPEND PROPERTY B3D_SHADER_COOK_INPUT_FOLDERS "${PROJECT_SOURCE_DIR}/Data/Shaders")
+
 # Sub-directories
 foreach(exampleSubdirectory ${EXAMPLE_SUBDIRECTORIES})
 	add_subdirectory(${exampleSubdirectory})
