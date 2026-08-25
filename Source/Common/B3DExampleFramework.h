@@ -103,16 +103,23 @@ namespace b3d
 		/** Virtual path prefix that may be used for accessing all resources managed by this class. */
 		static constexpr const char* kVirtualPathPrefix = "/B3D/ExampleData/";
 
+		/** Returns the absolute path to the folder containing the example data. */
+		static const Path& GetDataPath()
+		{
+			static Path path = FindDataPath();
+			return path;
+		}
+
 		/** Loads all packages containing example data. */
 		static void LoadPackages()
 		{
-			GetPackageManager().LoadPackages(EXAMPLE_DATA_PATH, true, kVirtualPathPrefix, true);
+			GetPackageManager().LoadPackages(GetDataPath(), true, kVirtualPathPrefix, true);
 		}
 
 		/** Loads a BSL shader from the example data Shaders folder, by file name (e.g. "MyShader.bsl"). */
 		static HShader LoadShader(const String& fileName)
 		{
-			const Path shaderPath = Path::Combine(EXAMPLE_DATA_PATH, "Shaders/", fileName);
+			const Path shaderPath = Path::Combine(GetDataPath(), "Shaders/", fileName);
 			const TShared<Shader> shader = ShaderRegistry::Instance().GetOrCompileShader<false>(
 				shaderPath, BuiltinResources::kBuiltinShaderCachePrefix, ShaderDefines());
 
@@ -174,7 +181,7 @@ namespace b3d
 			else // Mesh file doesn't exist, import from the source file.
 			{
 				// When importing you may specify optional import options that control how is the asset imported.
-				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
+				const Path& sourceAssetPath = Path::Combine(GetDataPath(), assetFolderAndName.Folder, assetFolderAndName.Name);
 				TShared<ImportOptions> meshImportOptions = Importer::Instance().CreateImportOptions(sourceAssetPath);
 
 				// B3DRTTIIsOfType checks if the import options are of valid type, in case the provided path is pointing to a
@@ -192,7 +199,7 @@ namespace b3d
 				ResourceSaveOptions resourceSaveOptions;
 				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				GetResources().SaveAsSinglePackage(mesh, Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
+				GetResources().SaveAsSinglePackage(mesh, Path::Combine(GetDataPath(), assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 				return mesh;
 			}
 		}
@@ -243,7 +250,7 @@ namespace b3d
 			else // Texture file doesn't exist, import from the source file.
 			{
 				// When importing you may specify optional import options that control how is the asset imported.
-				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
+				const Path& sourceAssetPath = Path::Combine(GetDataPath(), assetFolderAndName.Folder, assetFolderAndName.Name);
 				TShared<ImportOptions> textureImportOptions = Importer::Instance().CreateImportOptions(sourceAssetPath);
 
 				// B3DRTTIIsOfType checks if the import options are of valid type, in case the provided path is pointing to a
@@ -288,7 +295,7 @@ namespace b3d
 				ResourceSaveOptions resourceSaveOptions;
 				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				GetResources().SaveAsSinglePackage(texture, Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
+				GetResources().SaveAsSinglePackage(texture, Path::Combine(GetDataPath(), assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 				return texture;
 			}
 		}
@@ -315,14 +322,14 @@ namespace b3d
 				return GetResources().Load<Shader>(virtualAssetPath, ResourceLoadOptions(false));
 			else // Shader file doesn't exist, import from the source file.
 			{
-				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
+				const Path& sourceAssetPath = Path::Combine(GetDataPath(), assetFolderAndName.Folder, assetFolderAndName.Name);
 				HShader shader = GetImporter().Import<Shader>(sourceAssetPath);
 
 				// Save for later use, so we don't have to import on the next run.
 				ResourceSaveOptions resourceSaveOptions;
 				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				GetResources().SaveAsSinglePackage(shader, Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
+				GetResources().SaveAsSinglePackage(shader, Path::Combine(GetDataPath(), assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 				return shader;
 			}
 		}
@@ -347,7 +354,7 @@ namespace b3d
 				return GetResources().Load<Font>(virtualAssetPath, ResourceLoadOptions(false));
 			else // Font file doesn't exist, import from the source file.
 			{
-				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
+				const Path& sourceAssetPath = Path::Combine(GetDataPath(), assetFolderAndName.Folder, assetFolderAndName.Name);
 
 				// When importing you may specify optional import options that control how is the asset imported.
 				TShared<FontImportOptions> fontImportOptions = FontImportOptions::Create();
@@ -357,7 +364,7 @@ namespace b3d
 				ResourceSaveOptions resourceSaveOptions;
 				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				GetResources().SaveAsSinglePackage(font, Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
+				GetResources().SaveAsSinglePackage(font, Path::Combine(GetDataPath(), assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 				return font;
 			}
 		}
@@ -381,17 +388,39 @@ namespace b3d
 			TResourceHandle<T> resource = GetResources().Load<T>(virtualAssetPath, ResourceLoadOptions(false));
 			if(resource == nullptr) // Shader file doesn't exist, import from the source file.
 			{
-				const Path& sourceAssetPath = Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder, assetFolderAndName.Name);
+				const Path& sourceAssetPath = Path::Combine(GetDataPath(), assetFolderAndName.Folder, assetFolderAndName.Name);
 				resource = GetImporter().Import<T>(sourceAssetPath);
 
 				// Save for later use, so we don't have to import on the next run.
 				ResourceSaveOptions resourceSaveOptions;
 				resourceSaveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
 
-				GetResources().SaveAsSinglePackage(resource, Path::Combine(EXAMPLE_DATA_PATH, assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
+				GetResources().SaveAsSinglePackage(resource, Path::Combine(GetDataPath(), assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 			}
 
 			return resource;
+		}
+
+	private:
+		/** Locates the example data folder. See GetDataPath(). */
+		static Path FindDataPath()
+		{
+			// Next to the executable (packaged builds).
+			Path path = FileSystem::GetExecutableFolderPath() + Path("ExampleData/");
+			if(FileSystem::Exists(path))
+				return path;
+
+			// The example source tree (development builds).
+			path = EXAMPLE_DATA_PATH;
+			if(FileSystem::Exists(path))
+				return path;
+
+			// The source tree through the host filesystem mount, on platforms served from a host PC.
+			const Path hostRoot = FileSystem::GetHostFileSystemRoot();
+			if(!hostRoot.IsEmpty())
+				return Path(hostRoot.ToString() + String(EXAMPLE_DATA_PATH));
+
+			return path;
 		}
 	};
 

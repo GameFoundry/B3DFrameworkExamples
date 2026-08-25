@@ -68,7 +68,7 @@ namespace b3d
 		// First import any audio clips we plan on using
 
 		// Set up paths to the audio file resources
-		const Path exampleDataPath = EXAMPLE_DATA_PATH;
+		const Path exampleDataPath = ExampleFramework::GetDataPath();
 		const Path musicClipPath = exampleDataPath + "Audio/BrokeForFree-NightOwl.ogg";
 		const Path environmentClipPath = exampleDataPath + "Audio/FilteredPianoAmbient.ogg";
 		const Path cueClipPath = exampleDataPath + "Audio/GunShot.wav";

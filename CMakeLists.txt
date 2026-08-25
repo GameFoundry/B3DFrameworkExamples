@@ -3,9 +3,6 @@ project (bsfExamples)
 
 set (SECONDARY_APP_ROOT_DIR "${PROJECT_SOURCE_DIR}")
 
-# Path the examples read their data from at runtime.
-set(EXAMPLE_DATA_RUNTIME_PATH "${PROJECT_SOURCE_DIR}/Data/")
-
 # Example projects to build.
 set(EXAMPLE_SUBDIRECTORIES
 	Source/Common
@@ -25,8 +22,7 @@ set(EXAMPLE_SUBDIRECTORIES
 	Source/MeshSimplification)
 
 # Platform-specific overrides, if the target platform defines any (see Platform/<name>/Platform.cmake).
-# A platform may redirect the runtime data path (e.g. when example data is reached through a different
-# mount) or trim the example set to the projects that build on it.
+# A platform may trim the example set to the projects that build on it.
 if(COMMAND B3DApplyPlatformExampleOverrides)
 	B3DApplyPlatformExampleOverrides()
 endif()

@@ -53,7 +53,7 @@ namespace b3d
 		// Load the 3D model and the animation clip
 
 		// Set up a path to the model resource
-		const Path exampleDataPath = EXAMPLE_DATA_PATH;
+		const Path exampleDataPath = ExampleFramework::GetDataPath();
 		const Path modelPath = exampleDataPath + "MechDrone/Drone.FBX";
 
 		// Set up mesh import options so that we import information about the skeleton and the skin, as well as any

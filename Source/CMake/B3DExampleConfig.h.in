@@ -1,4 +1,6 @@
 #pragma once
 
 static constexpr const char* EXAMPLE_ROOT = "@PROJECT_SOURCE_DIR@/";
-static constexpr const char* EXAMPLE_DATA_PATH = "@EXAMPLE_DATA_RUNTIME_PATH@";
+
+/** Example data folder in the source tree. A fallback - see ExampleFramework::GetDataPath() for the runtime resolution. */
+static constexpr const char* EXAMPLE_DATA_PATH = "@PROJECT_SOURCE_DIR@/Data/";

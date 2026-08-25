@@ -84,7 +84,7 @@ namespace b3d
 		TShared<GUIStyleSheetCascade> customStyleSheetCascade = B3DMakeShared<GUIStyleSheetCascade>();
 		customStyleSheetCascade->RegisterStyleSheet(GetBuiltinResources().GetDefaultGUIStyleSheet(), GUIStyleSheet::kBuiltinImportance); // Anything not defined in the custom style sheet file will use the default style sheet
 
-		HGUIStyleSheet customStyleSheet = GUIStyleSheet::Parse(Path(EXAMPLE_DATA_PATH) + "GUI.css");
+		HGUIStyleSheet customStyleSheet = GUIStyleSheet::Parse(ExampleFramework::GetDataPath() + "GUI.css");
 		customStyleSheetCascade->RegisterStyleSheet(customStyleSheet, GUIStyleSheet::kDeveloperImportance);
 
 		// Register the style sheet with the GUI widget
