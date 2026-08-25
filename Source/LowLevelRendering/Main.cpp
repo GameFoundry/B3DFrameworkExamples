@@ -1,7 +1,6 @@
 #include "B3DApplication.h"
 #include "B3DEntry.h"
 #include "B3DExampleFramework.h"
-#include "Material/B3DMaterial.h"
 #include "Material/B3DShader.h"
 #include "Material/B3DVariation.h"
 #include "Material/B3DPass.h"
@@ -34,8 +33,9 @@
 // The rendering is performed on the render thread, as opposed to the main thread, where majority of bsf's code executes.
 //
 // The GPU programs (and the blend/depth state they render with) come from a BSL shader that ships with the example data
-// ("ExampleLowLevelRendering.bsl"). Everything below the shader - pipeline state, vertex & index buffers, parameter binding
-// and draw calls - is set up manually through the low-level API.
+// ("ExampleLowLevelRendering.bsl"). Everything below the shader - GPU programs, pipeline state, vertex & index buffers,
+// parameter binding and draw calls - is created manually through the low-level API, from the information the shader's
+// pass provides.
 //
 // The example first sets up those resources, then every frame binds them and executes the draw call.
 //
@@ -51,7 +51,7 @@ namespace b3d
 	// an object has variants of its type usable from main and render threads.
 	namespace render
 	{
-		void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Material>& boxMaterial);
+		void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Shader>& boxShader);
 		void Render();
 		void Shutdown();
 	} // namespace render
@@ -80,15 +80,15 @@ namespace b3d
 			// Get the version of the render window usable on the render thread, and send it along to setup()
 			TShared<render::RenderWindow> renderWindowRenderProxy = B3DGetRenderProxy(renderWindow);
 
-			// Load the box shader from the example data and wrap it in a material.
-			HShader boxShader = ExampleFramework::LoadShader("ExampleLowLevelRendering.bsl");
-			mBoxMaterial = Material::Create(boxShader);
+			// Load the box shader from the example data. The shader provides the GPU program code and pipeline states,
+			// which we use to manually construct the objects needed for rendering in Setup().
+			mBoxShader = ExampleFramework::LoadShader("ExampleLowLevelRendering.bsl");
 
-			TShared<render::Material> boxMaterialRenderProxy = B3DGetRenderProxy(mBoxMaterial);
+			TShared<render::Shader> boxShaderRenderProxy = B3DGetRenderProxy(mBoxShader);
 
 			// Initialize all the resources we need for rendering. Since we do rendering on a separate thread (the render
 			// thread), we don't call the method directly, but rather queue it for execution using the RenderThread class.
-			GetRenderThread().PostCommand([renderWindowRenderProxy, boxMaterialRenderProxy] { render::Setup(renderWindowRenderProxy, boxMaterialRenderProxy); });
+			GetRenderThread().PostCommand([renderWindowRenderProxy, boxShaderRenderProxy] { render::Setup(renderWindowRenderProxy, boxShaderRenderProxy); });
 		}
 
 		// Called when the engine is about to be shut down
@@ -97,8 +97,8 @@ namespace b3d
 			// Queue the method for execution on the render thread
 			GetRenderThread().PostCommand(&render::Shutdown);
 
-			// Release the material before engine shut-down proceeds, so the resources it keeps alive are destroyed while the resource system is still running
-			mBoxMaterial = HMaterial();
+			// Release the shader before engine shut-down proceeds, so the resources it keeps alive are destroyed while the resource system is still running
+			mBoxShader = HShader();
 
 			// Shut-down engine components
 			Application::OnShutDown();
@@ -114,8 +114,8 @@ namespace b3d
 			Application::PreUpdate();
 		}
 
-		// Material wrapping the box shader; setup() renders with its pipeline
-		HMaterial mBoxMaterial;
+		// Shader whose pass provides the GPU programs and pipeline states the box renders with
+		HShader mBoxShader;
 	};
 } // namespace b3d
 
@@ -176,7 +176,7 @@ namespace b3d
 		};
 
 		// Initializes any resources required for rendering
-		void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Material>& boxMaterial)
+		void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Shader>& boxShader)
 		{
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
@@ -191,16 +191,25 @@ namespace b3d
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;
 
-			// Compile the box material's only variation (a no-op when it was resolved from the prebuilt shader store)
-			// and take its graphics pipeline. The blend/depth state to render with is part of the shader's BSL source.
-			const TShared<Variation>& shaderVariation = boxMaterial->GetVariation(0);
+			// Grab the shader's first variation compatible with the active GPU backend, and ensure it is compiled
+			const TShared<Variation> shaderVariation = boxShader->GetCompatibleVariations()[0];
 			if(!shaderVariation->IsCompiled())
 				shaderVariation->Compile().BlockUntilComplete();
 
-			const TShared<Pass>& pass = boxMaterial->GetPass(0, 0);
-			pass->Compile();
+			// The variation's pass provides everything needed to construct the rendering pipeline: the GPU program
+			// descriptors (compiled bytecode, or source to compile from), and the blend/rasterizer/depth-stencil
+			// states described in the shader's BSL source. Create the GPU programs and the graphics pipeline from it
+			// manually through the low-level API.
+			const PassInformation& passInformation = shaderVariation->GetPass(0)->GetInformation();
 
-			gPipelineState = pass->GetGraphicsPipelineState();
+			GpuGraphicsPipelineStateCreateInformation pipelineCreateInformation;
+			pipelineCreateInformation.VertexProgram = gpuDevice->CreateGpuProgram(passInformation.VertexProgramCreateInformation);
+			pipelineCreateInformation.FragmentProgram = gpuDevice->CreateGpuProgram(passInformation.FragmentProgramCreateInformation);
+			pipelineCreateInformation.BlendState = passInformation.BlendStateInformation;
+			pipelineCreateInformation.RasterizerState = passInformation.RasterizerStateInformation;
+			pipelineCreateInformation.DepthStencilState = passInformation.DepthStencilStateInformation;
+
+			gPipelineState = gpuDevice->CreateGpuGraphicsPipelineState(pipelineCreateInformation);
 
 			// Create an object containing GPU program parameters
 			GpuParameterSetPool& pool = render::GetRenderer()->GetGpuContext().GetParameterSetPool();
