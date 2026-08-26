@@ -1,0 +1,14 @@
+AssetLicences.txt
+Audio/
+Cerberus/
+Decal/
+Environments/
+Example.bsl
+GUI/
+GUI.css
+Grid/
+Materials/
+MechDrone/
+Particles/
+Pistol/
+.version

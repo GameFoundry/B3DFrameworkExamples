@@ -8,6 +8,8 @@ lib
 Build
 Data/*
 !Data/**/.reqversion
+!Data/Shaders/
+!Data/DataPackageManifest.txt
 B3DExampleConfig.h
 Source/Experimental
 ExperimentalData
