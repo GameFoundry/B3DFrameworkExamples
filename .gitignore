@@ -10,6 +10,7 @@ Data/*
 !Data/**/.reqversion
 !Data/Shaders/
 !Data/DataPackageManifest.txt
+!Data/DataPackageRemovals.txt
 B3DExampleConfig.h
 Source/Experimental
 ExperimentalData

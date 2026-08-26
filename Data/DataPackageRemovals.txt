@@ -1,0 +1,5 @@
+Shaders/CustomDeferredLighting.bsl
+Shaders/CustomDeferredSurface.bsl
+Shaders/CustomForward.bsl
+Shaders/CustomVertex.bsl
+Shaders/Noise.bslinc
