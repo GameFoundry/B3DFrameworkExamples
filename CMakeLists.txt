@@ -7,6 +7,7 @@ set (SECONDARY_APP_ROOT_DIR "${PROJECT_SOURCE_DIR}")
 set(EXAMPLE_SUBDIRECTORIES
 	Source/Common
 	Source/LowLevelRendering
+	Source/Tests/AdvancedLowLevelRendering
 	Source/PhysicallyBasedShading
 	# Source/CustomMaterials # Outdated, until the shading language update is done
 	Source/GUI
