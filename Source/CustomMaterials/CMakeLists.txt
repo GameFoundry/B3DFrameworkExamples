@@ -14,7 +14,9 @@ target_link_libraries(CustomMaterials Common)
 
 # Plugin dependencies
 B3DAddRuntimeDependencies(CustomMaterials)
-add_dependencies(CustomMaterials bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+if(B3D_BUILD_IMPORTERS)
+	add_dependencies(CustomMaterials bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+endif()
 
 # Install
 B3DSetUpPostBuildAndInstallSteps(CustomMaterials)

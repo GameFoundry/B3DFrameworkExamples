@@ -16,7 +16,9 @@ target_link_libraries(Particles Common)
 
 # Plugin dependencies
 B3DAddRuntimeDependencies(Particles)
-add_dependencies(Particles bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+if(B3D_BUILD_IMPORTERS)
+	add_dependencies(Particles bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+endif()
 
 # Install
 B3DSetUpPostBuildAndInstallSteps(Particles)

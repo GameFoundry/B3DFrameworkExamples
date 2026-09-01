@@ -16,7 +16,9 @@ target_link_libraries(SkeletalAnimation Common)
 
 # Plugin dependencies
 B3DAddRuntimeDependencies(SkeletalAnimation)
-add_dependencies(SkeletalAnimation bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+if(B3D_BUILD_IMPORTERS)
+	add_dependencies(SkeletalAnimation bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+endif()
 
 # Install
 B3DSetUpPostBuildAndInstallSteps(SkeletalAnimation)

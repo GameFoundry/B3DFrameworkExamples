@@ -16,7 +16,9 @@ target_link_libraries(PhysicallyBasedShading Common)
 
 # Plugin dependencies
 B3DAddRuntimeDependencies(PhysicallyBasedShading)
-add_dependencies(PhysicallyBasedShading bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+if(B3D_BUILD_IMPORTERS)
+	add_dependencies(PhysicallyBasedShading bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+endif()
 
 # Install
 B3DSetUpPostBuildAndInstallSteps(PhysicallyBasedShading)

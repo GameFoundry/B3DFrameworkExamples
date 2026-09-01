@@ -16,7 +16,9 @@ target_link_libraries(Lighting Common)
 
 # Plugin dependencies
 B3DAddRuntimeDependencies(Lighting)
-add_dependencies(Lighting bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+if(B3D_BUILD_IMPORTERS)
+	add_dependencies(Lighting bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+endif()
 
 # Install
 B3DSetUpPostBuildAndInstallSteps(Lighting)

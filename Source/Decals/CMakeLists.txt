@@ -16,7 +16,9 @@ target_link_libraries(Decals Common)
 
 # Plugin dependencies
 B3DAddRuntimeDependencies(Decals)
-add_dependencies(Decals bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+if(B3D_BUILD_IMPORTERS)
+	add_dependencies(Decals bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+endif()
 
 # Install
 B3DSetUpPostBuildAndInstallSteps(Decals)

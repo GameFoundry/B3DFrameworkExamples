@@ -16,7 +16,9 @@ target_link_libraries(GUICulling Common)
 
 # Plugin dependencies
 B3DAddRuntimeDependencies(GUICulling)
-add_dependencies(GUICulling bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+if(B3D_BUILD_IMPORTERS)
+	add_dependencies(GUICulling bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+endif()
 
 # Install
 B3DSetUpPostBuildAndInstallSteps(GUICulling)

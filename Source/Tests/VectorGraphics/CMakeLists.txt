@@ -16,7 +16,9 @@ target_link_libraries(VectorGraphics Common)
 
 # Plugin dependencies
 B3DAddRuntimeDependencies(VectorGraphics)
-add_dependencies(VectorGraphics bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+if(B3D_BUILD_IMPORTERS)
+	add_dependencies(VectorGraphics bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+endif()
 
 # Install
 B3DSetUpPostBuildAndInstallSteps(VectorGraphics)

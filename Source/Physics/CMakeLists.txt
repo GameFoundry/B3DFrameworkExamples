@@ -16,7 +16,9 @@ target_link_libraries(Physics Common)
 
 # Plugin dependencies
 B3DAddRuntimeDependencies(Physics)
-add_dependencies(Physics bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+if(B3D_BUILD_IMPORTERS)
+	add_dependencies(Physics bsfFBXImporter bsfFontImporter bsfFreeImgImporter)
+endif()
 
 # Install
 B3DSetUpPostBuildAndInstallSteps(Physics)
