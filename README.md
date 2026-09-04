@@ -6,7 +6,7 @@ A collection of small, focused projects demonstrating how to use the B3D Framewo
 
 The examples are bundled with the main [B3D Framework](https://github.com/GameFoundry/B3DFramework) repository as a git submodule and are built as part of the framework — there are no separate build steps. Follow the framework's [build instructions](https://github.com/GameFoundry/B3DFramework/blob/master/Documentation/GitHub/compiling.md), and the example binaries will be placed alongside the rest of the framework output.
 
-Toolchain requirements match the parent project: Git, CMake 3.31 or higher, and a C++17 compiler. Example projects are enabled by default and can be toggled via the `B3D_BUILD_EXAMPLES` CMake option.
+Toolchain requirements match the parent project: Git, CMake 4.2 or newer, and a C++17 compiler. Windows builds use Visual Studio 2026 with the v145 platform toolset (MSVC 14.50 or newer) and Windows 11 SDK 10.0.26100.0 or newer. Example projects are enabled by default and can be toggled via the `B3D_BUILD_EXAMPLES` CMake option.
 
 # Examples
 

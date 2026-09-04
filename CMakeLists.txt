@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.12.0)
+cmake_minimum_required (VERSION 4.2.0)
 project (bsfExamples)
 
 set (SECONDARY_APP_ROOT_DIR "${PROJECT_SOURCE_DIR}")

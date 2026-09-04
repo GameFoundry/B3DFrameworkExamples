@@ -8,6 +8,7 @@
 #include "GpuBackend/B3DRenderWindow.h"
 #include "GpuBackend/B3DGpuCommandBuffer.h"
 #include "GpuBackend/B3DGpuPipelineState.h"
+#include "GpuBackend/B3DGpuPushConstants.h"
 #include "GpuBackend/B3DGpuBuffer.h"
 #include "GpuBackend/B3DVertexDescription.h"
 #include "Mesh/B3DMeshData.h"
@@ -159,8 +160,9 @@ namespace b3d::render
 		computePipelineCreateInformation.Program = gpuDevice->CreateGpuProgram(computePass.ComputeProgramCreateInformation);
 		gComputePipelineState = gpuDevice->CreateGpuComputePipelineState(computePipelineCreateInformation);
 
-		B3D_ASSERT(gGraphicsPipelineState->GetParameterLayout()->GetPushConstantBufferSize() == 16);
-		B3D_ASSERT(gComputePipelineState->GetParameterLayout()->GetPushConstantBufferSize() == 16);
+		B3D_ASSERT(gpuDevice->GetCapabilities().MaximumPushConstantSize >= kMaxPushConstantSizeInBytes);
+		B3D_ASSERT(gGraphicsPipelineState->GetParameterLayout()->GetPushConstantBufferSize() == kMaxPushConstantSizeInBytes);
+		B3D_ASSERT(gComputePipelineState->GetParameterLayout()->GetPushConstantBufferSize() == kMaxPushConstantSizeInBytes);
 
 		// Shared compute output and parameter sets.
 		GpuParameterSetPool& parameterSetPool = gpuContext.GetParameterSetPool();
