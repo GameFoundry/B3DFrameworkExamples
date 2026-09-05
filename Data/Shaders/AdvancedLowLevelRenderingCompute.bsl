@@ -10,10 +10,13 @@ shader AdvancedLowLevelRenderingCompute
 
 		RWStructuredBuffer<float4> gComputeOutput;
 
-		[numthreads(1, 1, 1)]
+		[numthreads(32, 1, 1)]
 		void csmain(uint3 dispatchId : SV_DispatchThreadID)
 		{
-			gComputeOutput[dispatchId.x] = gColorMultiplier;
+			float activeLaneCount = (float)WaveActiveCountBits(true);
+			float4 waveSum = WaveActiveSum(gColorMultiplier);
+			if(WaveGetLaneIndex() == 0)
+				gComputeOutput[0] = waveSum / activeLaneCount;
 		}
 	};
 };

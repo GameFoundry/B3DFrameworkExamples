@@ -23,7 +23,7 @@
 
 /**
  * Low-level rendering test bed for newly introduced GPU features. It currently verifies graphics and compute push
- * constants, including partial updates and propagation of compute results into a subsequent graphics pass.
+ * constants, plus D3D12 wave/lane operations and propagation of compute results into a subsequent graphics pass.
  */
 namespace b3d
 {
