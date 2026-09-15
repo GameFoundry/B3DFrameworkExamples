@@ -50,22 +50,10 @@ namespace b3d
 	{
 		Assets assets;
 
-		// Load the 3D model and the animation clip
-
-		// Set up a path to the model resource
-		const Path exampleDataPath = ExampleFramework::GetDataPath();
-		const Path modelPath = exampleDataPath + "MechDrone/Drone.FBX";
-
-		// Set up mesh import options so that we import information about the skeleton and the skin, as well as any
-		// animation clips the model might have.
-		TShared<MeshImportOptions> meshImportOptions = MeshImportOptions::Create();
-		meshImportOptions->ImportSkin = true;
-		meshImportOptions->ImportAnimation = true;
-
-		// The FBX file contains multiple resources (a mesh and an animation clip), therefore we use importAll() method,
-		// which imports all resources in a file.
-		TShared<MultiResource> modelResources = GetImporter().ImportAll(modelPath, meshImportOptions);
-		for(auto& entry : modelResources->Entries)
+		// Load the skeletal mesh and the animation clip. The source file contains multiple resources (a mesh and an
+		// animation clip), so the skeletal mesh is loaded as a group of sub-resources.
+		TShared<MultiResource> skeletalMeshResources = ExampleFramework::LoadSkeletalMesh(ExampleSkeletalMesh::MechDrone);
+		for(auto& entry : skeletalMeshResources->Entries)
 		{
 			if(B3DRTTIIsOfType<Mesh>(entry.Value.Get()))
 				assets.ExampleModel = B3DStaticResourceCast<Mesh>(entry.Value);

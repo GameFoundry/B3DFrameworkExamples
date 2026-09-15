@@ -3,6 +3,8 @@
 #include "B3DPrerequisites.h"
 #include "Reflection/B3DRTTIType.h"
 #include "Resources/B3DResources.h"
+#include "Resources/B3DPackage.h"
+#include "Resources/B3DPackageManager.h"
 #include "Mesh/B3DMesh.h"
 #include "Importer/B3DImporter.h"
 #include "Importer/B3DMeshImportOptions.h"
@@ -22,6 +24,12 @@ namespace b3d
 	{
 		Pistol,
 		Cerberus
+	};
+
+	/** A list of skeletal mesh assets (a mesh and its animation clips, imported from one file) provided with the example projects. */
+	enum class ExampleSkeletalMesh
+	{
+		MechDrone
 	};
 
 	/** A list of texture assets provided with the example projects. */
@@ -201,6 +209,63 @@ namespace b3d
 
 				GetResources().SaveAsSinglePackage(mesh, Path::Combine(GetDataPath(), assetFolderAndName.Folder), assetFolderAndName.Name, resourceSaveOptions);
 				return mesh;
+			}
+		}
+
+		/**
+		 * Loads one of the builtin skeletal meshes: the mesh together with every animation clip stored in its source file.
+		 * If the asset doesn't exist, the skeletal mesh will be re-imported from the source file with skin and animation
+		 * data, and then saved so it can be loaded on the next call to this method.
+		 */
+		static TShared<MultiResource> LoadSkeletalMesh(ExampleSkeletalMesh type)
+		{
+			// Map from the enum to the actual file path
+			static AssetFolderAndName assetPaths[] = {
+				AssetFolderAndName("MechDrone/", "Drone.FBX")
+			};
+
+			const AssetFolderAndName& assetFolderAndName = assetPaths[(u32)type];
+
+			// All sub-resources of the skeletal mesh live in a virtual folder named after the source file, so it can be
+			// found again by enumerating that folder, without knowing the sub-resource names up front.
+			const Path& virtualFolderPath = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder, assetFolderAndName.Name + "/");
+
+			// Collect the paths first, since resources must not be loaded while the package is locked for enumeration
+			Vector<Path> virtualPaths;
+			GetPackageManager().EnumerateResourceMetaData(virtualFolderPath,
+				[&virtualPaths](const Path& virtualPath, const PackageResourceMetaData&) { virtualPaths.push_back(virtualPath); });
+
+			// Attempt to load the previously processed asset
+			if(!virtualPaths.empty())
+			{
+				TShared<MultiResource> skeletalMesh = B3DMakeShared<MultiResource>();
+				for(const Path& virtualPath : virtualPaths)
+					skeletalMesh->Entries.push_back({ virtualPath.GetFilename(true), GetResources().Load(virtualPath, ResourceLoadOptions(false)) });
+
+				return skeletalMesh;
+			}
+			else // Skeletal mesh package doesn't exist, import from the source file.
+			{
+				const Path& sourceAssetPath = Path::Combine(GetDataPath(), assetFolderAndName.Folder, assetFolderAndName.Name);
+
+				// Import the skeleton and the skin as well as the animation clips, not just the mesh geometry
+				TShared<MeshImportOptions> importOptions = MeshImportOptions::Create();
+				importOptions->ImportSkin = true;
+				importOptions->ImportAnimation = true;
+
+				TShared<MultiResource> skeletalMesh = GetImporter().ImportAll(sourceAssetPath, importOptions);
+
+				// Save all sub-resources into a single package for later use, so we don't have to import on the next run.
+				const TShared<Package> package = Package::Create(assetFolderAndName.Name);
+				for(const SubResource& entry : skeletalMesh->Entries)
+					package->AddResource(Path::Combine(assetFolderAndName.Name + "/", entry.Name), entry.Value);
+
+				PackageManagerSavePackageOptions saveOptions;
+				saveOptions.VirtualPathPrefix = Path::Combine(kVirtualPathPrefix, assetFolderAndName.Folder);
+
+				const Path& packagePath = Path::Combine(GetDataPath(), assetFolderAndName.Folder, assetFolderAndName.Name + Package::kPackageExtension);
+				GetPackageManager().SavePackage(package, packagePath, saveOptions);
+				return skeletalMesh;
 			}
 		}
 
