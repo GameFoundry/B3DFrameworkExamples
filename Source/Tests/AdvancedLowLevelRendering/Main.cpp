@@ -20,10 +20,11 @@
 #include "Renderer/B3DRenderer.h"
 #include "Renderer/B3DRendererManager.h"
 #include "GpuBackend/B3DGpuParameterSetPool.h"
+#include "String/B3DStringFormat.h"
 
 /**
  * Low-level rendering test bed for newly introduced GPU features. It currently verifies graphics and compute push
- * constants, plus D3D12 wave/lane operations and propagation of compute results into a subsequent graphics pass.
+ * constants at every portable size through readback, plus wave/lane operations and compute-to-graphics propagation.
  */
 namespace b3d
 {
@@ -34,7 +35,7 @@ namespace b3d
 	namespace render
 	{
 		void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Shader>& graphicsShader,
-			const TShared<Shader>& computeShader);
+			const TShared<Shader>& computeShader, const TShared<Shader>& pushConstantShader, const TShared<Shader>& pushConstantComputeShader);
 		void Render();
 		void Shutdown();
 	}
@@ -54,12 +55,19 @@ namespace b3d
 			const TShared<render::RenderWindow> renderWindow = B3DGetRenderProxy(GetPrimaryWindow());
 			mGraphicsShader = ExampleFramework::LoadShader("AdvancedLowLevelRendering.bsl");
 			mComputeShader = ExampleFramework::LoadShader("AdvancedLowLevelRenderingCompute.bsl");
+			mPushConstantShader = ExampleFramework::LoadShader("AdvancedPushConstantTests.bsl");
+			mPushConstantComputeShader = ExampleFramework::LoadShader("AdvancedPushConstantComputeTests.bsl");
+			if(!mGraphicsShader || !mComputeShader || !mPushConstantShader || !mPushConstantComputeShader)
+				B3D_LOG(Fatal, LogGeneric, "AdvancedLowLevelRendering requires all four test shaders.");
+
 			const TShared<render::Shader> graphicsShader = B3DGetRenderProxy(mGraphicsShader);
 			const TShared<render::Shader> computeShader = B3DGetRenderProxy(mComputeShader);
+			const TShared<render::Shader> pushConstantShader = B3DGetRenderProxy(mPushConstantShader);
+			const TShared<render::Shader> pushConstantComputeShader = B3DGetRenderProxy(mPushConstantComputeShader);
 
-			GetRenderThread().PostCommand([renderWindow, graphicsShader, computeShader]
+			GetRenderThread().PostCommand([renderWindow, graphicsShader, computeShader, pushConstantShader, pushConstantComputeShader]
 			{
-				render::Setup(renderWindow, graphicsShader, computeShader);
+				render::Setup(renderWindow, graphicsShader, computeShader, pushConstantShader, pushConstantComputeShader);
 			});
 		}
 
@@ -68,6 +76,8 @@ namespace b3d
 			GetRenderThread().PostCommand(&render::Shutdown);
 			mGraphicsShader = HShader();
 			mComputeShader = HShader();
+			mPushConstantShader = HShader();
+			mPushConstantComputeShader = HShader();
 
 			Application::OnShutDown();
 		}
@@ -80,6 +90,8 @@ namespace b3d
 
 		HShader mGraphicsShader;
 		HShader mComputeShader;
+		HShader mPushConstantShader;
+		HShader mPushConstantComputeShader;
 	};
 }
 
@@ -125,7 +137,7 @@ namespace b3d::render
 	void WriteBoxIndices(u32* indices);
 	Matrix4 CreateWorldViewProjectionMatrix();
 
-	void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Shader>& graphicsShader, const TShared<Shader>& computeShader)
+	void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Shader>& graphicsShader, const TShared<Shader>& computeShader, const TShared<Shader>& pushConstantShader, const TShared<Shader>& pushConstantComputeShader)
 	{
 		const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 		GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
@@ -136,6 +148,165 @@ namespace b3d::render
 		poolCreateInformation.Type = GQT_GRAPHICS;
 		gCommandBufferPool = gpuDevice->CreateGpuCommandBufferPool(poolCreateInformation);
 		gRenderWindow = renderWindow;
+
+		// Compile pipelines from loaded bytecode
+		Array<TShared<GpuGraphicsPipelineState>, 4> testGraphicsPipelines;
+		Array<TShared<GpuComputePipelineState>, 4> testComputePipelines;
+		for(const TShared<Shader>& testShader : { pushConstantShader, pushConstantComputeShader })
+		{
+			for(const TShared<Variation>& variation : testShader->GetCompatibleVariations())
+			{
+				ShaderVariationParameters variationParameters = variation->GetVariationParameters();
+				const u32 valueCount = (u32)variationParameters.GetI32("VALUE_COUNT");
+				if(valueCount < 1 || valueCount > kMaxPushConstantValueCount)
+					B3D_LOG(Fatal, LogGeneric, "Invalid push-constant test variation.");
+
+				if(!variation->IsCompiled())
+					variation->Compile().BlockUntilComplete();
+
+				if(!variation->IsCompiled() || variation->GetPassCount() != 1)
+					B3D_LOG(Fatal, LogGeneric, "Missing compiled push-constant test pass.");
+
+				const TShared<Pass> testPass = variation->GetPass(0);
+				if(testPass == nullptr)
+					B3D_LOG(Fatal, LogGeneric, "Missing push-constant test pass.");
+
+				const PassInformation& pass = testPass->GetInformation();
+				if(testShader == pushConstantComputeShader)
+				{
+					if(!pass.ComputeProgramCreateInformation.Bytecode || !pass.ComputeProgramCreateInformation.Bytecode->Instructions.Data)
+						B3D_LOG(Fatal, LogGeneric, "Missing compute push-constant test bytecode.");
+
+					GpuComputePipelineStateCreateInformation pipelineInformation;
+					pipelineInformation.Program = gpuDevice->CreateGpuProgram(pass.ComputeProgramCreateInformation);
+
+					testComputePipelines[valueCount - 1] = gpuDevice->CreateGpuComputePipelineState(pipelineInformation);
+				}
+				else
+				{
+					if(!pass.VertexProgramCreateInformation.Bytecode || !pass.VertexProgramCreateInformation.Bytecode->Instructions.Data || !pass.FragmentProgramCreateInformation.Bytecode || !pass.FragmentProgramCreateInformation.Bytecode->Instructions.Data)
+						B3D_LOG(Fatal, LogGeneric, "Missing graphics push-constant test bytecode.");
+
+					GpuGraphicsPipelineStateCreateInformation pipelineInformation;
+					pipelineInformation.VertexProgram = gpuDevice->CreateGpuProgram(pass.VertexProgramCreateInformation);
+					pipelineInformation.FragmentProgram = gpuDevice->CreateGpuProgram(pass.FragmentProgramCreateInformation);
+					pipelineInformation.DepthStencilState = pass.DepthStencilStateInformation;
+					pipelineInformation.RasterizerState.CullMode = CULL_NONE;
+
+					testGraphicsPipelines[valueCount - 1] = gpuDevice->CreateGpuGraphicsPipelineState(pipelineInformation);
+				}
+			}
+		}
+
+		TextureCreateInformation testTextureInformation;
+		testTextureInformation.Width = 1;
+		testTextureInformation.Height = 1;
+		testTextureInformation.Format = PF_RGBA32F;
+		testTextureInformation.Usage = TextureUsageFlag::RenderTarget;
+
+		const TShared<Texture> testTexture = gpuDevice->CreateTexture(testTextureInformation);
+
+		RenderTextureCreateInformation testTargetInformation;
+		testTargetInformation.ColorSurfaces[0].Texture = testTexture;
+
+		const TShared<RenderTexture> testTarget = RenderTexture::Create(testTargetInformation);
+		const ImageSubresourcePitch testPitch = testTexture->GetStagingBufferPitchForSubresource(0, 0);
+		const TShared<GpuBuffer> graphicsReadback = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(testPitch.RowPitch * testPitch.SliceHeight * sizeof(float) * 4));
+		const TShared<GpuBuffer> computeReadback = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(sizeof(float) * 4));
+		const TShared<GpuBuffer> testOutput = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(float) * 4, 1, GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU));
+		const TShared<VertexDescription> emptyVertexDescription = B3DMakeShared<VertexDescription>(TInlineArray<VertexElement, 8>());
+
+		// One cached payload survives partial writes, smaller pipeline layouts, and graphics/compute transitions.
+		float expectedValues[4];
+		for(u32 valueCount = 1; valueCount <= kMaxPushConstantValueCount; valueCount++)
+		{
+			const TShared<GpuGraphicsPipelineState>& graphicsPipeline = testGraphicsPipelines[valueCount - 1];
+			const TShared<GpuComputePipelineState>& computePipeline = testComputePipelines[valueCount - 1];
+			if(!graphicsPipeline || !computePipeline || graphicsPipeline->GetParameterLayout()->GetPushConstantBufferSize() != valueCount * sizeof(float) || computePipeline->GetParameterLayout()->GetPushConstantBufferSize() != valueCount * sizeof(float))
+				B3D_LOG(Fatal, LogGeneric, "Missing or incorrectly sized push-constant test pipeline.");
+
+			const TShared<GpuParameterSet> parameters = gpuContext.GetParameterSetPool().Create(computePipeline->GetParameterLayout()->GetSet(0), 0);
+			parameters->SetStorageBuffer("gOutput", testOutput);
+			for(u32 valueIndex = 0; valueIndex < kMaxPushConstantValueCount; valueIndex++)
+				expectedValues[valueIndex] = (float)(valueCount * 10 + valueIndex + 1);
+
+			// Repeat with fresh command buffers and writes before a pipeline is selected.
+			for(u32 phase = 0; phase < 3; phase++)
+			{
+				const TShared<GpuCommandBuffer> commands = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("Push-constant values"));
+				commands->SetPushConstants(0, valueCount * sizeof(float), expectedValues);
+				commands->SetGpuComputePipelineState(computePipeline);
+				commands->SetGpuParameterSet(parameters);
+				commands->DispatchCompute(1);
+
+				if(phase != 0)
+				{
+					expectedValues[valueCount - 1] += 100.0f;
+					commands->SetPushConstants((valueCount - 1) * sizeof(float), sizeof(float), expectedValues + valueCount - 1);
+					commands->DispatchCompute(1);
+				}
+
+				if(phase == 2)
+				{
+					commands->SetGpuComputePipelineState(testComputePipelines[0]);
+					commands->SetGpuParameterSet(parameters);
+					commands->DispatchCompute(1);
+
+					commands->SetGpuComputePipelineState(computePipeline);
+					commands->SetGpuParameterSet(parameters);
+					commands->DispatchCompute(1);
+				}
+
+				RenderPassCreateInformation testPass(testTarget);
+				testPass.ClearMask = RT_COLOR0;
+				commands->BeginRenderPass(testPass);
+				commands->SetGpuGraphicsPipelineState(graphicsPipeline);
+				commands->SetVertexDescription(emptyVertexDescription);
+				commands->SetDrawOperation(DOT_TRIANGLE_LIST);
+				commands->Draw(0, 3, 1);
+				commands->EndRenderPass();
+
+				if(phase == 2)
+				{
+					commands->BeginRenderPass(testPass);
+					commands->SetGpuGraphicsPipelineState(testGraphicsPipelines[0]);
+					commands->Draw(0, 3, 1);
+					commands->SetGpuGraphicsPipelineState(graphicsPipeline);
+					commands->Draw(0, 3, 1);
+					commands->EndRenderPass();
+				}
+
+				commands->CopyTextureToBuffer(testTexture, graphicsReadback, 0, 0);
+				commands->SetGpuComputePipelineState(computePipeline);
+				commands->SetGpuParameterSet(parameters);
+
+				const float computeLastValue = expectedValues[valueCount - 1] + 1000.0f;
+				commands->SetPushConstants((valueCount - 1) * sizeof(float), sizeof(float), &computeLastValue);
+				commands->DispatchCompute(1);
+				commands->CopyBufferToBuffer(testOutput, computeReadback, 0, 0, sizeof(float) * 4);
+
+				gpuContext.SubmitCommandBuffer(commands);
+				gpuDevice->WaitUntilIdle();
+
+				const GpuBufferMappedScope computeMapping = computeReadback->Map(GpuMapOption::Read);
+				const GpuBufferMappedScope graphicsMapping = graphicsReadback->Map(GpuMapOption::Read);
+				if(!computeMapping.IsValid() || !graphicsMapping.IsValid())
+					B3D_LOG(Fatal, LogGeneric, "Push-constant test readback mapping failed.");
+
+				for(u32 valueIndex = 0; valueIndex < kMaxPushConstantValueCount; valueIndex++)
+				{
+					const float expected = valueIndex < valueCount ? expectedValues[valueIndex] : 0.0f;
+					const float expectedCompute = valueIndex == valueCount - 1 ? computeLastValue : expected;
+					const float computeValue = static_cast<const float*>(computeMapping.GetMappedMemory())[valueIndex];
+					const float graphicsValue = static_cast<const float*>(graphicsMapping.GetMappedMemory())[valueIndex];
+
+					if(computeValue != expectedCompute || graphicsValue != expected * 3.0f)
+						B3D_LOG(Fatal, LogGeneric, "Push-constant readback failed: {0} bytes, phase {1}, component {2}: compute {3}, graphics {4}, expected {5}/{6}.", valueCount * sizeof(float), phase, valueIndex, computeValue, graphicsValue, expectedCompute, expected * 3.0f);
+				}
+			}
+
+			B3D_LOG(Info, LogGeneric, "Push-constant readback passed: {0} bytes, vertex/fragment/compute, full/partial/replay.", valueCount * sizeof(float));
+		}
 
 		const TShared<Variation> graphicsVariation = graphicsShader->GetCompatibleVariations()[0];
 		if(!graphicsVariation->IsCompiled())
