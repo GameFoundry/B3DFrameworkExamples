@@ -291,7 +291,6 @@ namespace b3d
 				const float x = 800.0f;
 				const float y = 800.0f;
 
-				constexpr static float kKappa45 = 0.2652164900709011f;
 				constexpr static float kKappa90 = 0.5522847493f; // Length proportional to radius of a cubic bezier handle for 90deg arcs.
 
 				gTestPath->SetDrawCursor(Vector2(x, y + topLeft.Y));
