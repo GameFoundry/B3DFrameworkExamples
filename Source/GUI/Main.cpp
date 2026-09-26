@@ -156,7 +156,7 @@ namespace b3d
 		listBox->SetWidth(100);
 
 		// Add a button with an image
-		HTexture icon = ExampleFramework::LoadTexture(ExampleTexture::GUIBansheeIcon, ExampleTextureType::Default, false);
+		HTexture icon = ExampleFramework::LoadTexture(ExampleTexture::GUIBansheeIcon, ExampleTextureType::GUI, false);
 		HSpriteImage iconSprite = SpriteTexture::Create(icon);
 
 		// Create a GUI content object that contains an icon to display on the button. Also an optional text and tooltip.

@@ -16,6 +16,7 @@
 #include "Material/B3DShaderRegistry.h"
 #include "Resources/B3DBuiltinResources.h"
 #include "Material/B3DShader.h"
+#include "2D/B3DSpriteMaterial.h"
 
 namespace b3d
 {
@@ -68,7 +69,9 @@ namespace b3d
 		/** Tangent-space normal map. Imported using the two-channel BC5 format. */
 		NormalMap,
 		/** High dynamic range image. Imported as a HDR cubemap using the BC6H format. */
-		HDRI
+		HDRI,
+		/** Color texture displayed by the GUI. Imported using the BC3 format, in the color space GUI composites in (gamma space by default). */
+		GUI
 	};
 
 	/** A list of shader assets provided with the example projects. */
@@ -327,8 +330,8 @@ namespace b3d
 					// Generate a full mip-map chain if requested
 					importOptions->GenerateMips = generateMipmaps;
 
-					// Only the standard color texture lives in sRGB (gamma) space; the system needs to know about it
-					importOptions->SRgb = textureType == ExampleTextureType::Default;
+					// Color textures live in sRGB (gamma) space and the system needs to know about it. GUI composited in gamma space is the exception, as it uses texture values as-is.
+					importOptions->SRgb = textureType == ExampleTextureType::Default || (textureType == ExampleTextureType::GUI && gGuiUseLinearColorSpace);
 
 					// Ensures we can save the texture contents
 					importOptions->CpuCached = true;
