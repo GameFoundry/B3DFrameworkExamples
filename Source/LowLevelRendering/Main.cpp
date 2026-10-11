@@ -20,6 +20,7 @@
 #include "Renderer/B3DRenderer.h"
 #include "Renderer/B3DRendererManager.h"
 #include "GpuBackend/B3DGpuParameterSetPool.h"
+#include "FrameGraph/B3DFrameGraph.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // This example uses the low-level rendering API to render a textured cube mesh. This is opposed to using scene objects
@@ -37,7 +38,10 @@
 // parameter binding and draw calls - is created manually through the low-level API, from the information the shader's
 // pass provides.
 //
-// The example first sets up those resources, then every frame binds them and executes the draw call.
+// The example first sets up those resources. Every frame it then describes its GPU work as a frame graph: a pass that renders the
+// box into a color and a depth texture, and a pass that copies the color texture into the window. The graph places the
+// textures in memory it reuses between frames, and records every barrier between the passes. The engine runs in explicit mode,
+// so the graph's barriers are the only ones the GPU work gets.
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace b3d
@@ -129,6 +133,9 @@ int B3DMain()
 
 	ApplicationCreateInformation createInformation = Application::BuildCreateInformation(videoMode, "Low Level Rendering", false);
 
+	// Leave every resource at rest after its creation and upload, which the frame graph expects of resources it did not create
+	gGpuExplicitTransferBarriers.Set(true);
+
 	// Start-up the engine using our custom MyApplication class. This will also create the primary rendering window.
 	// We provide the initial resolution of the window, its title and fullscreen state.
 	Application::StartUp<MyApplication>(createInformation);
@@ -157,13 +164,12 @@ namespace b3d
 		TShared<GpuGraphicsPipelineState> gPipelineState;
 		TShared<Texture> gSurfaceTex;
 		TShared<SamplerState> gSurfaceSampler;
-		TShared<GpuParameterSet> gGpuParams;
 		TShared<VertexDescription> gVertexDescription;
 		TShared<GpuBuffer> gVertexBuffer;
 		TShared<GpuBuffer> gIndexBuffer;
-		TShared<RenderTexture> gRenderTarget;
 		TShared<RenderWindow> gRenderWindow;
-		TShared<GpuCommandBufferPool> gCommandBufferPool;
+		TextureCreateInformation gColorInformation;
+		TextureCreateInformation gDepthInformation;
 
 		const u32 kVertexCount = 24;
 		const u32 kIndexCount = 36;
@@ -180,13 +186,6 @@ namespace b3d
 		{
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
-
-			// Create a pool to allocate GPU command buffer from
-			GpuCommandBufferPoolCreateInformation poolCreateInformation;
-			poolCreateInformation.Thread = B3D_CURRENT_THREAD_ID;
-			poolCreateInformation.Type = GQT_GRAPHICS;
-
-			gCommandBufferPool = gpuDevice->CreateGpuCommandBufferPool(poolCreateInformation);
 
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;
@@ -210,10 +209,6 @@ namespace b3d
 			pipelineCreateInformation.DepthStencilState = passInformation.DepthStencilStateInformation;
 
 			gPipelineState = gpuDevice->CreateGpuGraphicsPipelineState(pipelineCreateInformation);
-
-			// Create an object containing GPU program parameters
-			GpuParameterSetPool& pool = render::GetRenderer()->GetGpuContext().GetParameterSetPool();
-			gGpuParams = pool.Create(gPipelineState->GetParameterLayout()->GetSet(0), 0);
 
 			// Create a vertex declaration for shader inputs
 			TInlineArray<VertexElement, 8> vertexElements;
@@ -271,37 +266,27 @@ namespace b3d
 
 			gSurfaceSampler = gpuDevice->FindOrCreateSamplerState(samplerStateCreateInformation);
 
-			// Create a color attachment texture for the render surface
-			TextureCreateInformation colorAttDesc;
-			colorAttDesc.Width = kWindowWidth;
-			colorAttDesc.Height = kWindowHeight;
-			colorAttDesc.Format = PF_RGBA8;
-			colorAttDesc.Usage = TextureUsageFlag::RenderTarget;
-			colorAttDesc.ClearColor = Color::kBlue;
+			// Describe the color and depth textures the box renders into. The frame graph creates them every frame, in memory
+			// it reuses between frames.
+			gColorInformation.Width = kWindowWidth;
+			gColorInformation.Height = kWindowHeight;
+			gColorInformation.Format = PF_RGBA8;
+			gColorInformation.Usage = TextureUsageFlag::RenderTarget;
+			gColorInformation.ClearColor = Color::kBlue;
 
-			TShared<Texture> colorAtt = gpuDevice->CreateTexture(colorAttDesc);
-
-			// Create a depth attachment texture for the render surface
-			TextureCreateInformation depthAttDesc;
-			depthAttDesc.Width = kWindowWidth;
-			depthAttDesc.Height = kWindowHeight;
-			depthAttDesc.Format = PF_D32;
-			depthAttDesc.Usage = TextureUsageFlag::DepthStencil;
-
-			TShared<Texture> depthAtt = gpuDevice->CreateTexture(depthAttDesc);
-
-			// Create the render surface
-			RenderTextureCreateInformation desc;
-			desc.ColorSurfaces[0].Texture = colorAtt;
-			desc.DepthStencilSurface.Texture = depthAtt;
-
-			gRenderTarget = RenderTexture::Create(desc);
+			gDepthInformation.Width = kWindowWidth;
+			gDepthInformation.Height = kWindowHeight;
+			gDepthInformation.Format = PF_D32;
+			gDepthInformation.Usage = TextureUsageFlag::DepthStencil;
 		}
 
 		// Render the box, called every frame
 		void Render()
 		{
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
+
+			// Get the GPU context, which is a thread-local object that provides access to the GPU command buffer and other GPU resources. 
+			// Renderer provides a GPU context for the render thread, which is where this method executes.
 			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 
 			// Fill out the uniform block variables
@@ -317,48 +302,67 @@ namespace b3d
 				memcpy(mappedBufferScope.GetMappedMemory(), &uniformBlock, sizeof(uniformBlock));
 			}
 
-			// Assign the uniform buffer & texture
-			gGpuParams->SetUniformBuffer("Params", uniformBuffer);
+			// Describe the frame's GPU work as a graph of passes. The window is a resource the graph did not create, so it is imported.
+			FrameGraph frameGraph(gpuContext);
+			frameGraph.ImportRenderTarget(gRenderWindow);
 
-			gGpuParams->SetSampledTexture("gMainTexture", gSurfaceTex);
-			gGpuParams->SetSamplerState("gMainTexSamp", gSurfaceSampler);
+			// Create the color and depth textures the box renders into. They only live within this graph.
+			const TShared<Texture> colorTexture = frameGraph.CreateTexture("Box color", gColorInformation);
+			const TShared<Texture> depthTexture = frameGraph.CreateTexture("Box depth", gDepthInformation);
 
-			// Create a command buffer
-			TShared<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("LowLevelRendering"));
+			// The first pass clears both textures to their clear values and renders the box into them
+			FrameGraphRasterPass boxPass;
+			boxPass.SetColorAttachment(0, colorTexture, FrameGraphAttachmentLoad::Clear);
+			boxPass.SetDepthStencilAttachment(depthTexture, FrameGraphDepthStencilMode::Write, FrameGraphAttachmentLoad::Clear);
 
-			// Bind render surface & clear it
-			RenderPassCreateInformation renderPassCreateInformation(gRenderTarget, gGpuParams, RT_NONE, RT_NONE);
-			renderPassCreateInformation.ClearMask = RT_COLOR_ALL | RT_DEPTH;
+			// Parameter sets created through the pass tell the graph which resources the pass reads and writes. Assign the
+			// uniform buffer & texture.
+			const TShared<GpuParameterSet> boxParameters = gpuContext.GetParameterSetPool().Create(gPipelineState->GetParameterLayout()->GetSet(0), 0);
+			boxPass.AddParameterSet(boxParameters);
+			boxParameters->SetUniformBuffer("Params", uniformBuffer);
+			boxParameters->SetSampledTexture("gMainTexture", gSurfaceTex);
+			boxParameters->SetSamplerState("gMainTexSamp", gSurfaceSampler);
 
-			commandBuffer->BeginRenderPass(renderPassCreateInformation);
+			// The graph calls the function when it records the pass, after the pass's barriers, with the attachments bound
+			frameGraph.AddRasterPass("Box", std::move(boxPass), [boxParameters](FrameGraphPassContext& passContext)
+			{
+				GpuCommandBuffer& commandBuffer = passContext.GetCommandBuffer();
 
-			// Bind the pipeline state
-			commandBuffer->SetGpuGraphicsPipelineState(gPipelineState);
+				// Bind the pipeline state
+				commandBuffer.SetGpuGraphicsPipelineState(gPipelineState);
 
-			// Set the vertex & index buffers, as well as vertex declaration and draw type
-			commandBuffer->SetVertexBuffers(0, &gVertexBuffer, 1);
-			commandBuffer->SetIndexBuffer(gIndexBuffer);
-			commandBuffer->SetVertexDescription(gVertexDescription);
-			commandBuffer->SetDrawOperation(DOT_TRIANGLE_LIST);
+				// Set the vertex & index buffers, as well as vertex declaration and draw type
+				commandBuffer.SetVertexBuffers(0, &gVertexBuffer, 1);
+				commandBuffer.SetIndexBuffer(gIndexBuffer);
+				commandBuffer.SetVertexDescription(gVertexDescription);
+				commandBuffer.SetDrawOperation(DOT_TRIANGLE_LIST);
 
-			// Bind the GPU program parameters (i.e. resource descriptors)
-			commandBuffer->SetGpuParameterSet(gGpuParams);
+				// Bind the GPU program parameters (i.e. resource descriptors)
+				commandBuffer.SetGpuParameterSet(boxParameters);
 
-			// Draw
-			commandBuffer->DrawIndexed(0, kIndexCount, 0, kVertexCount, 1, 0);
+				// Draw
+				commandBuffer.DrawIndexed(0, kIndexCount, 0, kVertexCount, 1, 0);
+			});
 
-			// Blit the image from the render texture, to the render window
-			commandBuffer->EndRenderPass();
+			// The second pass draws a full-screen quad that samples the color texture into the window, using the blit material
+			// of the renderer utility. It overwrites the whole window, so the previous contents are not loaded.
+			BlitMat* const blitMaterial = BlitMat::GetVariation(1, true, false);
 
-			// Get the color attachment
-			TShared<Texture> colorTexture = gRenderTarget->GetColorSurfaceInformation(0).Texture;
+			FrameGraphRasterPass blitPass;
+			blitPass.SetRenderTarget(gRenderWindow, FrameGraphAttachmentLoad::DontCare);
 
-			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
-			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
-			GetRendererUtility().Blit(*commandBuffer, BlitInformation::BlitColor(colorTexture, gRenderWindow));
+			const TShared<GpuParameterSet> blitParameters = blitMaterial->CreateGpuParameterSet(blitPass);
+			blitParameters->SetSampledTexture("gSource", colorTexture);
 
-			// Submit the command buffer through the render thread's GPU work context
-			gpuContext.SubmitCommandBuffer(commandBuffer);
+			frameGraph.AddRasterPass("Blit to window", std::move(blitPass), [blitMaterial, blitParameters](FrameGraphPassContext& passContext)
+			{
+				blitMaterial->Execute(passContext.GetCommandBuffer(), blitParameters, Area2(0.0f, 0.0f, (float)kWindowWidth, (float)kWindowHeight), false);
+			});
+
+			// Place the textures in memory and plan the barriers between the passes, then record and submit the passes. The
+			// graph leaves the window ready to be presented.
+			frameGraph.Compile();
+			frameGraph.Execute();
 
 			// Present the rendered image to the user
 			gpuDevice->PresentRenderWindow(gRenderWindow);
@@ -367,14 +371,11 @@ namespace b3d
 		// Clean up any resources
 		void Shutdown()
 		{
-			gCommandBufferPool = nullptr;
 			gPipelineState = nullptr;
 			gSurfaceTex = nullptr;
-			gGpuParams = nullptr;
 			gVertexDescription = nullptr;
 			gVertexBuffer = nullptr;
 			gIndexBuffer = nullptr;
-			gRenderTarget = nullptr;
 			gRenderWindow = nullptr;
 			gSurfaceSampler = nullptr;
 		}
