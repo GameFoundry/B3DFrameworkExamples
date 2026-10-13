@@ -1,3 +1,6 @@
+// Surface shaders read renderer inputs from set 2. Shaders that include BasePass get this define from it.
+#define IS_SURFACE_SHADER 1
+
 #include "$ENGINE$\PerCameraData.bslinc"
 #include "$ENGINE$\PerObjectData.bslinc"
 #include "$ENGINE$\PerFrameData.bslinc"
