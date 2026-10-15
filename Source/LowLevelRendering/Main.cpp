@@ -134,7 +134,7 @@ int B3DMain()
 	ApplicationCreateInformation createInformation = Application::BuildCreateInformation(videoMode, "Low Level Rendering", false);
 
 	// Leave every resource at rest after its creation and upload, which the frame graph expects of resources it did not create
-	gGpuExplicitTransferBarriers.Set(true);
+	gGpuExplicitBarriers.Set(true);
 
 	// Start-up the engine using our custom MyApplication class. This will also create the primary rendering window.
 	// We provide the initial resolution of the window, its title and fullscreen state.
@@ -303,7 +303,7 @@ namespace b3d
 			}
 
 			// Describe the frame's GPU work as a graph of passes. The window is a resource the graph did not create, so it is imported.
-			FrameGraph frameGraph(gpuContext);
+			FrameGraph frameGraph(gpuContext, "Low level rendering");
 			frameGraph.ImportRenderTarget(gRenderWindow);
 
 			// Create the color and depth textures the box renders into. They only live within this graph.
@@ -351,12 +351,11 @@ namespace b3d
 			FrameGraphRasterPass blitPass;
 			blitPass.SetRenderTarget(gRenderWindow, FrameGraphAttachmentLoad::DontCare);
 
-			const TShared<GpuParameterSet> blitParameters = blitMaterial->CreateGpuParameterSet(blitPass);
-			blitParameters->SetSampledTexture("gSource", colorTexture);
+			const TShared<GpuParameterSet> blitParameters = blitMaterial->Prepare(blitPass, colorTexture);
 
 			frameGraph.AddRasterPass("Blit to window", std::move(blitPass), [blitMaterial, blitParameters](FrameGraphPassContext& passContext)
 			{
-				blitMaterial->Execute(passContext.GetCommandBuffer(), blitParameters, Area2(0.0f, 0.0f, (float)kWindowWidth, (float)kWindowHeight), false);
+				blitMaterial->Execute(passContext, blitParameters, Area2(0.0f, 0.0f, (float)kWindowWidth, (float)kWindowHeight), false);
 			});
 
 			// Place the textures in memory and plan the barriers between the passes, then record and submit the passes. The

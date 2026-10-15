@@ -20,6 +20,7 @@
 #include "Renderer/B3DRenderer.h"
 #include "Renderer/B3DRendererManager.h"
 #include "GpuBackend/B3DGpuParameterSetPool.h"
+#include "FrameGraph/B3DFrameGraph.h"
 #include "String/B3DStringFormat.h"
 
 /**
@@ -121,9 +122,9 @@ namespace b3d::render
 	TShared<GpuBuffer> gVertexBuffer;
 	TShared<GpuBuffer> gIndexBuffer;
 	TShared<GpuBuffer> gComputeOutput;
-	TShared<RenderTexture> gRenderTarget;
+	TextureCreateInformation gColorInformation;
+	TextureCreateInformation gDepthInformation;
 	TShared<RenderWindow> gRenderWindow;
-	TShared<GpuCommandBufferPool> gCommandBufferPool;
 
 	constexpr u32 kVertexCount = 24;
 	constexpr u32 kIndexCount = 36;
@@ -141,12 +142,6 @@ namespace b3d::render
 	{
 		const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 		GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
-
-		// Command recording and pipelines.
-		GpuCommandBufferPoolCreateInformation poolCreateInformation;
-		poolCreateInformation.Thread = B3D_CURRENT_THREAD_ID;
-		poolCreateInformation.Type = GQT_GRAPHICS;
-		gCommandBufferPool = gpuDevice->CreateGpuCommandBufferPool(poolCreateInformation);
 		gRenderWindow = renderWindow;
 
 		// Compile pipelines from loaded bytecode
@@ -205,11 +200,6 @@ namespace b3d::render
 		testTextureInformation.Usage = TextureUsageFlag::RenderTarget;
 
 		const TShared<Texture> testTexture = gpuDevice->CreateTexture(testTextureInformation);
-
-		RenderTextureCreateInformation testTargetInformation;
-		testTargetInformation.ColorSurfaces[0].Texture = testTexture;
-
-		const TShared<RenderTexture> testTarget = RenderTexture::Create(testTargetInformation);
 		const ImageSubresourcePitch testPitch = testTexture->GetStagingBufferPitchForSubresource(0, 0);
 		const TShared<GpuBuffer> graphicsReadback = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(testPitch.RowPitch * testPitch.SliceHeight * sizeof(float) * 4));
 		const TShared<GpuBuffer> computeReadback = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(sizeof(float) * 4));
@@ -230,62 +220,126 @@ namespace b3d::render
 			for(u32 valueIndex = 0; valueIndex < kMaxPushConstantValueCount; valueIndex++)
 				expectedValues[valueIndex] = (float)(valueCount * 10 + valueIndex + 1);
 
-			// Repeat with fresh command buffers and writes before a pipeline is selected.
+			// Repeat with fresh graphs and writes before a pipeline is selected. A graph records its passes in the order they were added,
+			// into one command buffer, so the payload one pass leaves is the payload the next pass starts with.
 			for(u32 phase = 0; phase < 3; phase++)
 			{
-				const TShared<GpuCommandBuffer> commands = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("Push-constant values"));
-				commands->SetPushConstants(0, valueCount * sizeof(float), expectedValues);
-				commands->SetGpuComputePipelineState(computePipeline);
-				commands->SetGpuParameterSet(parameters);
-				commands->DispatchCompute(1);
+				Array<float, 4> firstValues;
+				std::copy(expectedValues, expectedValues + 4, firstValues.begin());
+
+				if(phase != 0)
+					expectedValues[valueCount - 1] += 100.0f;
+
+				const float updatedLastValue = expectedValues[valueCount - 1];
+				const float computeLastValue = expectedValues[valueCount - 1] + 1000.0f;
+
+				FrameGraph graph(gpuContext, "Push-constant values");
+				graph.ImportTexture(testTexture);
+				graph.ImportBuffer(testOutput);
+				graph.ImportBuffer(graphicsReadback);
+				graph.ImportBuffer(computeReadback);
+
+				// Every dispatch writes the output, so each one is a pass of its own, with a barrier before it. Passes that bind nothing
+				// dispatch with the pipeline and set the pass before them bound.
+				const auto fnAddDispatchPass = [&graph, &parameters](const char* name, Function<void(GpuCommandBuffer&)> record)
+				{
+					FrameGraphComputePass pass;
+					pass.AddParameterSet(parameters);
+					graph.AddComputePass(name, std::move(pass), [record = std::move(record)](FrameGraphPassContext& passContext)
+					{
+						GpuCommandBuffer& commands = passContext.GetCommandBuffer();
+						record(commands);
+						commands.DispatchCompute(1);
+					});
+				};
+
+				fnAddDispatchPass("Compute values", [computePipeline, parameters, firstValues, valueCount](GpuCommandBuffer& commands)
+				{
+					commands.SetPushConstants(0, valueCount * sizeof(float), firstValues.data());
+					commands.SetGpuComputePipelineState(computePipeline);
+					commands.SetGpuParameterSet(parameters);
+				});
 
 				if(phase != 0)
 				{
-					expectedValues[valueCount - 1] += 100.0f;
-					commands->SetPushConstants((valueCount - 1) * sizeof(float), sizeof(float), expectedValues + valueCount - 1);
-					commands->DispatchCompute(1);
+					fnAddDispatchPass("Compute partial values", [updatedLastValue, valueCount](GpuCommandBuffer& commands)
+					{
+						commands.SetPushConstants((valueCount - 1) * sizeof(float), sizeof(float), &updatedLastValue);
+					});
 				}
 
 				if(phase == 2)
 				{
-					commands->SetGpuComputePipelineState(testComputePipelines[0]);
-					commands->SetGpuParameterSet(parameters);
-					commands->DispatchCompute(1);
+					fnAddDispatchPass("Compute with a smaller layout", [&testComputePipelines, parameters](GpuCommandBuffer& commands)
+					{
+						commands.SetGpuComputePipelineState(testComputePipelines[0]);
+						commands.SetGpuParameterSet(parameters);
+					});
 
-					commands->SetGpuComputePipelineState(computePipeline);
-					commands->SetGpuParameterSet(parameters);
-					commands->DispatchCompute(1);
+					fnAddDispatchPass("Compute values again", [computePipeline, parameters](GpuCommandBuffer& commands)
+					{
+						commands.SetGpuComputePipelineState(computePipeline);
+						commands.SetGpuParameterSet(parameters);
+					});
 				}
 
-				RenderPassCreateInformation testPass(testTarget);
-				testPass.ClearMask = RT_COLOR0;
-				commands->BeginRenderPass(testPass);
-				commands->SetGpuGraphicsPipelineState(graphicsPipeline);
-				commands->SetVertexDescription(emptyVertexDescription);
-				commands->SetDrawOperation(DOT_TRIANGLE_LIST);
-				commands->Draw(0, 3, 1);
-				commands->EndRenderPass();
+				FrameGraphRasterPass drawPass;
+				drawPass.SetColorAttachment(0, testTexture, FrameGraphAttachmentLoad::Clear);
+				graph.AddRasterPass("Draw values", std::move(drawPass), [graphicsPipeline, emptyVertexDescription](FrameGraphPassContext& passContext)
+				{
+					GpuCommandBuffer& commands = passContext.GetCommandBuffer();
+					commands.SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+					commands.SetGpuGraphicsPipelineState(graphicsPipeline);
+					commands.SetVertexDescription(emptyVertexDescription);
+					commands.SetDrawOperation(DOT_TRIANGLE_LIST);
+					commands.Draw(0, 3, 1);
+				});
 
 				if(phase == 2)
 				{
-					commands->BeginRenderPass(testPass);
-					commands->SetGpuGraphicsPipelineState(testGraphicsPipelines[0]);
-					commands->Draw(0, 3, 1);
-					commands->SetGpuGraphicsPipelineState(graphicsPipeline);
-					commands->Draw(0, 3, 1);
-					commands->EndRenderPass();
+					// Loads the target rather than clearing it, so the graph keeps the pass before it. Every draw covers the whole target.
+					FrameGraphRasterPass replayPass;
+					replayPass.SetColorAttachment(0, testTexture, FrameGraphAttachmentLoad::Load);
+					graph.AddRasterPass("Draw values again", std::move(replayPass), [&testGraphicsPipelines, graphicsPipeline](FrameGraphPassContext& passContext)
+					{
+						GpuCommandBuffer& commands = passContext.GetCommandBuffer();
+						commands.SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+						commands.SetGpuGraphicsPipelineState(testGraphicsPipelines[0]);
+						commands.Draw(0, 3, 1);
+						commands.SetGpuGraphicsPipelineState(graphicsPipeline);
+						commands.Draw(0, 3, 1);
+					});
 				}
 
-				commands->CopyTextureToBuffer(testTexture, graphicsReadback, 0, 0);
-				commands->SetGpuComputePipelineState(computePipeline);
-				commands->SetGpuParameterSet(parameters);
+				FrameGraphCopyPass graphicsCopyPass;
+				graphicsCopyPass.AddSource(testTexture);
+				graphicsCopyPass.AddDestination(graphicsReadback);
+				graph.AddCopyPass("Read graphics values", std::move(graphicsCopyPass), [testTexture, graphicsReadback](FrameGraphPassContext& passContext)
+				{
+					passContext.GetCommandBuffer().CopyTextureToBuffer(testTexture, graphicsReadback, 0, 0);
+				});
 
-				const float computeLastValue = expectedValues[valueCount - 1] + 1000.0f;
-				commands->SetPushConstants((valueCount - 1) * sizeof(float), sizeof(float), &computeLastValue);
-				commands->DispatchCompute(1);
-				commands->CopyBufferToBuffer(testOutput, computeReadback, 0, 0, sizeof(float) * 4);
+				FrameGraphComputePass lastValuePass;
+				lastValuePass.AddParameterSet(parameters);
+				graph.AddComputePass("Compute last value", std::move(lastValuePass), [computePipeline, parameters, computeLastValue, valueCount](FrameGraphPassContext& passContext)
+				{
+					GpuCommandBuffer& commands = passContext.GetCommandBuffer();
+					commands.SetGpuComputePipelineState(computePipeline);
+					commands.SetGpuParameterSet(parameters);
+					commands.SetPushConstants((valueCount - 1) * sizeof(float), sizeof(float), &computeLastValue);
+					commands.DispatchCompute(1);
+				});
 
-				gpuContext.SubmitCommandBuffer(commands);
+				FrameGraphCopyPass computeCopyPass;
+				computeCopyPass.AddSource(testOutput);
+				computeCopyPass.AddDestination(computeReadback);
+				graph.AddCopyPass("Read compute values", std::move(computeCopyPass), [testOutput, computeReadback](FrameGraphPassContext& passContext)
+				{
+					passContext.GetCommandBuffer().CopyBufferToBuffer(testOutput, computeReadback, 0, 0, sizeof(float) * 4);
+				});
+
+				graph.Compile();
+				graph.Execute();
 				gpuDevice->WaitUntilIdle();
 
 				const GpuBufferMappedScope computeMapping = computeReadback->Map(GpuMapOption::Read);
@@ -379,23 +433,17 @@ namespace b3d::render
 		samplerCreateInformation.MagFilter = FO_POINT;
 		gSurfaceSampler = gpuDevice->FindOrCreateSamplerState(samplerCreateInformation);
 
-		TextureCreateInformation colorCreateInformation;
-		colorCreateInformation.Width = kWindowWidth;
-		colorCreateInformation.Height = kWindowHeight;
-		colorCreateInformation.Format = PF_RGBA8;
-		colorCreateInformation.Usage = TextureUsageFlag::RenderTarget;
-		colorCreateInformation.ClearColor = Color::kBlue;
+		// Off-screen color and depth, created by each frame's graph
+		gColorInformation.Width = kWindowWidth;
+		gColorInformation.Height = kWindowHeight;
+		gColorInformation.Format = PF_RGBA8;
+		gColorInformation.Usage = TextureUsageFlag::RenderTarget;
+		gColorInformation.ClearColor = Color::kBlue;
 
-		TextureCreateInformation depthCreateInformation;
-		depthCreateInformation.Width = kWindowWidth;
-		depthCreateInformation.Height = kWindowHeight;
-		depthCreateInformation.Format = PF_D32;
-		depthCreateInformation.Usage = TextureUsageFlag::DepthStencil;
-
-		RenderTextureCreateInformation renderTargetCreateInformation;
-		renderTargetCreateInformation.ColorSurfaces[0].Texture = gpuDevice->CreateTexture(colorCreateInformation);
-		renderTargetCreateInformation.DepthStencilSurface.Texture = gpuDevice->CreateTexture(depthCreateInformation);
-		gRenderTarget = RenderTexture::Create(renderTargetCreateInformation);
+		gDepthInformation.Width = kWindowWidth;
+		gDepthInformation.Height = kWindowHeight;
+		gDepthInformation.Format = PF_D32;
+		gDepthInformation.Usage = TextureUsageFlag::DepthStencil;
 	}
 
 	void Render()
@@ -415,47 +463,77 @@ namespace b3d::render
 		gGraphicsParameters->SetSampledTexture("gMainTexture", gSurfaceTexture);
 		gGraphicsParameters->SetSamplerState("gMainTexSamp", gSurfaceSampler);
 
-		const TShared<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("AdvancedLowLevelRendering"));
+		// The window and the compute output are resources the graph did not create, so they are imported
+		FrameGraph frameGraph(gpuContext, "AdvancedLowLevelRendering");
+		frameGraph.ImportRenderTarget(gRenderWindow);
+		frameGraph.ImportBuffer(gComputeOutput);
+
+		const TShared<Texture> colorTexture = frameGraph.CreateTexture("Cube color", gColorInformation);
+		const TShared<Texture> depthTexture = frameGraph.CreateTexture("Cube depth", gDepthInformation);
 
 		// Exercise partial compute push-constant writes and publish their result for the graphics pass.
-		const float computeConstants[4] = { 0.8f, 0.9f, 1.0f, 1.0f };
-		commandBuffer->SetGpuComputePipelineState(gComputePipelineState);
-		commandBuffer->SetGpuParameterSet(gComputeParameters);
-		commandBuffer->SetPushConstants(0, sizeof(float) * 2, computeConstants);
-		commandBuffer->SetPushConstants(sizeof(float) * 2, sizeof(float) * 2, computeConstants + 2);
-		commandBuffer->DispatchCompute(1);
+		FrameGraphComputePass computePass;
+		computePass.AddParameterSet(gComputeParameters);
+		frameGraph.AddComputePass("Compute tint", std::move(computePass), [](FrameGraphPassContext& passContext)
+		{
+			GpuCommandBuffer& commandBuffer = passContext.GetCommandBuffer();
+
+			const float computeConstants[4] = { 0.8f, 0.9f, 1.0f, 1.0f };
+			commandBuffer.SetGpuComputePipelineState(gComputePipelineState);
+			commandBuffer.SetGpuParameterSet(gComputeParameters);
+			commandBuffer.SetPushConstants(0, sizeof(float) * 2, computeConstants);
+			commandBuffer.SetPushConstants(sizeof(float) * 2, sizeof(float) * 2, computeConstants + 2);
+			commandBuffer.DispatchCompute(1);
+		});
 
 		// Draw two cubes with distinct graphics push constants; the right cube consumes the compute result.
-		RenderPassCreateInformation renderPassCreateInformation(gRenderTarget, gGraphicsParameters, RT_NONE, RT_NONE);
-		renderPassCreateInformation.ClearMask = RT_COLOR_ALL | RT_DEPTH;
-		commandBuffer->BeginRenderPass(renderPassCreateInformation);
-		commandBuffer->SetGpuGraphicsPipelineState(gGraphicsPipelineState);
-		commandBuffer->SetVertexBuffers(0, &gVertexBuffer, 1);
-		commandBuffer->SetIndexBuffer(gIndexBuffer);
-		commandBuffer->SetVertexDescription(gVertexDescription);
-		commandBuffer->SetDrawOperation(DOT_TRIANGLE_LIST);
-		commandBuffer->SetGpuParameterSet(gGraphicsParameters);
+		FrameGraphRasterPass cubePass;
+		cubePass.SetColorAttachment(0, colorTexture, FrameGraphAttachmentLoad::Clear);
+		cubePass.SetDepthStencilAttachment(depthTexture, FrameGraphDepthStencilMode::Write, FrameGraphAttachmentLoad::Clear);
+		cubePass.AddParameterSet(gGraphicsParameters);
+		frameGraph.AddRasterPass("Cubes", std::move(cubePass), [](FrameGraphPassContext& passContext)
+		{
+			GpuCommandBuffer& commandBuffer = passContext.GetCommandBuffer();
+			commandBuffer.SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+			commandBuffer.SetGpuGraphicsPipelineState(gGraphicsPipelineState);
+			commandBuffer.SetVertexBuffers(0, &gVertexBuffer, 1);
+			commandBuffer.SetIndexBuffer(gIndexBuffer);
+			commandBuffer.SetVertexDescription(gVertexDescription);
+			commandBuffer.SetDrawOperation(DOT_TRIANGLE_LIST);
+			commandBuffer.SetGpuParameterSet(gGraphicsParameters);
 
-		const float leftConstants[4] = { -0.45f, 1.0f, 0.2f, 0.2f };
-		commandBuffer->SetPushConstants(0, sizeof(leftConstants), leftConstants);
-		commandBuffer->DrawIndexed(0, kIndexCount, 0, kVertexCount, 1, 0);
+			const float leftConstants[4] = { -0.45f, 1.0f, 0.2f, 0.2f };
+			commandBuffer.SetPushConstants(0, sizeof(leftConstants), leftConstants);
+			commandBuffer.DrawIndexed(0, kIndexCount, 0, kVertexCount, 1, 0);
 
-		const float rightOffset = 0.45f;
-		const float rightTint[3] = { 0.2f, 1.0f, 0.2f };
-		commandBuffer->SetPushConstants(0, sizeof(rightOffset), &rightOffset);
-		commandBuffer->SetPushConstants(sizeof(rightOffset), sizeof(rightTint), rightTint);
-		commandBuffer->DrawIndexed(0, kIndexCount, 0, kVertexCount, 1, 0);
+			const float rightOffset = 0.45f;
+			const float rightTint[3] = { 0.2f, 1.0f, 0.2f };
+			commandBuffer.SetPushConstants(0, sizeof(rightOffset), &rightOffset);
+			commandBuffer.SetPushConstants(sizeof(rightOffset), sizeof(rightTint), rightTint);
+			commandBuffer.DrawIndexed(0, kIndexCount, 0, kVertexCount, 1, 0);
+		});
 
-		commandBuffer->EndRenderPass();
-		const TShared<Texture> colorTexture = gRenderTarget->GetColorSurfaceInformation(0).Texture;
-		GetRendererUtility().Blit(*commandBuffer, BlitInformation::BlitColor(colorTexture, gRenderWindow));
-		gpuContext.SubmitCommandBuffer(commandBuffer);
+		// Copy the cubes into the window. The copy covers the whole window, so its previous contents are not loaded.
+		BlitMat* const blitMaterial = BlitMat::GetVariation(1, true, false);
+
+		FrameGraphRasterPass blitPass;
+		blitPass.SetRenderTarget(gRenderWindow, FrameGraphAttachmentLoad::DontCare);
+		const TShared<GpuParameterSet> blitParameters = blitMaterial->Prepare(blitPass, colorTexture);
+
+		frameGraph.AddRasterPass("Blit to window", std::move(blitPass), [blitMaterial, blitParameters](FrameGraphPassContext& passContext)
+		{
+			passContext.GetCommandBuffer().SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+			blitMaterial->Execute(passContext, blitParameters, Area2(0.0f, 0.0f, (float)kWindowWidth, (float)kWindowHeight), false);
+		});
+
+		frameGraph.Compile();
+		frameGraph.Execute();
+
 		gpuDevice->PresentRenderWindow(gRenderWindow);
 	}
 
 	void Shutdown()
 	{
-		gCommandBufferPool = nullptr;
 		gGraphicsPipelineState = nullptr;
 		gComputePipelineState = nullptr;
 		gSurfaceTexture = nullptr;
@@ -466,7 +544,6 @@ namespace b3d::render
 		gVertexBuffer = nullptr;
 		gIndexBuffer = nullptr;
 		gComputeOutput = nullptr;
-		gRenderTarget = nullptr;
 		gRenderWindow = nullptr;
 	}
 

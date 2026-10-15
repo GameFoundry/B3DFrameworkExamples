@@ -19,6 +19,7 @@
 #include "Renderer/B3DRenderer.h"
 #include "Renderer/B3DRendererManager.h"
 #include "VectorGraphics/B3DVectorGraphics.h"
+#include "FrameGraph/B3DFrameGraph.h"
 
 namespace b3d
 {
@@ -121,57 +122,28 @@ namespace b3d
 		TShared<b3d::VectorPath> gCheckmarkPath;
 		TShared<VectorPathRenderable> gTestPathRenderable;
 		TShared<VectorPathRenderable> gCheckmarkPathRenderable;
-		TShared<GpuCommandBufferPool> gCommandBufferPool;
 
-		TShared<RenderTexture> gRenderTarget;
+		TextureCreateInformation gColorInformation;
+		TextureCreateInformation gStencilInformation;
 		TShared<RenderWindow> gRenderWindow;
 
 		// Initializes any resources required for rendering
 		void Setup(const TShared<RenderWindow>& renderWindow)
 		{
-			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
-
-			// Create a pool to allocate GPU command buffer from
-			GpuCommandBufferPoolCreateInformation poolCreateInformation;
-			poolCreateInformation.Thread = B3D_CURRENT_THREAD_ID;
-			poolCreateInformation.Type = GQT_GRAPHICS;
-
-			gCommandBufferPool = gpuDevice->CreateGpuCommandBufferPool(poolCreateInformation);
-
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;
 
-			auto fnCreateRenderTexture = [](u32 width, u32 height)
-			{
-				const TShared<GpuDevice> gpuDevice = GetApplication().GetPrimaryGpuDevice();
+			// Color and stencil the shapes render into, created by each frame's graph
+			gColorInformation.Width = kWindowWidth;
+			gColorInformation.Height = kWindowHeight;
+			gColorInformation.Format = PF_RGBA8;
+			gColorInformation.Usage = TextureUsageFlag::RenderTarget;
+			gColorInformation.ClearColor = Color::kWhite;
 
-				TextureCreateInformation colorTextureCreateInformation;
-				colorTextureCreateInformation.Width = width;
-				colorTextureCreateInformation.Height = height;
-				colorTextureCreateInformation.Format = PF_RGBA8;
-				colorTextureCreateInformation.Usage = TextureUsageFlag::RenderTarget;
-				colorTextureCreateInformation.ClearColor = Color::kWhite;
-
-				const TShared<Texture> colorTexture = gpuDevice->CreateTexture(colorTextureCreateInformation);
-
-				TextureCreateInformation stencilTextureCreateInformation;
-				stencilTextureCreateInformation.Width = width;
-				stencilTextureCreateInformation.Height = height;
-				stencilTextureCreateInformation.Format = PF_D32_S8X24;
-				stencilTextureCreateInformation.Usage = TextureUsageFlag::DepthStencil;
-
-				const TShared<Texture> stencilTexture = gpuDevice->CreateTexture(stencilTextureCreateInformation);
-
-				// Create the render surface
-				RenderTextureCreateInformation renderTextureCreateInformation;
-				renderTextureCreateInformation.ColorSurfaces[0].Texture = colorTexture;
-				renderTextureCreateInformation.DepthStencilSurface.Texture = stencilTexture;
-
-				return RenderTexture::Create(renderTextureCreateInformation);
-			};
-
-
-			gRenderTarget = fnCreateRenderTexture(kWindowWidth, kWindowHeight);
+			gStencilInformation.Width = kWindowWidth;
+			gStencilInformation.Height = kWindowHeight;
+			gStencilInformation.Format = PF_D32_S8X24;
+			gStencilInformation.Usage = TextureUsageFlag::DepthStencil;
 
 			// Create the vector path
 			gTestPath = b3d::VectorPath::CreateShared();
@@ -492,41 +464,52 @@ namespace b3d
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 
-			// Create a command buffer
-			TShared<GpuCommandBuffer> commandBuffer = gCommandBufferPool->Create(GpuCommandBufferCreateInformation::Create("VectorGraphics"));
+			// Describe the frame's GPU work as a graph of passes. The window is a resource the graph did not create, so it is imported.
+			FrameGraph frameGraph(gpuContext, "VectorGraphics");
+			frameGraph.ImportRenderTarget(gRenderWindow);
 
-			const TShared<GpuParameterSet> gpuParameters = gTestPathRenderable->Prepare();
+			const TShared<Texture> colorTexture = frameGraph.CreateTexture("Shapes color", gColorInformation);
+			const TShared<Texture> stencilTexture = frameGraph.CreateTexture("Shapes stencil", gStencilInformation);
 
-			// Bind render surface & clear it
-			RenderPassCreateInformation renderPassCreateInformation(gRenderTarget, gpuParameters, RT_NONE, RT_NONE);
-			renderPassCreateInformation.ClearMask = RT_COLOR_ALL | RT_DEPTH;
-
-			commandBuffer->BeginRenderPass(renderPassCreateInformation);
-
-			// Draw the vector shapes
-			gTestPathRenderable->Render(*commandBuffer);
+			// Clear the render surface and draw the vector shapes. Their parameter set only holds resources at rest.
+			FrameGraphRasterPass shapesPass;
+			shapesPass.SetColorAttachment(0, colorTexture, FrameGraphAttachmentLoad::Clear);
+			shapesPass.SetDepthStencilAttachment(stencilTexture, FrameGraphDepthStencilMode::Write, FrameGraphAttachmentLoad::Clear);
+			shapesPass.AddParameterSet(gTestPathRenderable->Prepare());
 
 			if(gCheckmarkPathRenderable != nullptr)
+				shapesPass.AddParameterSet(gCheckmarkPathRenderable->Prepare());
+
+			frameGraph.AddRasterPass("Shapes", std::move(shapesPass), [](FrameGraphPassContext& passContext)
 			{
-				commandBuffer->SetViewport(Area2(0.0f, 0.0f, (float)kCheckmarkWidth / (float)kWindowWidth, (float)kCheckmarkHeight / (float)kWindowHeight));
-				commandBuffer->ClearViewport(RT_COLOR_ALL);
-				gCheckmarkPathRenderable->Render(*commandBuffer);
-			}
+				GpuCommandBuffer& commandBuffer = passContext.GetCommandBuffer();
+				commandBuffer.SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+				gTestPathRenderable->Render(commandBuffer);
 
-			// Blit the image from the render texture, to the render window
-			commandBuffer->EndRenderPass();
+				if(gCheckmarkPathRenderable != nullptr)
+				{
+					commandBuffer.SetViewport(Area2(0.0f, 0.0f, (float)kCheckmarkWidth / (float)kWindowWidth, (float)kCheckmarkHeight / (float)kWindowHeight));
+					commandBuffer.ClearViewport(RT_COLOR_ALL);
+					gCheckmarkPathRenderable->Render(commandBuffer);
+				}
+			});
 
-			TShared<Texture> colorTexture = gRenderTarget->GetColorSurfaceInformation(0).Texture;
+			// Draw a full-screen quad of the shapes into the window, using the blit material of the renderer utility. It covers the
+			// whole window, so the previous contents are not loaded.
+			BlitMat* const blitMaterial = BlitMat::GetVariation(1, true, false);
 
-			// Use the helper RendererUtility to draw a full-screen quad of the provided texture and output it to the currently
-			// bound render target. Internally this uses the same calls we used above, just with a different pipeline and mesh.
-			BlitInformation blitInformation = BlitInformation::BlitColor(colorTexture, gRenderWindow);
-			blitInformation.OutputArea =Area2(0.0f, 0.0f, 1.0f, 1.0f); 
+			FrameGraphRasterPass blitPass;
+			blitPass.SetRenderTarget(gRenderWindow, FrameGraphAttachmentLoad::DontCare);
+			const TShared<GpuParameterSet> blitParameters = blitMaterial->Prepare(blitPass, colorTexture);
 
-			GetRendererUtility().Blit(*commandBuffer, blitInformation);
+			frameGraph.AddRasterPass("Blit to window", std::move(blitPass), [blitMaterial, blitParameters](FrameGraphPassContext& passContext)
+			{
+				passContext.GetCommandBuffer().SetViewport(Area2(0.0f, 0.0f, 1.0f, 1.0f));
+				blitMaterial->Execute(passContext, blitParameters, Area2(0.0f, 0.0f, (float)kWindowWidth, (float)kWindowHeight), false);
+			});
 
-			// Submit the command buffer through the render thread's GPU work context
-			gpuContext.SubmitCommandBuffer(commandBuffer);
+			frameGraph.Compile();
+			frameGraph.Execute();
 
 			// Present the rendered image to the user
 			gpuDevice->PresentRenderWindow(gRenderWindow);
@@ -535,10 +518,8 @@ namespace b3d
 		// Clean up any resources
 		void Shutdown()
 		{
-			gCommandBufferPool = nullptr;
 			gTestPath = nullptr;
 			gTestPathRenderable = nullptr;
-			gRenderTarget = nullptr;
 			gRenderWindow = nullptr;
 		}
 	} // namespace render
