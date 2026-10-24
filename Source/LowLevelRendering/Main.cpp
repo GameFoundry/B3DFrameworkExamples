@@ -40,8 +40,8 @@
 //
 // The example first sets up those resources. Every frame it then describes its GPU work as a frame graph: a pass that renders the
 // box into a color and a depth texture, and a pass that copies the color texture into the window. The graph places the
-// textures in memory it reuses between frames, and records every barrier between the passes. The engine runs in explicit mode,
-// so the graph's barriers are the only ones the GPU work gets.
+// textures in memory it reuses between frames, and records every barrier between the passes. Command buffers issue no barriers of
+// their own, so the graph's barriers are the only ones the GPU work gets.
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace b3d
@@ -132,9 +132,6 @@ int B3DMain()
 	VideoMode videoMode(kWindowWidth, kWindowHeight);
 
 	ApplicationCreateInformation createInformation = Application::BuildCreateInformation(videoMode, "Low Level Rendering", false);
-
-	// Leave every resource at rest after its creation and upload, which the frame graph expects of resources it did not create
-	gGpuExplicitBarriers.Set(true);
 
 	// Start-up the engine using our custom MyApplication class. This will also create the primary rendering window.
 	// We provide the initial resolution of the window, its title and fullscreen state.
