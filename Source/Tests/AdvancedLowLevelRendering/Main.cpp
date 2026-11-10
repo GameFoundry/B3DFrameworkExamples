@@ -166,26 +166,28 @@ namespace b3d::render
 				if(testPass == nullptr)
 					B3D_LOG(Fatal, LogGeneric, "Missing push-constant test pass.");
 
-				const PassInformation& pass = testPass->GetInformation();
 				if(testShader == pushConstantComputeShader)
 				{
-					if(!pass.ComputeProgramCreateInformation.Bytecode || !pass.ComputeProgramCreateInformation.Bytecode->Instructions.Data)
+					const GpuProgramCreateInformation& computeProgram = testPass->GetGpuProgramCreateInformation(GPT_COMPUTE_PROGRAM);
+					if(!computeProgram.Bytecode || !computeProgram.Bytecode->Instructions.Data)
 						B3D_LOG(Fatal, LogGeneric, "Missing compute push-constant test bytecode.");
 
 					GpuComputePipelineStateCreateInformation pipelineInformation;
-					pipelineInformation.Program = gpuDevice->CreateGpuProgram(pass.ComputeProgramCreateInformation);
+					pipelineInformation.Program = gpuDevice->CreateGpuProgram(computeProgram);
 
 					testComputePipelines[valueCount - 1] = gpuDevice->CreateGpuComputePipelineState(pipelineInformation);
 				}
 				else
 				{
-					if(!pass.VertexProgramCreateInformation.Bytecode || !pass.VertexProgramCreateInformation.Bytecode->Instructions.Data || !pass.FragmentProgramCreateInformation.Bytecode || !pass.FragmentProgramCreateInformation.Bytecode->Instructions.Data)
+					const GpuProgramCreateInformation& vertexProgram = testPass->GetGpuProgramCreateInformation(GPT_VERTEX_PROGRAM);
+					const GpuProgramCreateInformation& fragmentProgram = testPass->GetGpuProgramCreateInformation(GPT_FRAGMENT_PROGRAM);
+					if(!vertexProgram.Bytecode || !vertexProgram.Bytecode->Instructions.Data || !fragmentProgram.Bytecode || !fragmentProgram.Bytecode->Instructions.Data)
 						B3D_LOG(Fatal, LogGeneric, "Missing graphics push-constant test bytecode.");
 
 					GpuGraphicsPipelineStateCreateInformation pipelineInformation;
-					pipelineInformation.VertexProgram = gpuDevice->CreateGpuProgram(pass.VertexProgramCreateInformation);
-					pipelineInformation.FragmentProgram = gpuDevice->CreateGpuProgram(pass.FragmentProgramCreateInformation);
-					pipelineInformation.DepthStencilState = pass.DepthStencilStateInformation;
+					pipelineInformation.VertexProgram = gpuDevice->CreateGpuProgram(vertexProgram);
+					pipelineInformation.FragmentProgram = gpuDevice->CreateGpuProgram(fragmentProgram);
+					pipelineInformation.DepthStencilState = testPass->GetInformation().DepthStencilStateInformation;
 					pipelineInformation.RasterizerState.CullMode = CULL_NONE;
 
 					testGraphicsPipelines[valueCount - 1] = gpuDevice->CreateGpuGraphicsPipelineState(pipelineInformation);
@@ -370,19 +372,20 @@ namespace b3d::render
 		if(!computeVariation->IsCompiled())
 			computeVariation->Compile().BlockUntilComplete();
 
-		const PassInformation& graphicsPass = graphicsVariation->GetPass(0)->GetInformation();
+		const TShared<Pass> graphicsPass = graphicsVariation->GetPass(0);
+		const PassInformation& graphicsPassInformation = graphicsPass->GetInformation();
 		GpuGraphicsPipelineStateCreateInformation graphicsPipelineCreateInformation;
-		graphicsPipelineCreateInformation.VertexProgram = gpuDevice->CreateGpuProgram(graphicsPass.VertexProgramCreateInformation);
-		graphicsPipelineCreateInformation.FragmentProgram = gpuDevice->CreateGpuProgram(graphicsPass.FragmentProgramCreateInformation);
-		graphicsPipelineCreateInformation.BlendState = graphicsPass.BlendStateInformation;
-		graphicsPipelineCreateInformation.RasterizerState = graphicsPass.RasterizerStateInformation;
-		graphicsPipelineCreateInformation.DepthStencilState = graphicsPass.DepthStencilStateInformation;
+		graphicsPipelineCreateInformation.VertexProgram = gpuDevice->CreateGpuProgram(graphicsPass->GetGpuProgramCreateInformation(GPT_VERTEX_PROGRAM));
+		graphicsPipelineCreateInformation.FragmentProgram = gpuDevice->CreateGpuProgram(graphicsPass->GetGpuProgramCreateInformation(GPT_FRAGMENT_PROGRAM));
+		graphicsPipelineCreateInformation.BlendState = graphicsPassInformation.BlendStateInformation;
+		graphicsPipelineCreateInformation.RasterizerState = graphicsPassInformation.RasterizerStateInformation;
+		graphicsPipelineCreateInformation.DepthStencilState = graphicsPassInformation.DepthStencilStateInformation;
 
 		gGraphicsPipelineState = gpuDevice->CreateGpuGraphicsPipelineState(graphicsPipelineCreateInformation);
 
-		const PassInformation& computePass = computeVariation->GetPass(0)->GetInformation();
+		const TShared<Pass> computePass = computeVariation->GetPass(0);
 		GpuComputePipelineStateCreateInformation computePipelineCreateInformation;
-		computePipelineCreateInformation.Program = gpuDevice->CreateGpuProgram(computePass.ComputeProgramCreateInformation);
+		computePipelineCreateInformation.Program = gpuDevice->CreateGpuProgram(computePass->GetGpuProgramCreateInformation(GPT_COMPUTE_PROGRAM));
 		gComputePipelineState = gpuDevice->CreateGpuComputePipelineState(computePipelineCreateInformation);
 
 		B3D_ASSERT(gpuDevice->GetCapabilities().MaximumPushConstantSize >= kMaxPushConstantSizeInBytes);

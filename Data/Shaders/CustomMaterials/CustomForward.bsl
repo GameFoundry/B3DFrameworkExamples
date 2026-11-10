@@ -53,7 +53,7 @@ shader Surface
 			surfaceData.metalness = gMetalnessTex.Sample(gMetalnessSamp, input.uv0).x;
 			
 			// Call the built-in function to apply lighting
-			float3 lighting = calcLighting(input.worldPosition.xyz, input.position, input.uv0, surfaceData);
+			float3 lighting = calcLighting(input.worldPosition.xyz, input.position.xyz, input.uv0, surfaceData);
 			return float4(lighting, 1.0f);
 		}	
 	};

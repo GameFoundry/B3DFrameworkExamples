@@ -196,11 +196,12 @@ namespace b3d
 			// descriptors (compiled bytecode, or source to compile from), and the blend/rasterizer/depth-stencil
 			// states described in the shader's BSL source. Create the GPU programs and the graphics pipeline from it
 			// manually through the low-level API.
-			const PassInformation& passInformation = shaderVariation->GetPass(0)->GetInformation();
+			const TShared<Pass> pass = shaderVariation->GetPass(0);
+			const PassInformation& passInformation = pass->GetInformation();
 
 			GpuGraphicsPipelineStateCreateInformation pipelineCreateInformation;
-			pipelineCreateInformation.VertexProgram = gpuDevice->CreateGpuProgram(passInformation.VertexProgramCreateInformation);
-			pipelineCreateInformation.FragmentProgram = gpuDevice->CreateGpuProgram(passInformation.FragmentProgramCreateInformation);
+			pipelineCreateInformation.VertexProgram = gpuDevice->CreateGpuProgram(pass->GetGpuProgramCreateInformation(GPT_VERTEX_PROGRAM));
+			pipelineCreateInformation.FragmentProgram = gpuDevice->CreateGpuProgram(pass->GetGpuProgramCreateInformation(GPT_FRAGMENT_PROGRAM));
 			pipelineCreateInformation.BlendState = passInformation.BlendStateInformation;
 			pipelineCreateInformation.RasterizerState = passInformation.RasterizerStateInformation;
 			pipelineCreateInformation.DepthStencilState = passInformation.DepthStencilStateInformation;
