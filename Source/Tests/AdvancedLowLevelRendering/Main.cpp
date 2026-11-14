@@ -205,7 +205,7 @@ namespace b3d::render
 		const ImageSubresourcePitch testPitch = testTexture->GetStagingBufferPitchForSubresource(0, 0);
 		const TShared<GpuBuffer> graphicsReadback = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(testPitch.RowPitch * testPitch.SliceHeight * sizeof(float) * 4));
 		const TShared<GpuBuffer> computeReadback = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStagingRead(sizeof(float) * 4));
-		const TShared<GpuBuffer> testOutput = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(float) * 4, 1, GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU));
+		const TShared<GpuBuffer> testOutput = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(float) * 4, 1, GpuBufferFlag::GpuWrite));
 		const TShared<VertexDescription> emptyVertexDescription = B3DMakeShared<VertexDescription>(TInlineArray<VertexElement, 8>());
 
 		// One cached payload survives partial writes, smaller pipeline layouts, and graphics/compute transitions.
@@ -397,7 +397,7 @@ namespace b3d::render
 		gGraphicsParameters = parameterSetPool.Create(gGraphicsPipelineState->GetParameterLayout()->GetSet(0), 0);
 		gComputeParameters = parameterSetPool.Create(gComputePipelineState->GetParameterLayout()->GetSet(0), 0);
 
-		const GpuBufferFlags computeBufferFlags = GpuBufferFlag::StoreOnGPU | GpuBufferFlag::AllowUnorderedAccessOnTheGPU;
+		const GpuBufferFlags computeBufferFlags = GpuBufferFlag::GpuWrite;
 		gComputeOutput = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(float) * 4, 1, computeBufferFlags));
 		gGraphicsParameters->SetStorageBuffer("gComputeOutput", gComputeOutput);
 		gComputeParameters->SetStorageBuffer("gComputeOutput", gComputeOutput);
