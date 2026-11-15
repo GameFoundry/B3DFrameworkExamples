@@ -19,7 +19,8 @@ set(EXAMPLE_SUBDIRECTORIES
 	Source/Decals
 	Source/Tests/VectorGraphics
 	Source/Tests/NullBackends
-	Source/Lighting)
+	Source/Lighting
+	Source/RayTracing)
 
 # Platform-specific overrides, if the target platform defines any (see Platform/<name>/Platform.cmake).
 # A platform may trim the example set to the projects that build on it.
