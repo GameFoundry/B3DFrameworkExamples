@@ -1,0 +1,298 @@
+/* Mirrors Artifacts/TextRenderQuality/reference.html. Banshee font-size is in points at 96 DPI, so px * 0.75.
+   Each class is self-contained: later declarations override the shared base block. */
+
+label.DarkBg
+{
+    background-color: #1E1F22;
+}
+
+label.LightBg
+{
+    background-color: #FFFFFF;
+}
+
+button.Primary
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    vertical-align: middle;
+    border-width: 1px;
+    border-radius: 6px;
+    font-family: "Arial";
+    font-size: 10.5;
+    background-color: #3B82F6;
+    border-color: #2563EB;
+    color: #FFFFFF;
+}
+
+button.Primary::checkmark
+{
+    visibility: hidden;
+}
+
+button.Secondary
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    vertical-align: middle;
+    border-width: 1px;
+    border-radius: 6px;
+    font-family: "Arial";
+    font-size: 10.5;
+    background-color: #2B2D31;
+    border-color: #4A4D55;
+    color: #E3E5E8;
+}
+
+button.Secondary::checkmark
+{
+    visibility: hidden;
+}
+
+button.Pill
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    vertical-align: middle;
+    border-width: 1px;
+    border-radius: 6px;
+    font-family: "Arial";
+    font-size: 10.5;
+    background-color: #1E1F22;
+    border-color: #A0A4AB;
+    color: #E3E5E8;
+    border-width: 2px;
+    border-radius: 18px;
+}
+
+button.Pill::checkmark
+{
+    visibility: hidden;
+}
+
+button.LightBtn
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+    vertical-align: middle;
+    border-width: 1px;
+    border-radius: 6px;
+    font-family: "Arial";
+    font-size: 10.5;
+    background-color: #F3F4F6;
+    border-color: #D1D5DB;
+    color: #111827;
+    font-size: 9.75;
+}
+
+button.LightBtn::checkmark
+{
+    visibility: hidden;
+}
+
+label.Kern
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 15.0;
+    color: #E3E5E8;
+}
+
+label.Para
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #C9CCD1;
+}
+
+label.Small
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 8.25;
+    color: #9DA1A8;
+}
+
+label.LightText
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #111827;
+}
+
+/* --scene=contrast: mirrors Artifacts/TextRenderQuality/contrast.html */
+
+label.ContrastRow0
+{
+    background-color: #000000;
+}
+
+label.ContrastText0
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #808080;
+}
+
+label.ContrastRow1
+{
+    background-color: #FFFFFF;
+}
+
+label.ContrastText1
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #808080;
+}
+
+label.ContrastRow2
+{
+    background-color: #3B82F6;
+}
+
+label.ContrastText2
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #FFFFFF;
+}
+
+label.ContrastRow3
+{
+    background-color: #DC2626;
+}
+
+label.ContrastText3
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #FFFFFF;
+}
+
+label.ContrastRow4
+{
+    background-color: #22C55E;
+}
+
+label.ContrastText4
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #000000;
+}
+
+label.ContrastRow5
+{
+    background-color: #F59E0B;
+}
+
+label.ContrastText5
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #111827;
+}
+
+label.ContrastRow6
+{
+    background-color: #8B5CF6;
+}
+
+label.ContrastText6
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #E3E5E8;
+}
+
+label.ContrastRow7
+{
+    background-color: #4B5563;
+}
+
+label.ContrastText7
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #9CA3AF;
+}
+
+label.ContrastRow8
+{
+    background-color: #1E1F22;
+}
+
+label.ContrastText8
+{
+    padding: 0px;
+    margin: 0px;
+    text-align: left;
+    vertical-align: top;
+    font-family: "Arial";
+    background-color: #00000000;
+    font-size: 9.75;
+    color: #FACC15;
+}

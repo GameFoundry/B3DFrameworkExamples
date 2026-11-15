@@ -18,6 +18,7 @@ set(EXAMPLE_SUBDIRECTORIES
 	Source/Particles
 	Source/Decals
 	Source/Tests/VectorGraphics
+	Source/Tests/TextQuality
 	Source/Tests/NullBackends
 	Source/Lighting
 	Source/RayTracing)
