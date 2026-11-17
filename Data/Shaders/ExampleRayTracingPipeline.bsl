@@ -142,7 +142,7 @@ shader ExampleRayTracingPipeline
 			return float4(pow(saturate(color), 1.0f / 2.2f), 1.0f);
 		}
 
-		// TODO(metal) - Ray tracing pipelines come with phase 5.4
+		// Metal has no ray tracing pipelines, and traces rays inline only
 	#if !defined(METAL)
 		// Ray types, which pick the miss record and, added to the hit group offset of the instance, the hit group record
 		static const uint RAY_PRIMARY = 0;
