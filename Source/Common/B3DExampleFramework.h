@@ -23,7 +23,6 @@ namespace b3d
 	/** A list of mesh assets provided with the example projects. */
 	enum class ExampleMesh
 	{
-		Pistol,
 		Cerberus
 	};
 
@@ -36,10 +35,6 @@ namespace b3d
 	/** A list of texture assets provided with the example projects. */
 	enum class ExampleTexture
 	{
-		PistolAlbedo,
-		PistolNormal,
-		PistolRoughness,
-		PistolMetalness,
 		EnvironmentPaperMill,
 		GUIBansheeIcon,
 		DroneAlbedo,
@@ -179,7 +174,6 @@ namespace b3d
 		{
 			// Map from the enum to the actual file path
 			static AssetFolderAndName assetPaths[] = {
-				AssetFolderAndName("Pistol/", "Pistol01.fbx"),
 				AssetFolderAndName("Cerberus/", "Cerberus.FBX")
 			};
 
@@ -286,10 +280,6 @@ namespace b3d
 		{
 			// Map from the enum to the actual file path
 			static AssetFolderAndName assetPaths[] = {
-				AssetFolderAndName("Pistol/", "Pistol_DFS.png"),
-				AssetFolderAndName("Pistol/", "Pistol_NM.png"),
-				AssetFolderAndName("Pistol/", "Pistol_RGH.png"),
-				AssetFolderAndName("Pistol/", "Pistol_MTL.png"),
 				AssetFolderAndName("Environments/", "PaperMill_E_3k.hdr"),
 				AssetFolderAndName("GUI/", "BansheeIcon.png"),
 				AssetFolderAndName("MechDrone/", "Drone_diff.jpg"),

@@ -80,13 +80,13 @@ namespace b3d
 		Assets assets;
 
 		// Load a 3D model
-		assets.Sphere = ExampleFramework::LoadMesh(ExampleMesh::Pistol, 10.0f);
+		assets.Sphere = ExampleFramework::LoadMesh(ExampleMesh::Cerberus);
 
 		// Load PBR textures for the 3D model
-		assets.ExampleAlbedoTex = ExampleFramework::LoadTexture(ExampleTexture::PistolAlbedo, ExampleTextureType::Default);
-		assets.ExampleNormalsTex = ExampleFramework::LoadTexture(ExampleTexture::PistolNormal, ExampleTextureType::NormalMap);
-		assets.ExampleRoughnessTex = ExampleFramework::LoadTexture(ExampleTexture::PistolRoughness, ExampleTextureType::Linear);
-		assets.ExampleMetalnessTex = ExampleFramework::LoadTexture(ExampleTexture::PistolMetalness, ExampleTextureType::Linear);
+		assets.ExampleAlbedoTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusAlbedo, ExampleTextureType::Default);
+		assets.ExampleNormalsTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusNormal, ExampleTextureType::NormalMap);
+		assets.ExampleRoughnessTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusRoughness, ExampleTextureType::Linear);
+		assets.ExampleMetalnessTex = ExampleFramework::LoadTexture(ExampleTexture::CerberusMetalness, ExampleTextureType::Linear);
 
 		// Create a set of materials we'll be using for rendering the object
 		//// Create a standard PBR material

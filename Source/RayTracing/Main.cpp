@@ -14,8 +14,6 @@
 #include "GpuBackend/B3DGpuParameterSetPool.h"
 #include "GpuBackend/B3DVertexDescription.h"
 #include "Image/B3DTexture.h"
-#include "Importer/B3DImporter.h"
-#include "Importer/B3DMeshImportOptions.h"
 #include "Mesh/B3DMesh.h"
 #include "Mesh/B3DMeshData.h"
 #include "RayTracing/B3DRayTracingGeometry.h"
@@ -84,19 +82,16 @@ namespace b3d
 
 			TShared<render::RenderWindow> renderWindow = B3DGetRenderProxy(GetPrimaryWindow());
 
+			// Load packages so we can find previously saved resources. Platforms without importers only have those.
+			ExampleFramework::LoadPackages();
+
 			// One shader traces inline, from a compute program, and the other through a ray tracing pipeline
 			mInlineShader = ExampleFramework::LoadShader("ExampleRayTracingInline.bsl");
 			mPipelineShader = ExampleFramework::LoadShader("ExampleRayTracingPipeline.bsl");
 
-			// Import the pistol mesh. Import options can turn ray tracing support off (MeshImportOptions::SupportsRayTracing), so the mesh is
-			// imported on every run instead of loaded from a package an earlier version might have saved without it.
-			const Path meshPath = Path::Combine(ExampleFramework::GetDataPath(), "Pistol/", "Pistol01.fbx");
-			TShared<ImportOptions> importOptions = Importer::Instance().CreateImportOptions(meshPath);
-			if(B3DRTTIIsOfType<MeshImportOptions>(importOptions))
-				static_cast<MeshImportOptions*>(importOptions.get())->SupportsRayTracing = true;
-
-			mTexturedMesh = GetImporter().Import<Mesh>(meshPath, importOptions);
-			mTexturedMeshAlbedo = ExampleFramework::LoadTexture(ExampleTexture::PistolAlbedo);
+			// The textured mesh. Meshes support ray tracing unless their import options turn it off (MeshImportOptions::SupportsRayTracing).
+			mTexturedMesh = ExampleFramework::LoadMesh(ExampleMesh::Cerberus);
+			mTexturedMeshAlbedo = ExampleFramework::LoadTexture(ExampleTexture::CerberusAlbedo);
 
 			TShared<render::Shader> inlineShader = mInlineShader.IsLoaded() ? B3DGetRenderProxy(mInlineShader) : nullptr;
 			TShared<render::Shader> pipelineShader = mPipelineShader.IsLoaded() ? B3DGetRenderProxy(mPipelineShader) : nullptr;
@@ -387,7 +382,7 @@ namespace b3d
 				const Vector3 size = bounds.GetSize();
 				const float scale = 3.0f / std::max(std::max(size.X, size.Y), std::max(size.Z, 0.001f));
 
-				const Quaternion rotation = Quaternion(Vector3::kUnitY, Degree(90.0f)) * Quaternion(Vector3::kUnitZ, Degree(90.0f));
+				const Quaternion rotation(Vector3::kUnitY, Degree(-70.0f));
 				Matrix4 transform = Matrix4::TRS(Vector3::kZero, rotation, Vector3::kOne * scale) *
 					Matrix4::Translation(-bounds.GetCenter());
 

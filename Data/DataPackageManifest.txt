@@ -10,6 +10,5 @@ Grid/
 Materials/
 MechDrone/
 Particles/
-Pistol/
 DataPackageRemovals.txt
 .version
