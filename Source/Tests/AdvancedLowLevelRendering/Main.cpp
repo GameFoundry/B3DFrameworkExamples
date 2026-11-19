@@ -414,13 +414,13 @@ namespace b3d::render
 		u8* positions = vertexData + gVertexDescription->GetElementOffsetFromStream(VES_POSITION);
 		u8* uvs = vertexData + gVertexDescription->GetElementOffsetFromStream(VES_TEXCOORD);
 		WriteBoxVertices(AABox(Vector3::kOne * -10.0f, Vector3::kOne * 10.0f), positions, uvs, vertexStride);
-		GpuBufferUtility::Write(gpuContext, gVertexBuffer, 0, vertexStride * kVertexCount, vertexData, GpuBufferWriteFlag::Discard);
+		GpuBufferUtility::Write(gVertexBuffer, 0, vertexStride * kVertexCount, vertexData, GpuBufferWriteFlag::Discard);
 		B3DStackFree(vertexData);
 
 		gIndexBuffer = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateIndex(IT_32BIT, kIndexCount));
 		u32* indexData = (u32*)B3DStackAllocate(kIndexCount * sizeof(u32));
 		WriteBoxIndices(indexData);
-		GpuBufferUtility::Write(gpuContext, gIndexBuffer, 0, kIndexCount * sizeof(u32), indexData, GpuBufferWriteFlag::Discard);
+		GpuBufferUtility::Write(gIndexBuffer, 0, kIndexCount * sizeof(u32), indexData, GpuBufferWriteFlag::Discard);
 		B3DStackFree(indexData);
 
 		// Surface texture, sampler and off-screen render target.

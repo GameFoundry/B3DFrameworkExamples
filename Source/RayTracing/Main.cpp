@@ -399,9 +399,8 @@ namespace b3d
 			gLayoutBuffer = gpuDevice->CreateGpuBuffer(GpuBufferCreateInformation::CreateStructuredStorage(sizeof(RayTracingGeometryLayout),
 				(u32)layouts.size()));
 
-			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
-			GpuBufferUtility::Write(gpuContext, gObjectBuffer, 0, (u32)(objects.size() * sizeof(ObjectData)), objects.data());
-			GpuBufferUtility::Write(gpuContext, gLayoutBuffer, 0, (u32)(layouts.size() * sizeof(RayTracingGeometryLayout)), layouts.data());
+			GpuBufferUtility::Write(gObjectBuffer, 0, (u32)(objects.size() * sizeof(ObjectData)), objects.data());
+			GpuBufferUtility::Write(gLayoutBuffer, 0, (u32)(layouts.size() * sizeof(RayTracingGeometryLayout)), layouts.data());
 
 			// Shaders always sample a texture, so use a white one if the albedo texture failed to load
 			gAlbedoTexture = texturedMeshAlbedo;

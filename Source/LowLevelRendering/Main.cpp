@@ -182,7 +182,6 @@ namespace b3d
 		void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Shader>& boxShader)
 		{
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
-			GpuWorkContext& gpuContext = GetRenderer()->GetGpuContext();
 
 			// This will be the primary output for our rendering (created by the main thread on start-up)
 			gRenderWindow = renderWindow;
@@ -232,7 +231,7 @@ namespace b3d
 			AABox box(Vector3::kOne * -10.0f, Vector3::kOne * 10.0f);
 			WriteBoxVertices(box, positions, uvs, vertexStride);
 
-			GpuBufferUtility::Write(gpuContext, gVertexBuffer, 0, vertexStride * kVertexCount, vbData, GpuBufferWriteFlag::Discard);
+			GpuBufferUtility::Write(gVertexBuffer, 0, vertexStride * kVertexCount, vbData, GpuBufferWriteFlag::Discard);
 			B3DStackFree(vbData);
 
 			// Create & fill the index buffer for a box mesh
@@ -245,7 +244,7 @@ namespace b3d
 			u32* ibData = (u32*)B3DStackAllocate(kIndexCount * sizeof(u32));
 			WriteBoxIndices(ibData);
 
-			GpuBufferUtility::Write(gpuContext, gIndexBuffer, 0, kIndexCount * sizeof(u32), ibData, GpuBufferWriteFlag::Discard);
+			GpuBufferUtility::Write(gIndexBuffer, 0, kIndexCount * sizeof(u32), ibData, GpuBufferWriteFlag::Discard);
 			B3DStackFree(ibData);
 
 			// Create a simple 2x2 checkerboard texture to map to the object we're about to render
