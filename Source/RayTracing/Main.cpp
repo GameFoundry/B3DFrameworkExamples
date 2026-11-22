@@ -1,6 +1,11 @@
 #include "B3DApplication.h"
 #include "B3DEntry.h"
 #include "B3DExampleFramework.h"
+#include "Animation/B3DAnimationClip.h"
+#include "Animation/B3DSkeleton.h"
+#include "Animation/B3DSkeletonMask.h"
+#include "Animation/SkinCache/B3DSkinCache.h"
+#include "Resources/B3DResources.h"
 #include "Material/B3DShader.h"
 #include "Material/B3DVariation.h"
 #include "Material/B3DPass.h"
@@ -31,8 +36,14 @@
 // Every mesh that supports ray tracing (MeshFlag::SupportsRayTracing, the default for static meshes) has a ray tracing geometry: a
 // bottom level acceleration structure built from the mesh's own vertex and index buffers. A RayTracingScene places instances of these
 // geometries in the world, and builds the top level acceleration structure rays are traced against. The scene below has a ground plane,
-// three instances of one box (they share one bottom level structure), an imported textured mesh, and a quad with alpha tested holes. One
-// of the boxes moves every frame, so the scene rebuilds its top level structure every frame.
+// three instances of one box (they share one bottom level structure), an imported textured mesh, a quad with alpha tested holes, and an
+// animated drone. One of the boxes moves every frame, so the scene rebuilds its top level structure every frame.
+//
+// The drone is a skeletal mesh. A SkinCache deforms its vertices on the GPU every frame, into buffers of a SkinCacheEntry created with
+// SkinCacheEntryFlag::RayTracingGeometry. The entry owns a ray tracing geometry over its deformed vertices: the cache builds it on the first
+// deformation and refits it on each one after that, all in passes of the frame graph, before the scene builds its top level structure. The
+// clip is sampled at a time derived from the frame index, so a given frame always looks the same. A renderer drives its own skin cache
+// from the poses of Animation components; this example poses the entry itself.
 //
 // The scene is traced in two ways, each into one half of the image:
 //  - Left: inline ray tracing. A compute program traces rays with RayTraceClosest() and RayTraceAny(), and runs the alpha test in an
@@ -63,7 +74,7 @@ namespace b3d
 	namespace render
 	{
 		void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Shader>& inlineShader, const TShared<Shader>& pipelineShader,
-			const TShared<Mesh>& texturedMesh, const TShared<Texture>& texturedMeshAlbedo);
+			const TShared<Mesh>& texturedMesh, const TShared<Texture>& texturedMeshAlbedo, const TShared<Mesh>& droneMesh, const TShared<b3d::AnimationClip>& droneClip);
 		void Render();
 		void Shutdown();
 	} // namespace render
@@ -93,14 +104,28 @@ namespace b3d
 			mTexturedMesh = ExampleFramework::LoadMesh(ExampleMesh::Cerberus);
 			mTexturedMeshAlbedo = ExampleFramework::LoadTexture(ExampleTexture::CerberusAlbedo);
 
+			// The drone's mesh and its animation clip come from one source file
+			const TShared<MultiResource> droneResources = ExampleFramework::LoadSkeletalMesh(ExampleSkeletalMesh::MechDrone);
+			for(const auto& entry : droneResources->Entries)
+			{
+				if(B3DRTTIIsOfType<Mesh>(entry.Value.Get()))
+					mDroneMesh = B3DStaticResourceCast<Mesh>(entry.Value);
+				else if(B3DRTTIIsOfType<AnimationClip>(entry.Value.Get()))
+					mDroneClip = B3DStaticResourceCast<AnimationClip>(entry.Value);
+			}
+
 			TShared<render::Shader> inlineShader = mInlineShader.IsLoaded() ? B3DGetRenderProxy(mInlineShader) : nullptr;
 			TShared<render::Shader> pipelineShader = mPipelineShader.IsLoaded() ? B3DGetRenderProxy(mPipelineShader) : nullptr;
 			TShared<render::Mesh> texturedMesh = mTexturedMesh.IsLoaded() ? B3DGetRenderProxy(mTexturedMesh) : nullptr;
 			TShared<render::Texture> texturedMeshAlbedo = mTexturedMeshAlbedo.IsLoaded() ? B3DGetRenderProxy(mTexturedMeshAlbedo) : nullptr;
 
-			GetRenderThread().PostCommand([renderWindow, inlineShader, pipelineShader, texturedMesh, texturedMeshAlbedo]
+			// The clip is immutable once loaded, so the render thread may sample it
+			TShared<render::Mesh> droneMesh = mDroneMesh.IsLoaded() ? B3DGetRenderProxy(mDroneMesh) : nullptr;
+			TShared<AnimationClip> droneClip = mDroneClip.IsLoaded() ? mDroneClip.GetShared() : nullptr;
+
+			GetRenderThread().PostCommand([renderWindow, inlineShader, pipelineShader, texturedMesh, texturedMeshAlbedo, droneMesh, droneClip]
 			{
-				render::Setup(renderWindow, inlineShader, pipelineShader, texturedMesh, texturedMeshAlbedo);
+				render::Setup(renderWindow, inlineShader, pipelineShader, texturedMesh, texturedMeshAlbedo, droneMesh, droneClip);
 			});
 		}
 
@@ -112,6 +137,8 @@ namespace b3d
 			mPipelineShader = HShader();
 			mTexturedMesh = HMesh();
 			mTexturedMeshAlbedo = HTexture();
+			mDroneMesh = HMesh();
+			mDroneClip = HAnimationClip();
 
 			Application::OnShutDown();
 		}
@@ -126,6 +153,8 @@ namespace b3d
 		HShader mPipelineShader;
 		HMesh mTexturedMesh;
 		HTexture mTexturedMeshAlbedo;
+		HMesh mDroneMesh;
+		HAnimationClip mDroneClip;
 	};
 } // namespace b3d
 
@@ -198,6 +227,13 @@ namespace b3d
 		TShared<RayTracingScene> gScene;
 		u32 gMovingInstanceSlot = 0;
 
+		// The drone. The entry must be destroyed before its cache.
+		TShared<SkinCache> gSkinCache;
+		TShared<SkinCacheEntry> gDroneEntry;
+		TShared<b3d::AnimationClip> gDroneClip; // The clip itself, not a render proxy, as Skeleton::GetPose() samples it
+		Vector<Matrix4> gDroneBoneTransforms;
+		LocalSkeletonPose gDroneLocalPose;
+
 		TShared<GpuBuffer> gObjectBuffer;
 		TShared<GpuBuffer> gLayoutBuffer;
 		TShared<Texture> gAlbedoTexture;
@@ -216,6 +252,7 @@ namespace b3d
 		TShared<Mesh> CreateBoxMesh(float size);
 		TShared<Mesh> CreateQuadMesh(float width, float height);
 		Matrix4 GetMovingInstanceTransform(u32 frameIndex);
+		void PoseDrone(u32 frameIndex);
 		ParamsBlock CreateParams(u32 viewOffset, u32 viewWidth);
 
 		/** Returns the program of @p pass with entry point @p entryPoint, created on @p device, or null if the pass has none. */
@@ -245,7 +282,7 @@ namespace b3d
 		}
 
 		void Setup(const TShared<RenderWindow>& renderWindow, const TShared<Shader>& inlineShader, const TShared<Shader>& pipelineShader,
-			const TShared<Mesh>& texturedMesh, const TShared<Texture>& texturedMeshAlbedo)
+			const TShared<Mesh>& texturedMesh, const TShared<Texture>& texturedMeshAlbedo, const TShared<Mesh>& droneMesh, const TShared<b3d::AnimationClip>& droneClip)
 		{
 			const TShared<GpuDevice>& gpuDevice = GetApplication().GetPrimaryGpuDevice();
 			gRenderWindow = renderWindow;
@@ -321,32 +358,62 @@ namespace b3d
 			if(texturedMesh != nullptr)
 				gMeshes.push_back(texturedMesh);
 
-			// Put the layouts of every geometry in one table, and remember where each mesh's layouts start
-			Vector<RayTracingGeometryLayout> layouts;
-			UnorderedMap<const Mesh*, u32> firstLayouts;
-			for(const TShared<Mesh>& mesh : gMeshes)
+			// The drone's entry creates its geometry on the first deformation, so deform it once now, which also builds the geometry. The
+			// entry keeps no previous positions, so its vertices stay in one buffer and the geometry's layouts never change.
+			TShared<RayTracingGeometry> droneGeometry;
+			if(droneMesh != nullptr && droneMesh->GetSkeleton() != nullptr && droneClip != nullptr)
 			{
-				const TShared<RayTracingGeometry>& geometry = mesh->GetOrCreateRayTracingGeometry();
-				if(geometry == nullptr)
-					continue;
+				gSkinCache = B3DMakeShared<SkinCache>(*gpuDevice, "Example skin cache");
+				gDroneEntry = gSkinCache->CreateEntry(SkinCacheEntryCreateInformation(droneMesh, SkinCacheEntryFlag::RayTracingGeometry, "Drone"));
+				gDroneClip = droneClip;
 
-				firstLayouts[mesh.get()] = (u32)layouts.size();
+				const u32 boneCount = droneMesh->GetSkeleton()->GetBoneCount();
+				gDroneBoneTransforms.resize(boneCount);
+				gDroneLocalPose = LocalSkeletonPose(boneCount);
+
+				if(gDroneEntry != nullptr)
+				{
+					PoseDrone(0);
+
+					FrameGraph frameGraph(GetRenderer()->GetGpuContext(), "First drone deformation");
+					gSkinCache->Update(frameGraph);
+					frameGraph.Compile();
+					frameGraph.Execute();
+
+					droneGeometry = gDroneEntry->GetRayTracingGeometry();
+				}
+
+				if(droneGeometry == nullptr)
+					B3D_LOG(Warning, LogGeneric, "The drone has no ray tracing geometry, so the scene leaves it out.");
+			}
+
+			// Put the layouts of every geometry in one table, and remember where each geometry's layouts start
+			Vector<RayTracingGeometryLayout> layouts;
+			UnorderedMap<const RayTracingGeometry*, u32> firstLayouts;
+			const auto fnAddLayouts = [&](const TShared<RayTracingGeometry>& geometry)
+			{
+				firstLayouts[geometry.get()] = (u32)layouts.size();
 				for(const RayTracingGeometryLayout& layout : geometry->GetGeometryLayouts())
 					layouts.push_back(layout);
+			};
+
+			for(const TShared<Mesh>& mesh : gMeshes)
+			{
+				if(const TShared<RayTracingGeometry>& geometry = mesh->GetOrCreateRayTracingGeometry())
+					fnAddLayouts(geometry);
 			}
+
+			if(droneGeometry != nullptr)
+				fnAddLayouts(droneGeometry);
 
 			// Place the instances. The instance id indexes the object data.
 			gScene = B3DMakeShared<RayTracingScene>(*gpuDevice, "Example scene");
 			Vector<ObjectData> objects;
 
-			const auto fnAddInstance = [&](const TShared<Mesh>& mesh, const Matrix4& transform, ExampleMaterial material, const Color& color)
+			const auto fnAddGeometryInstance = [&](const TShared<RayTracingGeometry>& geometry, const Matrix4& transform, ExampleMaterial material, const Color& color)
 			{
-				const TShared<RayTracingGeometry>& geometry = mesh->GetOrCreateRayTracingGeometry();
-				if(geometry == nullptr)
-					return ~0u;
-
 				ObjectData object;
-				object.FirstLayout = firstLayouts[mesh.get()];
+				object.FirstLayout = firstLayouts[geometry.get()];
 				object.Material = material;
 				object.Padding[0] = object.Padding[1] = 0;
 				object.Color = color;
@@ -364,6 +431,12 @@ namespace b3d
 					instance.HitGroupIndexOffset = kOpaqueHitGroupOffset;
 
 				return gScene->AddInstance(instance);
+			};
+
+			const auto fnAddInstance = [&](const TShared<Mesh>& mesh, const Matrix4& transform, ExampleMaterial material, const Color& color)
+			{
+				const TShared<RayTracingGeometry>& geometry = mesh->GetOrCreateRayTracingGeometry();
+				return geometry != nullptr ? fnAddGeometryInstance(geometry, transform, material, color) : ~0u;
 			};
 
 			fnAddInstance(planeMesh, Matrix4::kIdentity, ExampleMaterial::Checker, Color(0.6f, 0.6f, 0.6f));
@@ -391,6 +464,17 @@ namespace b3d
 				transform = Matrix4::Translation(Vector3(0.0f, 0.5f - placedBounds.Minimum.Y, 0.0f)) * transform;
 
 				fnAddInstance(texturedMesh, transform, ExampleMaterial::Textured, Color::kWhite);
+			}
+
+			// Scale the drone to 2.5 units tall, behind the textured mesh on the left, standing on the ground in its bind pose
+			if(droneGeometry != nullptr)
+			{
+				const AABox bounds = droneMesh->GetProperties().Bounds.GetBox();
+				const float scale = 2.5f / std::max(bounds.GetSize().Y, 0.001f);
+				const Vector3 center = bounds.GetCenter();
+				const Matrix4 transform = Matrix4::TRS(Vector3(-1.5f, 0.0f, 3.5f), Quaternion(Vector3::kUnitY, Degree(20.0f)), Vector3::kOne * scale) * Matrix4::Translation(Vector3(-center.X, -bounds.Minimum.Y, -center.Z));
+
+				fnAddGeometryInstance(droneGeometry, transform, ExampleMaterial::Solid, Color(0.75f, 0.55f, 0.15f));
 			}
 
 			// The tables never change and every ray reads them, so they live in the memory the GPU reads fastest. GpuBufferUtility::Write()
@@ -486,8 +570,16 @@ namespace b3d
 				return;
 			}
 
-			// Move the box, and build what changed. The move is by frame index, not time, so a given frame always looks the same.
+			// Move the box and pose the drone, and build what changed. Both move by frame index, not time, so a given frame always looks the
+			// same. The cache deforms the drone and refits its geometry before the scene builds its top level structure, which picks up
+			// the change of the geometry.
 			gScene->SetInstanceTransform(gMovingInstanceSlot, GetMovingInstanceTransform(gFrameIndex));
+			if(gDroneEntry != nullptr)
+			{
+				PoseDrone(gFrameIndex);
+				gSkinCache->Update(frameGraph);
+			}
+
 			gScene->Build(frameGraph);
 
 			const TShared<Texture> output = frameGraph.CreateTexture("Ray traced image", gOutputInformation);
@@ -595,6 +687,10 @@ namespace b3d
 			gRayTracingPipeline = nullptr;
 			gInlinePipeline = nullptr;
 			gScene = nullptr;
+			gDroneEntry = nullptr;
+			gSkinCache = nullptr;
+			gDroneClip = nullptr;
+			gDroneLocalPose = LocalSkeletonPose();
 			gMeshes.clear();
 			gObjectBuffer = nullptr;
 			gLayoutBuffer = nullptr;
@@ -618,6 +714,14 @@ namespace b3d
 			const Vector3 position(std::cos(angle.GetValueInRadians()) * 3.5f, 0.5f, std::sin(angle.GetValueInRadians()) * 3.5f);
 
 			return Matrix4::TRS(position, Quaternion(Vector3::kUnitY, angle), Vector3::kOne);
+		}
+
+		/** Poses the drone's entry with its clip at the time of frame @p frameIndex, at 60 frames a second. */
+		void PoseDrone(u32 frameIndex)
+		{
+			Skeleton& skeleton = *gDroneEntry->GetMesh()->GetSkeleton();
+			skeleton.GetPose(gDroneBoneTransforms.data(), gDroneLocalPose, SkeletonMask(skeleton.GetBoneCount()), *gDroneClip, frameIndex / 60.0f);
+			gDroneEntry->SetPose(gDroneBoneTransforms);
 		}
 
 		/** Returns the uniform block of a view @p viewWidth pixels wide, at @p viewOffset in the image. */
