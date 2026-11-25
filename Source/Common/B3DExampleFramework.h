@@ -468,17 +468,8 @@ namespace b3d
 			if(FileSystem::Exists(path))
 				return path;
 
-			// The example source tree (development builds).
-			path = EXAMPLE_DATA_PATH;
-			if(FileSystem::Exists(path))
-				return path;
-
-			// The source tree through the host filesystem mount, on platforms served from a host PC.
-			const Path hostRoot = FileSystem::GetHostFileSystemRoot();
-			if(!hostRoot.IsEmpty())
-				return Path(hostRoot.ToString() + String(EXAMPLE_DATA_PATH));
-
-			return path;
+			// The example source tree (development builds)
+			return FileSystem::ResolveSourceTreePath(Path(EXAMPLE_DATA_PATH));
 		}
 	};
 
