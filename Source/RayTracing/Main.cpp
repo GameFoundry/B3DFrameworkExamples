@@ -22,6 +22,7 @@
 #include "Mesh/B3DMesh.h"
 #include "Mesh/B3DMeshData.h"
 #include "RayTracing/B3DRayTracingGeometry.h"
+#include "RayTracing/B3DRayTracingManager.h"
 #include "RayTracing/B3DRayTracingScene.h"
 #include "Renderer/B3DRendererMeshData.h"
 #include "Renderer/B3DRendererUtility.h"
@@ -44,6 +45,10 @@
 // deformation and refits it on each one after that, all in passes of the frame graph, before the scene builds its top level structure. The
 // clip is sampled at a time derived from the frame index, so a given frame always looks the same. A renderer drives its own skin cache
 // from the poses of Animation components; this example poses the entry itself.
+//
+// The structures of static geometry are built with room to spare. Once a build is done, RayTracingManager::Update(), called at the start
+// of every frame, copies them into compacted structures that use less memory, and the scene rebuilds its top level structure over them.
+// The drone's geometry is rebuilt and refitted all the time, so it isn't compacted.
 //
 // The scene is traced in two ways, each into one half of the image:
 //  - Left: inline ray tracing. A compute program traces rays with RayTraceClosest() and RayTraceAny(), and runs the alpha test in an
@@ -569,6 +574,9 @@ namespace b3d
 				gpuDevice->PresentRenderWindow(gRenderWindow);
 				return;
 			}
+
+			// Compact the static geometries whose builds are done. The scene picks up their new structures.
+			RayTracingManager::Instance().Update(frameGraph);
 
 			// Move the box and pose the drone, and build what changed. Both move by frame index, not time, so a given frame always looks the
 			// same. The cache deforms the drone and refits its geometry before the scene builds its top level structure, which picks up
